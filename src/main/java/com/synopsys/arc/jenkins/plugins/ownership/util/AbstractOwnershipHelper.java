@@ -45,14 +45,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
     @Override
     public final String getOwnerEmail(TObjectType item) {
         OwnershipDescription descr = getOwnershipDescription(item);
-        User owner = descr.getPrimaryOwner();
-        OwnershipPlugin plugin = OwnershipPlugin.Instance();
-        
-        if (owner == null || plugin == null)
-        {
-            return null;
-        }             
-        return owner.getId() + plugin.getEmailSuffix();
+        return  UserStringFormatter.formatEmail(descr.getPrimaryOwner());      
     }
     
     @Override

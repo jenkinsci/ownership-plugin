@@ -64,7 +64,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
       
     public Collection<User> getUsers()
     {     
-        // Sort users
+        //TODO: Sort users
         IUserFilter filter = new AccessRightsFilter(owner, Job.CONFIGURE);
         Collection<User> res = UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         return res;
@@ -79,7 +79,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     public Job<?, ?> getDescribedItem() {
         return owner;   
     }
-
+ 
     @Extension
     public static class DescriptorImpl extends JobPropertyDescriptor {
 

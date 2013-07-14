@@ -53,13 +53,14 @@
         />
     </j:if>
     
-    <!--Display selection list, set user as owner if it was disabled-->
     <f:optionalBlock name="${blockName}" title="${%Enable ownership}" checked="${instance!=null}"
             description="${%Enables ownership for current item}">
-            <f:entry title="${%Primary Owner}" description="${%Primary responsible person}">
+            <j:set var="_item" value="${it.getDescribedItem()}"/>          
+            <f:entry title="${%Primary Owner}" description="${%Primary responsible person}"
+                     help="/plugin/ownership/help/primaryOwner.html"
+            >
                 <!--Already instantinated ownership-->
                 <j:if test="${_ownershipIsEnabled}">
-                    <j:set var="_item" value="${it.getDescribedItem()}"/>   
                     <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>   
                     <select name="${blockName}.primaryOwner" class="setting-input">
                         <j:forEach var="user" items="${_userList}">
@@ -72,15 +73,25 @@
                 <!--Non-instatinated-->
                 <j:if test="${!_ownershipIsEnabled}">                 
                     <f:textbox field="${blockName}.primaryOwner" id="primaryOwner" value="${_owner}"/>
+                    <f:description>Owner will be set to current user. You will be able to change owner after "Save"</f:description>                 
                 </j:if>
             </f:entry>
-            <!--TODO: enable in 0.2-->
-            <!--
-            <f:block>              
-                <f:hetero-list name="coOwners" hasHeader="true"
-                  descriptors="${allJobFilters}"
-                  items="${it.helper.getCoOwners()}"
-                  addCaption="${%Add Co-owner}" />
-            </f:block> 	-->
+            <f:entry title="Co-owners" help="/plugin/ownership/help/coOwner.html">
+                <f:repeatable name="coOwners" add="${%Add co-owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">                                    
+                    <table width="100%">
+                    <f:entry title="Co-owner">
+                        <f:textbox field="coOwner" value="${_coownerId}"
+                            checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"
+                        />  
+                    </f:entry>
+                    <f:entry title="">
+                        <div align="right">
+                            <f:repeatableDeleteButton value="Remove..."/> 
+                        </div>
+                    </f:entry>
+                    </table>        
+                </f:repeatable>
+            </f:entry>  
+            
     </f:optionalBlock>
 </j:jelly>

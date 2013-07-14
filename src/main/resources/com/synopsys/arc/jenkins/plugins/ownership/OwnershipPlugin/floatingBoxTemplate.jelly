@@ -38,13 +38,16 @@
         <div class="test-trend-caption"> ${itemType} $Ownership </div>            
         <j:choose>
             <j:when test="${helper.isOwnerExists(item)}">
-                Primary owner: <a href="${rootURL}/user/${helper.getOwner(item)}/">
-                    ${helper.getOwnerLongString(item)}
-                </a>
+                <j:set var="_ownerId" value="${helper.getOwner(item)}"/>
+                <j:invokeStatic var="_ownerEmail" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatEmailURI">
+                    <j:arg type="java.lang.String" value="${_ownerId}" />              
+                </j:invokeStatic> 
+                <j:invokeStatic var="_ownerURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
+                    <j:arg type="java.lang.String" value="${_ownerId}" />              
+                </j:invokeStatic>
+                <b>Primary owner:</b> ${_ownerURL}                 
                 <p/>
-                Contact e-mail: <a href="mailto://${helper.getOwnerEmail(item)}">
-                    ${helper.getOwnerEmail(item)}
-                </a>
+                <b>Contact e-mail:</b> ${_ownerEmail}                  
             </j:when>
             <j:otherwise>
                 Primary owner:  ${helper.getOwner(item)}
@@ -54,5 +57,17 @@
         <!--
         TODO: Co-owners: 
         -->
+        <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
+        <j:if test="${not coownersList.isEmpty()}">
+            <dl>
+                <dt>Co-owners:</dt> 
+                <j:forEach var="coownerId" items="${coownersList}">                   
+                    <j:invokeStatic var="_userURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
+                        <j:arg type="java.lang.String" value="${coownerId}" />              
+                    </j:invokeStatic>
+                    <dd>- ${_userURL}</dd>
+                </j:forEach>  
+            </dl>
+        </j:if>
     </div>
 </j:jelly>

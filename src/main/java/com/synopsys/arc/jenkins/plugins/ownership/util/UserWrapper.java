@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import hudson.model.User;
 
 /**
@@ -82,7 +83,8 @@ public class UserWrapper {
         return isUser ? UserStringFormatter.format(user) : macro;
     }
     
-    public boolean meetsMacro(String userId) {
+    public boolean meetsMacro(String userId) {           
+        // Handle macroses and get effective user's id
         String comparedId;
         if (isUser)
         {
@@ -96,6 +98,7 @@ public class UserWrapper {
             comparedId = current.getId();
         }        
 
+        // Check      
         return comparedId.equals(userId);
     }
     

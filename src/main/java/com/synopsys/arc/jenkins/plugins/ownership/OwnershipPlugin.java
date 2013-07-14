@@ -24,15 +24,18 @@
 package com.synopsys.arc.jenkins.plugins.ownership;
 
 import hudson.Plugin;
+import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.User;
+import hudson.util.FormValidation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -101,5 +104,19 @@ public class OwnershipPlugin extends Plugin {
     public static String getDefaultOwner() {
         User current = User.current();       
         return current !=null ? current.getId() : "";
+    }
+    
+    public FormValidation doCheckUser(@QueryParameter String userId) {
+        userId = Util.fixEmptyAndTrim(userId);
+        if (userId == null) {
+            return FormValidation.error("Field is empty. Field will be ignored");
+        }
+        
+        User usr = User.get(userId, false, null);
+        if (usr == null) {
+            return FormValidation.warning("User " + userId + " is not registered in Jenkins");
+        }
+        
+        return FormValidation.ok();
     }
 }

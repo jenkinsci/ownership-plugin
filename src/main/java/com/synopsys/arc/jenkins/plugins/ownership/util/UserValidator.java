@@ -1,4 +1,4 @@
-<!--
+/*
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
@@ -20,13 +20,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- -->
-<?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-  <f:section title="${%Ownership}" description="${%Configuration of the ownership plugin}">
-    <f:entry title="E-mail suffix" 
-             description="E-mail suffix for mailto: hyperlinks (ex, @synopsys.com)">
-        <f:textbox field="emailSuffix" id="emailSuffix" value="${it.getEmailSuffix()}"/>
-    </f:entry>    
-  </f:section>
-</j:jelly>
+ */
+package com.synopsys.arc.jenkins.plugins.ownership.util;
+
+import hudson.util.FormValidation;
+
+/**
+ *
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ */
+public class UserValidator {
+    
+}

@@ -87,8 +87,25 @@ public class OwnershipJobFilter extends ViewJobFilter {
             JobProperty prop = project.getProperty(JobOwnerJobProperty.class);
               
             if (prop != null) {
-                OwnershipDescription ownership = ((JobOwnerJobProperty)prop).getOwnership();
-                if (ownership.isOwnershipEnabled() && wuserWrapper.meetsMacro(ownership.getPrimaryOwnerId())) {
+                boolean matches = false;
+                OwnershipDescription ownership = ((JobOwnerJobProperty)prop).getOwnership();    
+                if (!ownership.isOwnershipEnabled()) {
+                    continue;
+                }
+                
+                if (wuserWrapper.meetsMacro(ownership.getPrimaryOwnerId())) {
+                    matches = true;
+                }            
+                if (acceptsCoowners && !matches) {
+                    for (String coOwnerId : ownership.getCoownersIds()) {
+                        if (wuserWrapper.meetsMacro(coOwnerId)) {
+                            matches = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (matches) {
                     newList.add(item);
                 }
             }
@@ -108,8 +125,7 @@ public class OwnershipJobFilter extends ViewJobFilter {
         @Override
         public ViewJobFilter newInstance(StaplerRequest req, JSONObject formData) throws FormException {
                 String jobOwner = formData.getString( "jobOwner" );
-                //FIXME: Enable support of co-owners
-                boolean acceptCoowners = false; //formData.getBoolean("acceptsCoowners" );
+                boolean acceptCoowners = formData.getBoolean("acceptsCoowners" );
                 OwnershipJobFilter instance = new OwnershipJobFilter( jobOwner, acceptCoowners );
                 return instance;
         } 

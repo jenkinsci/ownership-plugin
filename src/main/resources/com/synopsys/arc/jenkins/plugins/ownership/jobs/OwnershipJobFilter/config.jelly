@@ -26,16 +26,15 @@
 	xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
     
     <j:invokeStatic var="_usersList" className="com.synopsys.arc.jenkins.plugins.ownership.jobs.OwnershipJobFilter" method="getAvailableUsers"/>
-    <f:entry title="${%Job ownership}">  
+    <f:entry title="${%User}" help="/plugin/ownership/help/filter_ownerMacro.html">  
         <select name="jobOwner" class="setting-input">    
             <j:forEach var="user" items="${_usersList}">
                  <f:option value="${user.getId()}" selected="${ instance.isSelected(user) == true }">${user.toString()}</f:option>
             </j:forEach>
         </select>    
     </f:entry> 
-    <!-- TODO: Enable in 0.2
-    <f:entry>
-        <f:checkbox name="acceptsCoowners" field="acceptsCoowners"/> ${%Accept co-owners. Unsupported in phase1 }
+    <f:description>Filter will check ownership of the specified user</f:description>
+    <f:entry help="/plugin/ownership/help/filter_acceptCoowners.html">
+        <f:checkbox name="acceptsCoowners" field="acceptsCoowners"/> ${%Accept co-owned jobs}
     </f:entry> 
-    -->
 </j:jelly>

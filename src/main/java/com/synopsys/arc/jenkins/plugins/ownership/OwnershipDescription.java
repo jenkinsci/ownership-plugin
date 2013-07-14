@@ -23,10 +23,13 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import hudson.Util;
+import hudson.model.Descriptor;
 import hudson.model.User;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -132,10 +135,12 @@ public class OwnershipDescription {
     }
     
     public static OwnershipDescription Parse(JSONObject formData, String blockName)
+            throws Descriptor.FormException
     {
         Object blockObject = formData.get( blockName );
         boolean ownershipIsEnabled = false;
         String primaryOwner = null;
+        Set<String> coOwnersSet = null;
         
         if( blockObject != null ) {
             ownershipIsEnabled = true;          
@@ -144,11 +149,33 @@ public class OwnershipDescription {
             // Read primary owner
             primaryOwner = debugJSON.getString( "primaryOwner" );
             
-            //TODO: read coowners
+            // Read coowners
+            coOwnersSet = new TreeSet<String>();
+            if (debugJSON.has("coOwners")) {
+                JSONObject coOwners = debugJSON.optJSONObject("coOwners");
+                if (coOwners == null) {         
+                    for (Object obj : debugJSON.getJSONArray("coOwners")) {
+                       addUser(coOwnersSet, (JSONObject)obj);
+                    }
+                } else {
+                    addUser(coOwnersSet, coOwners);
+                }
+            }
         }
         
-        return new OwnershipDescription(ownershipIsEnabled, primaryOwner);
+        return new OwnershipDescription(ownershipIsEnabled, primaryOwner, coOwnersSet);
     }
+    
+    private static void addUser(Set<String> target, JSONObject userObj) throws Descriptor.FormException {
+        String userId = Util.fixEmptyAndTrim(((JSONObject)userObj).getString("coOwner"));
+        
+        //TODO: validate user string
+        
+        if (userId != null) {
+            target.add(userId);
+        }
+    }
+            
     
     /**
      * Check if User is owner.
@@ -182,5 +209,12 @@ public class OwnershipDescription {
      */
     public static boolean isEnabled(OwnershipDescription descr) {
         return descr != null && descr.ownershipEnabled;
+    }
+    
+    /**
+     * 
+     */
+    static void check() {
+        
     }
 }
