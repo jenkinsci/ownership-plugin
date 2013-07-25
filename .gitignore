@@ -9,3 +9,4 @@
 /src/main/resources/com/synopsys/jenkinsci/buildowner/BuildOwnerJobProperty/config.jelly
 /target_old/
 /work_old
+/work_roles

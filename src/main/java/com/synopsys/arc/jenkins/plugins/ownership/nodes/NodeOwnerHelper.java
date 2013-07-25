@@ -51,7 +51,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
      * @param node Node
      * @return OwnerNodeProperty or null
      */
-    private static OwnerNodeProperty getOwnerProperty(Node node)
+    public static OwnerNodeProperty getOwnerProperty(Node node)
     {
         NodeProperty prop = node.getNodeProperties().get(OwnerNodeProperty.class);
         return prop != null ? (OwnerNodeProperty)prop : null;

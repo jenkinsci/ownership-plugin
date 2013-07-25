@@ -35,7 +35,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <div align="left" style="width:400px;" class="${styleClass}">   
-        <div class="test-trend-caption"> ${itemType} $Ownership </div>            
+        <div class="test-trend-caption">${itemType} ${%Ownership}</div>            
         <j:choose>
             <j:when test="${helper.isOwnerExists(item)}">
                 <j:set var="_ownerId" value="${helper.getOwner(item)}"/>

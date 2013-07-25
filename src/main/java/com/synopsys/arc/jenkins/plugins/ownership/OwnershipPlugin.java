@@ -44,6 +44,8 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
 public class OwnershipPlugin extends Plugin {
+    public static final String LOG_PREFIX="[OwnershipPlugin] - ";
+    
     //TODO: Restore
     /**private static final PermissionGroup PERMISSIONS = new PermissionGroup(OwnershipPlugin.class, Messages._OwnershipPlugin_ManagePermissions_Title());    
     public static final Permission MANAGE_ITEMS_OWNERSHIP = new Permission(Job.PERMISSIONS, "Jobs", Messages._OwnershipPlugin_ManagePermissions_JobDescription(), Permission.CONFIGURE, PermissionScope.ITEM);

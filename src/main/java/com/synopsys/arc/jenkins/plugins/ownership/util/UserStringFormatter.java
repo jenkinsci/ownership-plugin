@@ -63,6 +63,6 @@ public class UserStringFormatter {
     }
     
     public static String formatEmail(User user) {
-        return user != null ? MailAddressResolver.resolve(user) : null;
+        return (user != null && user != User.getUnknown()) ? MailAddressResolver.resolve(user) : null;
     }
 }

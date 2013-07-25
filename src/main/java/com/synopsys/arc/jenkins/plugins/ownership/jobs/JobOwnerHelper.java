@@ -47,7 +47,7 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
      * @param job Job
      * @return JobOwnerJobProperty or null
      */
-    private static JobOwnerJobProperty getOwnerProperty(Job<?,?> job) {
+    public static JobOwnerJobProperty getOwnerProperty(Job<?,?> job) {
         AbstractProject project = (AbstractProject) job;
         JobProperty prop = project.getProperty(JobOwnerJobProperty.class);
         return prop != null ? (JobOwnerJobProperty)prop : null;

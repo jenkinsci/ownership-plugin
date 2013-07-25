@@ -135,12 +135,12 @@ public class OwnerNodeProperty extends NodeProperty<Node>
         
         @Override
         public String getDisplayName() {
-                return Messages.SlaveOwnership_Config_SectionTitle();
+                return Messages.NodesOwnership_Config_SectionTitle();
         }
 
         @Override
         public boolean isApplicable( Class<? extends Node> Type ) {
                 return true;
-        }           
+        }         
     }
 }
