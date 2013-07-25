@@ -48,8 +48,9 @@ public class OwnershipPlugin extends Plugin {
     /**private static final PermissionGroup PERMISSIONS = new PermissionGroup(OwnershipPlugin.class, Messages._OwnershipPlugin_ManagePermissions_Title());    
     public static final Permission MANAGE_ITEMS_OWNERSHIP = new Permission(Job.PERMISSIONS, "Jobs", Messages._OwnershipPlugin_ManagePermissions_JobDescription(), Permission.CONFIGURE, PermissionScope.ITEM);
     public static final Permission MANAGE_SLAVES_OWNERSHIP = new Permission(Computer.PERMISSIONS, "Slaves", Messages._OwnershipPlugin_ManagePermissions_SlaveDescription(), Permission.CONFIGURE, PermissionScope.COMPUTER);
-       */ 
-     
+    */ 
+    
+    private boolean requiresConfigureRights;
     private List<OwnershipAction> pluginActions = new ArrayList<OwnershipAction>();
     
     public static OwnershipPlugin Instance() {
@@ -70,12 +71,16 @@ public class OwnershipPlugin extends Plugin {
             MANAGE_SLAVES_OWNERSHIP.setEnabled(true);
         }*/
     }
-    
+
+    public boolean isRequiresConfigureRights() {
+        return requiresConfigureRights;
+    }
+      
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
 	Hudson.getInstance().getActions().removeAll(pluginActions);
-        
+        requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         ReinitActionsList();
 	save();
         Hudson.getInstance().getActions().addAll(pluginActions);

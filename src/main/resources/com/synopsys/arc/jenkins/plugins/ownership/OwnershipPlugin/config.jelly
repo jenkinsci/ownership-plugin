@@ -24,15 +24,9 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
   <f:section title="${%Ownership}" description="${%Configuration of the ownership plugin}">
-    <!--<f:entry title="Enable default suffix">
-        <f:checkbox field="useEmailSuffix" id="useEmailSuffix" value="${it.isUseEmailSuffix()}"/>
-        <f:description>Fallback to default suffix, when MailAddressResolver fails to find user's e-mail</f:description>
+    <f:entry title="Require Configure rights" field="requiresConfigureRights">
+        <f:checkbox checked="${it.requiresConfigureRights}"/>
+        <f:description>If checked, only users with Configure rights will be able to become owners.</f:description>
     </f:entry>
-    <f:entry title="E-mail suffix">
-        <f:textbox field="emailSuffix" id="emailSuffix" value="${it.getEmailSuffix()}"/>
-        <f:description>
-            Default e-mail suffix for mailto: hyperlinks (ex, @synopsys.com).
-        </f:description>
-    </f:entry>  -->  
   </f:section>
 </j:jelly>

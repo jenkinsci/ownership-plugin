@@ -21,44 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.synopsys.arc.jenkins.plugins.ownership.jobs;
+package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
-import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
-import hudson.model.Job;
+import com.synopsys.arc.jenkins.plugins.ownership.Messages;
+import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
+import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
+import hudson.Extension;
+import hudson.model.User;
+import hudson.security.AccessControlled;
+import hudson.security.Permission;
 
 /**
- * Ownership action for jobs.
- * @author Oleg Nenashev <nenashev@synopsys.com>
+ * Provides owner RoleMacro for the role-based strategy.
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * @since 0.2
  */
-public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
-    
-    public JobOwnerJobAction(Job<?, ?> job) {
-      super(job);
+@Extension
+public class OwnerRoleMacro extends AbstractOwnershipRoleMacro {
+
+    @Override
+    public String getName() {
+        return Messages.Security_RoleStrategy_OwnerRoleMacro_Name(); 
+    }
+
+
+    @Override
+    public String getDescription() {
+        return Messages.Security_RoleStrategy_OwnerRoleMacro_Description();
     }
 
     @Override
-    public JobOwnerHelper helper() {
-        return JobOwnerHelper.Instance;
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
+        User user = User.get(sid, false, null);              
+        return hasPermission(user, type, item, macro, false);
     }
-       
-    /** 
-     * Gets described job.
-     * @deprecated Just for compatibility with 0.0.1
-     */
-    public Job<?, ?> getJob() {
-        return getDescribedItem();
-    }
-
-    @Override
-    public String getDisplayName() {
-        return "Job ownership";
-    }
-
-    @Override
-    public OwnershipDescription getOwnership() {
-        return helper().getOwnershipDescription(getDescribedItem());
-    }
-    
     
 }

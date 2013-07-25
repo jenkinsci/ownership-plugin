@@ -24,6 +24,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
@@ -65,8 +66,11 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     
     @Override
     public Collection<User> getPossibleOwners(Node item) {
-        IUserFilter filter = new AccessRightsFilter(item, Computer.CONFIGURE);
-        Collection<User> res = UserCollectionFilter.filterUsers(User.getAll(), true, filter);
-        return res;
+        if (OwnershipPlugin.Instance().isRequiresConfigureRights()) {
+            IUserFilter filter = new AccessRightsFilter(item, Computer.CONFIGURE);
+            return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
+        } else {
+            return User.getAll();
+        }
     }   
 }

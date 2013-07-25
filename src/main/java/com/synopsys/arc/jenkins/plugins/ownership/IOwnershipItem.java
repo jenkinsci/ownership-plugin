@@ -41,4 +41,11 @@ public interface IOwnershipItem<TObjectType> {
      * @return Described item
      */
     public TObjectType getDescribedItem();
+    
+    
+    /**
+     * Gets ownership description
+     * @return Ownership Description (not null)
+     */
+    public OwnershipDescription getOwnership();
 }

@@ -24,6 +24,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
@@ -71,8 +72,11 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
 
     @Override
     public Collection<User> getPossibleOwners(Job<?, ?> item) {
-        IUserFilter filter = new AccessRightsFilter(item, Job.CONFIGURE);
-        Collection<User> res = UserCollectionFilter.filterUsers(User.getAll(), true, filter);
-        return res;
+        if (OwnershipPlugin.Instance().isRequiresConfigureRights()) {
+            IUserFilter filter = new AccessRightsFilter(item, Job.CONFIGURE);
+            return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
+        } else {
+            return User.getAll();
+        }
     }  
 }

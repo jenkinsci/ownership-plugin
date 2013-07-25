@@ -59,4 +59,13 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>role-strategy</artifactId>
+            <version>2.1.0</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 </project>

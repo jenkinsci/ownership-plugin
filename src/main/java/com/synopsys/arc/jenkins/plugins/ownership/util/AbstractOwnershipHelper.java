@@ -25,7 +25,6 @@ package com.synopsys.arc.jenkins.plugins.ownership.util;
 
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import hudson.model.User;
 
 /**

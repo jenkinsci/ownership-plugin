@@ -63,10 +63,9 @@ public class OwnerNodeProperty extends NodeProperty<Node>
          this.ownership = (ownership != null) ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
     
-    
-    public OwnershipDescription getOwnership()
-    {             
-        return ownership;
+    @Override
+    public OwnershipDescription getOwnership() {             
+        return ownership != null ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
 
     public Node getNode() {

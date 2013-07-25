@@ -179,10 +179,12 @@ public class OwnershipDescription implements Serializable {
      * @return true if User belongs to primary owners (and/or coowners)
      */
     public boolean isOwner(User user, boolean acceptCoowners) {
+        if (user == null) {
+            return false;
+        }
         if (isPrimaryOwner(user)) {
             return true;
         }
-        
         return acceptCoowners ? coownersIds.contains(user.getId()) : false;
     }
     

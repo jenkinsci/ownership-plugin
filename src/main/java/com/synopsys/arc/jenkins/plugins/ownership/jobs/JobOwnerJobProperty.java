@@ -58,6 +58,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
             this.ownership = ownershipDescription;
     }
 
+    @Override
     public OwnershipDescription getOwnership() {
         return (ownership!=null) ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
