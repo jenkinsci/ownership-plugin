@@ -1,6 +1,12 @@
-/target
-/work
-
+# Maven
+target/
+# Jenkins
+work/
+# Eclipse
+.project
+.classpath
+.settings/
+#???
 /src/main/java/com/synopsys/jenkinsci/buildowner/BuildOwnerColumn.java
 /src/main/java/com/synopsys/jenkinsci/buildowner/BuildOwnerJobProperty.java
 /src/main/resources/com/synopsys/jenkinsci/buildowner/BuildOwnerColumn/column.jelly
