@@ -21,40 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.synopsys.arc.jenkins.plugins.ownership;
+package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
-import hudson.model.Action;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import hudson.Extension;
+import hudson.model.Hudson;
+import hudson.model.Item;
+import hudson.model.Job;
+import hudson.model.User;
+import hudson.model.listeners.ItemListener;
+import java.io.IOException;
 
 /**
- * Provides Floating box with ownership description.
- * @author Oleg Nenashev <nenashev@synopsys.com>
+ *
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
  */
-public abstract class OwnershipAction implements Action {
-    public static final String ICON_FILENAME = "user.gif";
-    public static final String URL_NAME = "ownership";
-    
+@Extension
+public class OwnershipItemListener extends ItemListener {
+
     @Override
-    public String getIconFileName() {
-         return actionIsAvailable() ? ICON_FILENAME : null; 
-    }
-     
-    @Override
-    public String getUrlName() {
-        return actionIsAvailable() ? URL_NAME : null;
+    public void onCopied(Item src, Item item) {
+        modifyOwnership(item);
     }
 
     @Override
-    public String getDisplayName() {
-        return actionIsAvailable() ? Messages.OwnershipAction_ManageOwnership_DisplayName() : null;
-    }
-       
-    public String getManageOwnershipTitle() {
-        return Messages.OwnershipAction_ManageOwners_DisplayName();
+    public void onCreated(Item item) {
+        modifyOwnership(item);
     }
     
-    public String getConfigureSpecificAccessTitle() {
-        return Messages.OwnershipAction_ConfigureSpecificAccess_DisplayName();
+    private void modifyOwnership(Item item) {
+        if (OwnershipPlugin.Instance().isAssignOnCreate()) {
+            User creator = User.current();
+            if (creator != null && creator != User.getUnknown() && item instanceof Job) {
+                Job job = (Job) item;
+                try {
+                    JobOwnerHelper.setOwnership(job, new OwnershipDescription(true, creator.getId()));
+                } catch (IOException ex) {
+                    //TODO: do sowething
+                }
+            }
+        }
     }
-    
-    public abstract boolean actionIsAvailable();
 }

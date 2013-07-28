@@ -33,6 +33,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.User;
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -68,6 +69,16 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
     public OwnershipDescription getOwnershipDescription(Job<?, ?> job) {
         JobOwnerJobProperty prop = getOwnerProperty(job);     
         return (prop != null) ? prop.getOwnership() : OwnershipDescription.DISABLED_DESCR;
+    }
+    
+    public static void setOwnership(Job<?, ?> job, OwnershipDescription descr) throws IOException {
+        JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(job);
+        if (prop == null) {
+            prop = new JobOwnerJobProperty(descr);
+            job.addProperty(prop);
+        } else {
+            prop.setOwnershipDescription(descr);
+        }
     }
 
     @Override

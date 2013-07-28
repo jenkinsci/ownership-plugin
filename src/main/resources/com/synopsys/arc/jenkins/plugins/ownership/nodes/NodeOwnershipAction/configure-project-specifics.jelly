@@ -27,33 +27,13 @@
         <st:include it="${app}" page="sidepanel.jelly"/>
         <l:main-panel>
             <h1>
-                <img src="${imagesURL}/48x48/${it.iconFileName}" alt="${it.displayName}"/>
-                ${it.displayName}
+                <img src="${imagesURL}/48x48/fingerprint.gif" alt="${%Configure node-specific access rights}" />
+                ${%Configure node-specific access rights}
             </h1>
-            <p>This page allows to configure ownership and specific access rights of the item.</p>
-            
-            <d:taglib uri="local">
-              <!-- table to show a map -->
-              <d:tag name="feature">
-                <t:summary icon="${icon}"
-                           href="${href}" iconOnly="true">
-                  <div class="link"><a href="${href}">${title}</a></div>
-                  <div style="color:gray; text-decoration:none;">
-                    <d:invokeBody />
-                  </div>
-                </t:summary>
-              </d:tag>
-            </d:taglib>
-
-            <table style="padding-left: 2em;" id="management-links">
-              <local:feature icon="user.gif" href="manage-owners" title="${it.manageOwnershipTitle}">
-                ${%Manage Owners, add co-owners, etc.}
-              </local:feature>
-              <local:feature icon="fingerprint.gif" href="configure-project-specifics" title="${it.configureSpecificAccessTitle}">
-                ${%Configure job-specific access rights}. <a style="color:red"><b>(not supported in the ownership-0.2)</b></a>
-              </local:feature>               
-            </table>
+            <p style="color:red">
+                <b>Project-specific access rights aren't supported in the current version</b>
+            </p>
+                
         </l:main-panel>
     </l:layout>
-         
 </j:jelly>

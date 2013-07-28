@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -81,6 +80,12 @@ public class OwnershipDescription implements Serializable {
         this.ownershipEnabled = ownershipEnabled;
         this.primaryOwnerId = primaryOwnerId;
         this.coownersIds = new TreeSet<String>(coownersIds);
+    }
+    
+    public void assign(OwnershipDescription descr) {
+        this.ownershipEnabled = descr.ownershipEnabled;
+        this.primaryOwnerId = descr.primaryOwnerId;
+        this.coownersIds = descr.coownersIds;
     }
 
     @Override
@@ -204,4 +209,6 @@ public class OwnershipDescription implements Serializable {
     public static boolean isEnabled(OwnershipDescription descr) {
         return descr != null && descr.ownershipEnabled;
     } 
+    
+    
 }

@@ -25,9 +25,13 @@ package com.synopsys.arc.jenkins.plugins.ownership;
 
 import hudson.Plugin;
 import hudson.Util;
+import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.User;
+import hudson.security.Permission;
+import hudson.security.PermissionGroup;
+import hudson.security.PermissionScope;
 import hudson.util.FormValidation;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,13 +50,12 @@ import org.kohsuke.stapler.StaplerRequest;
 public class OwnershipPlugin extends Plugin {
     public static final String LOG_PREFIX="[OwnershipPlugin] - ";
     
-    //TODO: Restore
-    /**private static final PermissionGroup PERMISSIONS = new PermissionGroup(OwnershipPlugin.class, Messages._OwnershipPlugin_ManagePermissions_Title());    
-    public static final Permission MANAGE_ITEMS_OWNERSHIP = new Permission(Job.PERMISSIONS, "Jobs", Messages._OwnershipPlugin_ManagePermissions_JobDescription(), Permission.CONFIGURE, PermissionScope.ITEM);
-    public static final Permission MANAGE_SLAVES_OWNERSHIP = new Permission(Computer.PERMISSIONS, "Slaves", Messages._OwnershipPlugin_ManagePermissions_SlaveDescription(), Permission.CONFIGURE, PermissionScope.COMPUTER);
-    */ 
-    
+    private static final PermissionGroup PERMISSIONS = new PermissionGroup(OwnershipPlugin.class, Messages._OwnershipPlugin_ManagePermissions_Title());    
+    public static final Permission MANAGE_ITEMS_OWNERSHIP = new Permission(PERMISSIONS, "Jobs", Messages._OwnershipPlugin_ManagePermissions_JobDescription(), Permission.CONFIGURE, PermissionScope.ITEM);
+    public static final Permission MANAGE_SLAVES_OWNERSHIP = new Permission(PERMISSIONS, "Nodes", Messages._OwnershipPlugin_ManagePermissions_SlaveDescription(), Permission.CONFIGURE, PermissionScope.COMPUTER);
+     
     private boolean requiresConfigureRights;
+    private boolean assignOnCreate;
     private List<OwnershipAction> pluginActions = new ArrayList<OwnershipAction>();
     
     public static OwnershipPlugin Instance() {
@@ -65,24 +68,22 @@ public class OwnershipPlugin extends Plugin {
 	super.load();
         ReinitActionsList();
 	Hudson.getInstance().getActions().addAll(pluginActions);
-        //TODO: Restore
-        /*if (!MANAGE_ITEMS_OWNERSHIP.getEnabled()) {
-            MANAGE_ITEMS_OWNERSHIP.setEnabled(true);
-        }
-        if (!MANAGE_SLAVES_OWNERSHIP.getEnabled()) {
-            MANAGE_SLAVES_OWNERSHIP.setEnabled(true);
-        }*/
     }
-
+    
     public boolean isRequiresConfigureRights() {
         return requiresConfigureRights;
     }
-      
+
+    public boolean isAssignOnCreate() {
+        return assignOnCreate;
+    }
+     
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
 	Hudson.getInstance().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
+        assignOnCreate=formData.getBoolean("assignOnCreate");
         ReinitActionsList();
 	save();
         Hudson.getInstance().getActions().addAll(pluginActions);

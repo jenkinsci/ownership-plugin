@@ -67,7 +67,12 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     public OwnershipDescription getOwnership() {             
         return ownership != null ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
-
+    
+    public void setOwnershipDescription(OwnershipDescription descr) {
+        ownership = descr;
+        getDescriptor().save();
+    }
+    
     public Node getNode() {
         if (node == null) {
             setNode(Jenkins.getInstance().getNode(nodeName));
@@ -81,14 +86,13 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     }
             
     @Override
-    public IOwnershipHelper<NodeProperty> helper() {
-        
+    public IOwnershipHelper<NodeProperty> helper() {       
         return NodeOwnerPropertyHelper.Instance;
     }
 
     @Override
     public NodeProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
-        return super.reconfigure(req, form); 
+        return new OwnerNodeProperty(DescriptorImpl.getNodePropertyOwner(req), getOwnership());
     }
      
     @Override
@@ -97,15 +101,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     }
       
     @Extension
-    public static class DescriptorImpl extends NodePropertyDescriptor {
-        
-        @Override
-        public NodeProperty<?> newInstance( StaplerRequest req, JSONObject formData ) throws Descriptor.FormException {               
-            Node owner = getNodePropertyOwner(req);
-            OwnershipDescription descr = OwnershipDescription.Parse(formData);
-            return descr.isOwnershipEnabled() ? new OwnerNodeProperty(owner, descr) : null;       
-        }
-         
+    public static class DescriptorImpl extends NodePropertyDescriptor {       
         /**
          * Gets Node, which is being configured by StaplerRequest
          * @remarks Workaround for
@@ -134,7 +130,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
         
         @Override
         public String getDisplayName() {
-                return Messages.NodeOwnership_Config_SectionTitle();
+                return Messages.NodeOwnership_Config_SectionTitle()+". (just a stub, use \"Manage ownership\" page to configure)";
         }
 
         @Override

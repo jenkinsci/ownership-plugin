@@ -1,0 +1,81 @@
+<!--
+* The MIT License
+*
+* Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+-->
+<!--
+- Template for ownership property Setup
+- 
+- Features:
+-   - Optional ownership enable
+-   - Setting of primary owner
+-
+- Parameters:
+-    {it}       - Property instance
+-    item       - Described Item
+-    blockName  - name of the block
+-
+- @remarks Use <function> to parse parameters
+- @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+- @since 0.0.3   
+-   
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    
+    <!--Prepare data-->
+    <j:set var="_item" value="${it.getDescribedItem()}"/>   
+    <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>   
+    
+    <j:set var="_item" value="${it.getDescribedItem()}"/>          
+    <f:entry title="${%Primary Owner}" help="/plugin/ownership/help/primaryOwner.html">
+        <!--Already instantinated ownership-->
+        <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>   
+        <select name="${blockName}.primaryOwner" class="setting-input">
+            <j:forEach var="user" items="${_userList}">
+                <f:option value="${user.getId()}" selected="${ it.helper().getOwnershipDescription(_item).isPrimaryOwner(user) == true }">
+                    ${it.helper().getDisplayName(user)}
+                </f:option>
+            </j:forEach>
+        </select> 
+
+    </f:entry>
+    <f:entry title="Co-owners" help="/plugin/ownership/help/coOwner.html"/>
+    <f:entry>
+        <f:repeatable name="coOwners" add="${%Add co-owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">                                    
+            <table width="100%">
+                <f:entry title="Co-owner">
+                    <f:textbox field="coOwner" value="${_coownerId}"
+                               checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"
+                    />
+                    <f:description>
+                        User, who have specific access rights to the item.
+                    </f:description>  
+                </f:entry>
+                <f:entry title="">
+                    <div align="right">
+                        <f:repeatableDeleteButton value="Remove..."/> 
+                    </div>
+                </f:entry>
+            </table>        
+        </f:repeatable>
+    </f:entry>              
+</j:jelly>

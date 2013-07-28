@@ -33,12 +33,12 @@ import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.User;
 import hudson.slaves.NodeProperty;
+import java.io.IOException;
 import java.util.Collection;
 
 /**
  * Provides helper for Node owner
  * @todo Add Bug reference
- * @deprecated Bug in Jenkins => doesn't work
  * @since 0.0.3
  * @author Oleg Nenashev <nenashev@synopsys.com>
  * @see OwnerNodeProperty
@@ -72,5 +72,15 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
         } else {
             return User.getAll();
         }
-    }   
+    }  
+    
+     public static void setOwnership(Node node, OwnershipDescription descr) throws IOException {
+        OwnerNodeProperty prop = NodeOwnerHelper.getOwnerProperty(node);
+        if (prop == null) {
+            prop = new OwnerNodeProperty(node, descr);
+            node.getNodeProperties().add(prop);
+        } else {
+            prop.setOwnershipDescription(descr);
+        }
+    }
 }

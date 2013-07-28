@@ -21,14 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.synopsys.arc.jenkins.plugins.ownership.jobs;
+package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
+import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
+import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
-import hudson.model.Job;
 import hudson.security.Permission;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,52 +40,47 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 /**
- * Ownership action for jobs.
- * @author Oleg Nenashev <nenashev@synopsys.com>
+ * Node ownership action.
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * @since 0.2
  */
-public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
+public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
     
-    public JobOwnerJobAction(Job<?, ?> job) {
-      super(job);
+    public NodeOwnershipAction(Computer owner) {
+        super(owner);
     }
 
     @Override
-    public JobOwnerHelper helper() {
-        return JobOwnerHelper.Instance;
-    }
-       
-    /** 
-     * Gets described job.
-     * @deprecated Just for compatibility with 0.0.1
-     */
-    public Job<?, ?> getJob() {
-        return getDescribedItem();
-    }
-    
+    public boolean actionIsAvailable() {
+        return getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
+    }   
+
+    @Override
     public Permission getOwnerPermission() {
-        return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
+        return OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP;
     }
-    
+
+    @Override
     public Permission getProjectSpecificPermission() {
-        return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
+        return OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP;
+    }
+
+    @Override
+    public IOwnershipHelper<Computer> helper() {
+        return ComputerOwnerHelper.Instance;
     }
 
     @Override
     public OwnershipDescription getOwnership() {
         return helper().getOwnershipDescription(getDescribedItem());
-    } 
-
-    @Override
-    public boolean actionIsAvailable() {
-        return getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
     }
-      
+    
     public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
-        Hudson.getInstance().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
+        Hudson.getInstance().checkPermission(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
         
         JSONObject jsonOwnership = (JSONObject) req.getSubmittedForm().getJSONObject("owners");
         OwnershipDescription descr = OwnershipDescription.Parse(jsonOwnership);
-        JobOwnerHelper.setOwnership(getDescribedItem(), descr);
+        ComputerOwnerHelper.setOwnership(getDescribedItem(), descr);
         
         rsp.sendRedirect(".");
     }

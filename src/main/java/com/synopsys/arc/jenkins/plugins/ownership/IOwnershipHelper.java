@@ -64,6 +64,8 @@ public interface IOwnershipHelper<TObjectType>  {
      */
     public String getOwnerLongString(TObjectType item);
     
+    
+    
     /**
      * Gets ownership description of the requested item
      * @param item Item to be described

@@ -1,4 +1,4 @@
-<!--
+/*
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
@@ -20,17 +20,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- -->
-<?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-  <f:section title="${%Ownership}" description="${%Configuration of the ownership plugin}">
-    <f:entry title="Require Configure rights" field="requiresConfigureRights">
-        <f:checkbox checked="${it.requiresConfigureRights}"/>
-        <f:description>If checked, only users with Configure rights will be able to become owners.</f:description>
-    </f:entry>
-    <f:entry title="${%Setup after creation}" field="assignOnCreate">
-        <f:checkbox checked="${it.assignOnCreate}"/>
-        <f:description>Assign current user as owner after creation of any job (nodes aren't supported)</f:description>
-    </f:entry>
-  </f:section>
-</j:jelly>
+ */
+package com.synopsys.arc.jenkins.plugins.ownership.nodes;
+
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
+import hudson.model.Computer;
+import hudson.model.User;
+import java.io.IOException;
+import java.util.Collection;
+
+/**
+ *
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ */
+public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
+
+    static final ComputerOwnerHelper Instance = new ComputerOwnerHelper();
+        
+    @Override
+    public OwnershipDescription getOwnershipDescription(Computer item) {
+        return NodeOwnerHelper.Instance.getOwnershipDescription(item.getNode());
+    }
+    
+    @Override
+    public Collection<User> getPossibleOwners(Computer item) {
+        return NodeOwnerHelper.Instance.getPossibleOwners(item.getNode());
+    }  
+    
+    public static void setOwnership(Computer computer, OwnershipDescription descr) throws IOException {
+       NodeOwnerHelper.setOwnership(computer.getNode(), descr);
+    }
+}

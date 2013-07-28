@@ -1,4 +1,4 @@
-<!--
+/*
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
@@ -20,17 +20,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- -->
-<?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-  <f:section title="${%Ownership}" description="${%Configuration of the ownership plugin}">
-    <f:entry title="Require Configure rights" field="requiresConfigureRights">
-        <f:checkbox checked="${it.requiresConfigureRights}"/>
-        <f:description>If checked, only users with Configure rights will be able to become owners.</f:description>
-    </f:entry>
-    <f:entry title="${%Setup after creation}" field="assignOnCreate">
-        <f:checkbox checked="${it.assignOnCreate}"/>
-        <f:description>Assign current user as owner after creation of any job (nodes aren't supported)</f:description>
-    </f:entry>
-  </f:section>
-</j:jelly>
+ */
+package com.synopsys.arc.jenkins.plugins.ownership.nodes;
+
+import hudson.Extension;
+import hudson.model.Action;
+import hudson.model.Computer;
+import hudson.model.TransientComputerActionFactory;
+import java.util.Collection;
+import static java.util.Collections.singleton;
+
+/**
+ * Generates ownership actions for the Jenkins nodes.
+ * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * @since 0.2
+ */
+@Extension
+public class OwnershipActionFactory extends TransientComputerActionFactory {
+
+    @Override
+    public Collection<? extends Action> createFor(Computer target) {
+        return singleton(new NodeOwnershipAction(target));
+    }
+    
+}
