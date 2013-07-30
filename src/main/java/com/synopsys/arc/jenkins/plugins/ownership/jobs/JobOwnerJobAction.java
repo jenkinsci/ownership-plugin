@@ -85,6 +85,6 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         OwnershipDescription descr = OwnershipDescription.Parse(jsonOwnership);
         JobOwnerHelper.setOwnership(getDescribedItem(), descr);
         
-        rsp.sendRedirect(".");
+        rsp.sendRedirect(getDescribedItem().getAbsoluteUrl());
     }
 }

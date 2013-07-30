@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
+import hudson.Util;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
@@ -35,6 +36,7 @@ import hudson.security.Permission;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -75,6 +77,19 @@ public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
         return helper().getOwnershipDescription(getDescribedItem());
     }
     
+    /**
+     * Get absolute URL of the computer.
+     * This method is just a copy of getAbsoluteUrl from AbstractItem.
+     * @param computer
+     * @return 
+     */
+    public static String getAbsoluteUrl(Computer computer) {
+        String r = Jenkins.getInstance().getRootUrl();
+        if(r==null)
+            throw new IllegalStateException("Root URL isn't configured yet. Cannot compute absolute URL.");
+        return Util.encode(r+computer.getUrl());
+    }
+    
     public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
         
@@ -82,6 +97,6 @@ public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
         OwnershipDescription descr = OwnershipDescription.Parse(jsonOwnership);
         ComputerOwnerHelper.setOwnership(getDescribedItem(), descr);
         
-        rsp.sendRedirect(".");
+        rsp.sendRedirect(getAbsoluteUrl(getDescribedItem()));
     }
 }
