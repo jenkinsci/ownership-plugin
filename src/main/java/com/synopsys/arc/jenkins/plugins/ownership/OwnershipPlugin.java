@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.Util;
 import hudson.model.Computer;
@@ -32,9 +33,11 @@ import hudson.model.User;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
+import hudson.tasks.MailAddressResolver;
 import hudson.util.FormValidation;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
@@ -57,6 +60,7 @@ public class OwnershipPlugin extends Plugin {
     private boolean requiresConfigureRights;
     private boolean assignOnCreate;
     private List<OwnershipAction> pluginActions = new ArrayList<OwnershipAction>();
+    public String mailResolverClassName;
     
     public static OwnershipPlugin Instance() {
         Plugin plugin = Jenkins.getInstance().getPlugin(OwnershipPlugin.class);
@@ -84,6 +88,12 @@ public class OwnershipPlugin extends Plugin {
 	Hudson.getInstance().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         assignOnCreate=formData.getBoolean("assignOnCreate");
+        if (formData.containsKey("enableResolverRestrictions")) {
+            JSONObject mailResolversConf = formData.getJSONObject("enableResolverRestrictions");
+            mailResolverClassName = hudson.Util.fixEmptyAndTrim(mailResolversConf.getString("mailResolverClassName"));
+        } else {
+            mailResolverClassName = null;
+        }
         ReinitActionsList();
 	save();
         Hudson.getInstance().getActions().addAll(pluginActions);
@@ -98,6 +108,14 @@ public class OwnershipPlugin extends Plugin {
         return current !=null ? current.getId() : "";
     }
     
+    public boolean hasMailResolverRestriction() {
+        return mailResolverClassName != null;
+    }
+
+    public String getMailResolverClassName() {
+        return mailResolverClassName;
+    }
+    
     public FormValidation doCheckUser(@QueryParameter String userId) {
         userId = Util.fixEmptyAndTrim(userId);
         if (userId == null) {
@@ -110,5 +128,33 @@ public class OwnershipPlugin extends Plugin {
         }
        
         return FormValidation.ok();
+    }
+    
+    /**
+     * Resolves e-mail using resolvers and global config.
+     * @param user
+     * @return 
+     */
+    public String resolveEmail(User user) {
+        try {
+            if (hasMailResolverRestriction()) {
+                Class<MailAddressResolver> resolverClass = (Class<MailAddressResolver>)Class.forName(mailResolverClassName);
+                MailAddressResolver res = MailAddressResolver.all().get(resolverClass);
+                return res.findMailAddressFor(user);
+            } 
+        } catch (ClassNotFoundException ex) {
+            // Do nothing - fallback do default handler
+        }
+        
+        return MailAddressResolver.resolve(user);
+    }
+    
+    public Collection<String> getPossibleMailResolvers() {
+        ExtensionList<MailAddressResolver> extensions = MailAddressResolver.all();
+        List<String> items =new ArrayList<String>(extensions.size());
+        for (MailAddressResolver resolver : extensions) {
+            items.add(resolver.getClass().getCanonicalName());
+        }
+        return items;
     }
 }

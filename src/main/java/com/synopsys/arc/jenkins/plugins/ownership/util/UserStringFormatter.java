@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import hudson.model.User;
 import hudson.tasks.MailAddressResolver;
 
@@ -54,7 +55,7 @@ public class UserStringFormatter {
         
     /**
      * Formats e-mail from a user Id.
-     * @param userId
+     * @param userId User identifier
      * @return e-mail
      * @since 0.2
      */
@@ -63,6 +64,7 @@ public class UserStringFormatter {
     }
     
     public static String formatEmail(User user) {
-        return (user != null && user != User.getUnknown()) ? MailAddressResolver.resolve(user) : null;
+        return (user != null && user != User.getUnknown()) 
+            ? OwnershipPlugin.Instance().resolveEmail(user) : null;
     }
 }
