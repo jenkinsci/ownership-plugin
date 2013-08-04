@@ -33,7 +33,7 @@
         <f:description>Assign current user as owner after creation of any job (nodes aren't supported)</f:description>
     </f:entry>
     <f:optionalBlock name="enableResolverRestrictions" 
-                     title="${%Restrict usage of MailAddressResolvers}" 
+                     title="${%Restrict usage of MailAddressResolvers (recommended)}" 
                      checked="${it.hasMailResolverRestriction()}">
         <f:entry title="${%Use following resolver:}">
             <select  name="mailResolverClassName">
