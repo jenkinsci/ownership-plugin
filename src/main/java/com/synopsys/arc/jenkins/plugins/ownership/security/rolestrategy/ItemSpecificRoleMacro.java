@@ -24,34 +24,52 @@
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
-import static com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro.NO_SID_SUFFIX;
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
+import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.Extension;
-import hudson.model.User;
+import hudson.model.Job;
+import hudson.model.JobProperty;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
 
 /**
- * Checks if the current user belongs to owners or co-owners of the item (w/o sid control).
+ * Macro invokes evaluation of item-specific access rights.
  * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
- * @since 0.2
+ * @since 0.4
  */
 @Extension
-public class CoOwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro{
+public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
     @Override
     public String getName() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Name()+NO_SID_SUFFIX; 
-    }
-    
-    @Override
-    public String getDescription() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Description()+Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+        return Messages.Security_RoleStrategy_ItemSpecificMacro_Name();
     }
 
     @Override
-    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
-        User user = User.current();              
-        return hasPermission(user, type, item, macro, true);
+    public String getDescription() {
+        return Messages.Security_RoleStrategy_ItemSpecificMacro_Description();
     }
+
+    @Override
+    public boolean IsApplicable(RoleType roleType) {
+        return roleType == RoleType.Project;
+    }
+   
+    @Override
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        if (type == RoleType.Project && Job.class.isAssignableFrom(item.getClass())) { 
+            Job prj = (Job)item;
+            JobProperty prop = prj.getProperty(JobOwnerJobProperty.class);
+            if (prop != null) {
+                ItemSpecificSecurity sec = ((JobOwnerJobProperty)prop).getItemSpecificSecurity();
+                if (sec != null) {
+                    return sec.getPermissionsMatrix().hasPermission(sid, p);
+                }
+            }
+        }
+        
+        return false;
+    }
+    
 }

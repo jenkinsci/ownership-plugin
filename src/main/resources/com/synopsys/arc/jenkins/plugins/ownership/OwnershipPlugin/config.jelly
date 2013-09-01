@@ -35,7 +35,7 @@
     <f:optionalBlock name="enableResolverRestrictions" 
                      title="${%Restrict usage of MailAddressResolvers (recommended)}" 
                      checked="${it.hasMailResolverRestriction()}">
-        <f:entry title="${%Use following resolver:}">
+        <f:entry title="${%Use the following resolver:}">
             <select  name="mailResolverClassName">
                 <j:forEach var="resolver" items="${it.possibleMailResolvers}">
                     <f:option value="${resolver}" selected="${ resolver.equals(it.mailResolverClassName) }">
@@ -46,5 +46,13 @@
             <f:description>Allows to avoid usage of time-consuming resolvers (like Subversion AddressMailResolver)</f:description>
         </f:entry>
     </f:optionalBlock>
+    <!--Manual implementation of the optionalProperty-->
+    <f:optionalBlock name="defaultJobsSecurity" 
+                     title="${%Setup default permissions for job's item-specific security}"
+                     checked="${it.defaultJobsSecurity != null}">
+        <j:set var="descriptor" value="${it.itemSpecificDescriptor}"/>
+        <j:set var="instance" value="${it.defaultJobsSecurity}"/>
+        <st:include from="${descriptor}" page="${descriptor.configPage}"/>
+    </f:optionalBlock> 
   </f:section>
 </j:jelly>

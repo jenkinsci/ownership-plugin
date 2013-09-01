@@ -45,6 +45,7 @@ import hudson.security.AccessControlled;
  */
 abstract class AbstractOwnershipRoleMacro extends RoleMacroExtension {
     public static final String NO_SID_SUFFIX="NoSid";
+    protected static final String AUTHENTICATED_SID = "authenticated";
     
     @Override
     public boolean IsApplicable(RoleType roleType) {

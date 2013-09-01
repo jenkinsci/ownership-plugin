@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.Util;
@@ -64,6 +65,7 @@ public class OwnershipPlugin extends Plugin {
     private boolean assignOnCreate;
     private List<OwnershipAction> pluginActions = new ArrayList<OwnershipAction>();
     public String mailResolverClassName;
+    private ItemSpecificSecurity defaultJobsSecurity;
     
     public static OwnershipPlugin Instance() {
         Plugin plugin = Jenkins.getInstance().getPlugin(OwnershipPlugin.class);
@@ -84,7 +86,20 @@ public class OwnershipPlugin extends Plugin {
     public boolean isAssignOnCreate() {
         return assignOnCreate;
     }
+
+    public ItemSpecificSecurity getDefaultJobsSecurity() {
+        return defaultJobsSecurity;
+    }
      
+    /**
+     * Gets descriptor of ItemSpecificProperty.
+     * Required for jelly.
+     * @return Descriptor
+     */
+    public ItemSpecificSecurity.ItemSpecificDescriptor getItemSpecificDescriptor() {
+        return ItemSpecificSecurity.DESCRIPTOR;
+    }
+    
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
@@ -97,6 +112,11 @@ public class OwnershipPlugin extends Plugin {
         } else {
             mailResolverClassName = null;
         }
+        
+        if (formData.containsKey("defaultJobsSecurity")) {
+            this.defaultJobsSecurity = getItemSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultJobsSecurity"));
+        }
+        
         ReinitActionsList();
 	save();
         Hudson.getInstance().getActions().addAll(pluginActions);

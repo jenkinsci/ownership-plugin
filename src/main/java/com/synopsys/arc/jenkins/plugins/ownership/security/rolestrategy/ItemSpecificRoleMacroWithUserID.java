@@ -24,7 +24,6 @@
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
-import static com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro.NO_SID_SUFFIX;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.Extension;
@@ -33,25 +32,32 @@ import hudson.security.AccessControlled;
 import hudson.security.Permission;
 
 /**
- * Checks if the current user belongs to owners or co-owners of the item (w/o sid control).
+ * Macro invokes evaluation of item-specific access rights for the current user.
  * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
- * @since 0.2
  */
 @Extension
-public class CoOwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro{
+public class ItemSpecificRoleMacroWithUserID extends ItemSpecificRoleMacro {
+
     @Override
     public String getName() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Name()+NO_SID_SUFFIX; 
+        return super.getName() + "WithUserID";
     }
     
     @Override
     public String getDescription() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Description()+Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+        return super.getDescription()+Messages.Security_RoleStrategy_WithUserDescriptionSuffix();
     }
 
     @Override
-    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
-        User user = User.current();              
-        return hasPermission(user, type, item, macro, true);
-    }
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        // check sid
+        boolean res = super.hasPermission(sid, p, type, item, macro);
+        if (res) return true;
+        
+        if (sid.equals(AUTHENTICATED_SID)) {
+            User usr = User.current();
+            return usr != null ? super.hasPermission(usr.getId(), p, type, item, macro) : false; 
+        }
+        return false;
+    }    
 }

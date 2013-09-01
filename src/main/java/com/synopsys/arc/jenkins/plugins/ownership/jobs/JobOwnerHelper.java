@@ -25,6 +25,7 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
@@ -74,10 +75,20 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
     public static void setOwnership(Job<?, ?> job, OwnershipDescription descr) throws IOException {
         JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(job);
         if (prop == null) {
-            prop = new JobOwnerJobProperty(descr);
+            //TODO: Use default?
+            prop = new JobOwnerJobProperty(descr, null);
             job.addProperty(prop);
         } else {
             prop.setOwnershipDescription(descr);
+        }
+    }
+    
+    public static void setProjectSpecificSecurity(Job<?, ?> job, ItemSpecificSecurity security) throws IOException {
+        JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(job);
+        if (prop == null) {
+            throw new IOException("Ownership is not configured for "+job);
+        } else {
+            prop.setItemSpecificSecurity(security);
         }
     }
 

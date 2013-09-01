@@ -26,8 +26,9 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipItem;
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
@@ -37,7 +38,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.Extension;
-import hudson.model.Action;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.JobProperty;
@@ -46,7 +46,6 @@ import hudson.model.User;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
-import java.util.LinkedList;
 import javax.servlet.ServletException;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -60,15 +59,25 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     implements IOwnershipItem<Job<?, ?>>
 {
     OwnershipDescription ownership;
-    
+
+    /**Additional matrix with project security*/
+    ItemSpecificSecurity itemSpecificSecurity;
+        
     @DataBoundConstructor
-    public JobOwnerJobProperty( OwnershipDescription ownershipDescription) {
-            this.ownership = ownershipDescription;
+    public JobOwnerJobProperty( OwnershipDescription ownershipDescription, ItemSpecificSecurity security) {
+        this.ownership = ownershipDescription;
+        this.itemSpecificSecurity = security;
     }
 
     @Override
     public OwnershipDescription getOwnership() {
         return (ownership!=null) ? ownership : OwnershipDescription.DISABLED_DESCR;
+    }
+
+    public ItemSpecificSecurity getItemSpecificSecurity() {
+        return itemSpecificSecurity != null 
+                ? itemSpecificSecurity 
+                : OwnershipPlugin.Instance().getDefaultJobsSecurity();
     }
     
     public String getDisplayName(User usr) {
@@ -95,7 +104,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
 
     @Override
     public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
-        return new JobOwnerJobProperty(getOwnership());
+        return new JobOwnerJobProperty(getOwnership(), getItemSpecificSecurity());
     }
     
     @Extension
@@ -124,6 +133,11 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     
     public void setOwnershipDescription(OwnershipDescription descr) throws IOException {
         ownership = descr;
+        owner.save();
+    }
+    
+    public void setItemSpecificSecurity(ItemSpecificSecurity security) throws IOException {
+        itemSpecificSecurity = security;
         owner.save();
     }
 }

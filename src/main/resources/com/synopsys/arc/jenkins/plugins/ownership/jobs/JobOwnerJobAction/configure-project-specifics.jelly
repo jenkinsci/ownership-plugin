@@ -26,6 +26,33 @@
     <l:layout permission="${it.ownerPermission}" xmlns:local="local" norefresh="true">
         <st:include it="${app}" page="sidepanel.jelly"/>
         <l:main-panel>
+            <h1>
+                <img src="${imagesURL}/48x48/fingerprint.gif"/>
+                ${%Manage item-specific access rights}
+            </h1>
+            <f:form method="post" name="config" action="projectSpecificSecuritySubmit">
+                <j:set var="instance" value="${it}"/>
+                Instance=${instance}; it=${it}
+                
+                <!--Item-specific security-->
+                <f:optionalBlock name="itemSpecificSecurity" 
+                     title="${%Use item-specific security}"
+                     checked="${it.itemSpecificSecurity != null}">
+                    
+                    <j:set var="descriptor" value="${it.itemSpecificDescriptor}"/>
+                    <j:set var="instance" value="${it.itemSpecificSecurity}"/>
+                    <st:include from="${descriptor}" page="${descriptor.configPage}"/> 
+                </f:optionalBlock>
+                
+                <f:block>
+                    <f:submit value="${%Save}"/>
+                </f:block>
+            </f:form>
+            <f:form method="post" name="config" action="restoreDefaultSpecificSecuritySubmit">
+                <div align="right">
+                    <f:submit value="${%Restore default settings...}"/>
+                </div>
+            </f:form>
         </l:main-panel>
     </l:layout>
 </j:jelly>

@@ -26,8 +26,8 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.security.Permission;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import org.kohsuke.stapler.StaplerResponse;
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
 public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
-    
+     
     public JobOwnerJobAction(Job<?, ?> job) {
       super(job);
     }
@@ -72,12 +72,30 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     public OwnershipDescription getOwnership() {
         return helper().getOwnershipDescription(getDescribedItem());
     } 
+    
+    public ItemSpecificSecurity getItemSpecificSecurity() {
+        JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(getDescribedItem());
+        if (prop != null && prop.getItemSpecificSecurity() != null) {
+             return prop.getItemSpecificSecurity();
+        }
+        
+        return getGlobalIemSpecificSecurity();
+    }
+    
+    private static ItemSpecificSecurity getGlobalIemSpecificSecurity() {
+        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.Instance().getDefaultJobsSecurity();
+        return defaultJobsSecurity;
+    }
+    
+    public ItemSpecificSecurity.ItemSpecificDescriptor getItemSpecificDescriptor() {
+        return ItemSpecificSecurity.DESCRIPTOR;
+    }
 
     @Override
     public boolean actionIsAvailable() {
         return getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
     }
-      
+    
     public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         
@@ -85,6 +103,30 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         OwnershipDescription descr = OwnershipDescription.Parse(jsonOwnership);
         JobOwnerHelper.setOwnership(getDescribedItem(), descr);
         
+        rsp.sendRedirect(getDescribedItem().getAbsoluteUrl());
+    }
+    
+    public void doProjectSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
+        getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
+        JSONObject form = req.getSubmittedForm();
+        
+        if (form.containsKey("itemSpecificSecurity")) {
+            JSONObject jsonSpecificSecurity = (JSONObject) req.getSubmittedForm().getJSONObject("itemSpecificSecurity");
+            ItemSpecificSecurity specific = ItemSpecificSecurity.DESCRIPTOR.newInstance(req, jsonSpecificSecurity);
+            JobOwnerHelper.setProjectSpecificSecurity(getDescribedItem(), specific);
+        } else { // drop security
+            JobOwnerHelper.setProjectSpecificSecurity(getDescribedItem(), null);
+        }
+        rsp.sendRedirect(getDescribedItem().getAbsoluteUrl());
+    }
+    
+    public void doRestoreDefaultSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
+        getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
+        // Get default security
+        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.Instance().getDefaultJobsSecurity();
+        ItemSpecificSecurity val = defaultJobsSecurity != null ? defaultJobsSecurity.clone() : null;
+        
+        JobOwnerHelper.setProjectSpecificSecurity(getDescribedItem(), val);
         rsp.sendRedirect(getDescribedItem().getAbsoluteUrl());
     }
 }

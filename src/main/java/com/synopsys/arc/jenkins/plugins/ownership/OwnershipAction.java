@@ -55,6 +55,6 @@ public abstract class OwnershipAction implements Action {
     public String getConfigureSpecificAccessTitle() {
         return Messages.OwnershipAction_ConfigureSpecificAccess_DisplayName();
     }
-    
+   
     public abstract boolean actionIsAvailable();
 }

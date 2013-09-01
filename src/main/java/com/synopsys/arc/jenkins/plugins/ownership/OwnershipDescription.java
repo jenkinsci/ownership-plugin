@@ -175,8 +175,7 @@ public class OwnershipDescription implements Serializable {
             target.add(userId);
         }
     }
-            
-    
+              
     /**
      * Check if User is owner.
      * @param user User to be checked
@@ -208,7 +207,5 @@ public class OwnershipDescription implements Serializable {
      */
     public static boolean isEnabled(OwnershipDescription descr) {
         return descr != null && descr.ownershipEnabled;
-    } 
-    
-    
+    }   
 }
