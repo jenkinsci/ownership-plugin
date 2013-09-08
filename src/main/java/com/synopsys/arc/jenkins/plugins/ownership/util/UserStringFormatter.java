@@ -25,7 +25,6 @@ package com.synopsys.arc.jenkins.plugins.ownership.util;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import hudson.model.User;
-import hudson.tasks.MailAddressResolver;
 
 /**
  * Helper for User string formatting.

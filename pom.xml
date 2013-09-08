@@ -3,12 +3,13 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.480.3</version>
+        <version>1.526</version>
     </parent>
 
     <groupId>com.synopsys.jenkinsci</groupId>
     <artifactId>ownership</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.3</version>
+    <version>0.3-SNAPSHOT</version>
     <name>Job and Slave ownership plugin</name>
     <packaging>hpi</packaging>
     <description>Provides explicit ownership of jobs and slaves</description>
@@ -66,6 +67,18 @@
             <artifactId>role-strategy</artifactId>
             <version>2.1.0</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
+            <artifactId>job-restrictions</artifactId>
+            <version>0.1</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>mailer</artifactId>
+            <version>1.5</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
