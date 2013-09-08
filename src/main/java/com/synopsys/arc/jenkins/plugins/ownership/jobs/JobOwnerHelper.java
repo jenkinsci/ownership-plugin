@@ -43,7 +43,7 @@ import java.util.Collection;
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
 public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
-    final static JobOwnerHelper Instance = new JobOwnerHelper();
+    public final static JobOwnerHelper Instance = new JobOwnerHelper();
     
     /**
      * Gets JobOwnerProperty from job if possible
@@ -51,11 +51,10 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
      * @return JobOwnerJobProperty or null
      */
     public static JobOwnerJobProperty getOwnerProperty(Job<?,?> job) {
-        AbstractProject project = (AbstractProject) job;
-        JobProperty prop = project.getProperty(JobOwnerJobProperty.class);
+        JobProperty prop = job.getProperty(JobOwnerJobProperty.class);
         return prop != null ? (JobOwnerJobProperty)prop : null;
     }
-       
+    
     public static boolean isUserExists(User user) {
         assert (user != null);
         return isUserExists(user.getId());

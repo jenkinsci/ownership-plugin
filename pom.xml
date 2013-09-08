@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.480.3</version>
+        <version>1.526</version>
     </parent>
 
     <groupId>com.synopsys.jenkinsci</groupId>
@@ -66,6 +66,19 @@
             <artifactId>role-strategy</artifactId>
             <version>2.1.0</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>token-macro</artifactId>
+            <version>1.6</version>
+            <optional>true</optional>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>mailer</artifactId>
+            <version>1.5</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 

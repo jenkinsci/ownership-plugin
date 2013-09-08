@@ -45,7 +45,7 @@ import java.util.Collection;
  */
 public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
 
-    static final NodeOwnerHelper Instance = new NodeOwnerHelper();
+    public static final NodeOwnerHelper Instance = new NodeOwnerHelper();
 
     /**
      * Gets OwnerNodeProperty from job if possible

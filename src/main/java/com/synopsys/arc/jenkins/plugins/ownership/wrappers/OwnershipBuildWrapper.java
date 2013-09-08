@@ -86,6 +86,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
         };
     }
     
+    //TODO: Replace by ownershipDescriptionHelper
     private static void getVariables(OwnershipDescription descr, Map<String, String> target, String prefix) {      
         target.put(prefix+"_OWNER", descr.hasPrimaryOwner() ? descr.getPrimaryOwnerId() : "");
         String ownerEmail = UserStringFormatter.formatEmail(descr.getPrimaryOwnerId());  
