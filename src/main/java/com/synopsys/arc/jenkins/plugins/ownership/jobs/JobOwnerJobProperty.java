@@ -74,10 +74,27 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
         return (ownership!=null) ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
 
+    /**
+     * Gets current configuration of item-specific security.
+     * The function returns a default configuration if security is not
+     * configured. Use {@link #hasItemSpecificSecurity() hasItemSpecificSecurity} 
+     * to check an origin of permissions.
+     * @return ItemSpecific security or null if it is not configured
+     * @since 0.3
+     */
     public ItemSpecificSecurity getItemSpecificSecurity() {
         return itemSpecificSecurity != null 
                 ? itemSpecificSecurity 
                 : OwnershipPlugin.Instance().getDefaultJobsSecurity();
+    }
+    
+    /**
+     * Checks if job-specific security is configured.
+     * @return true if job-specific security is configured
+     * @since 0.3.1
+     */
+    public boolean hasItemSpecificSecurity() {
+        return itemSpecificSecurity != null;
     }
     
     public String getDisplayName(User usr) {
@@ -104,7 +121,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
 
     @Override
     public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
-        return new JobOwnerJobProperty(getOwnership(), getItemSpecificSecurity());
+        return new JobOwnerJobProperty(ownership, itemSpecificSecurity);
     }
     
     @Extension

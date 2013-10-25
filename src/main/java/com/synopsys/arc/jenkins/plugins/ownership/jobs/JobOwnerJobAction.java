@@ -60,10 +60,12 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         return getDescribedItem();
     }
     
+    @Override
     public Permission getOwnerPermission() {
         return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
     }
     
+    @Override
     public Permission getProjectSpecificPermission() {
         return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
     }
@@ -75,16 +77,25 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     
     public ItemSpecificSecurity getItemSpecificSecurity() {
         JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(getDescribedItem());
-        if (prop != null && prop.getItemSpecificSecurity() != null) {
+        if (prop != null && prop.hasItemSpecificSecurity()) {
              return prop.getItemSpecificSecurity();
-        }
-        
-        return getGlobalIemSpecificSecurity();
+        }        
+        return getGlobalItemSpecificSecurity();
     }
     
-    private static ItemSpecificSecurity getGlobalIemSpecificSecurity() {
+    private static ItemSpecificSecurity getGlobalItemSpecificSecurity() {
         ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.Instance().getDefaultJobsSecurity();
         return defaultJobsSecurity;
+    }
+    
+    /**
+     * Checks if the described item has a job-specific security defined.
+     * @return true if the item has a job-specific security
+     * @since 0.3.1
+     */
+    public boolean hasItemSpecificSecurity() {
+        JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(getDescribedItem());
+        return prop != null && prop.hasItemSpecificSecurity();
     }
     
     public ItemSpecificSecurity.ItemSpecificDescriptor getItemSpecificDescriptor() {

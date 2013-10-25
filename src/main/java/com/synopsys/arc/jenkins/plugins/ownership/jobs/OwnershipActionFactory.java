@@ -41,5 +41,5 @@ public class OwnershipActionFactory extends TransientProjectActionFactory {
     public Collection<? extends Action> createFor(AbstractProject target) {
         return singleton(new JobOwnerJobAction(target));
     }
-    
+   
 }
