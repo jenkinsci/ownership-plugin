@@ -24,22 +24,28 @@
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
 import hudson.Extension;
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.TransientProjectActionFactory;
 import java.util.Collection;
 import static java.util.Collections.singleton;
+import java.util.LinkedList;
 
 /**
- *
+ * Creates a "Manage Ownership" action for jobs.
+ * Action will be available for all top-level job items. 
+ * Matrix configurations will be ignored.
  * @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
  */
 @Extension
 public class OwnershipActionFactory extends TransientProjectActionFactory {
-
+    /**Empty actions collection for invalid project type*/
+    private static final Collection<? extends Action> EMPTY_ACTIONS = new LinkedList<Action>();
+    
     @Override
     public Collection<? extends Action> createFor(AbstractProject target) {
-        return singleton(new JobOwnerJobAction(target));
-    }
-    
+        return (target instanceof MatrixConfiguration) 
+                ? EMPTY_ACTIONS : singleton(new JobOwnerJobAction(target));
+    }    
 }

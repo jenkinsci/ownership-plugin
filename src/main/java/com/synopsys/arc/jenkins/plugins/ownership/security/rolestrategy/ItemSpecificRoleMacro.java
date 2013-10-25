@@ -24,6 +24,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
@@ -59,10 +60,11 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
     @Override
     public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
         if (type == RoleType.Project && Job.class.isAssignableFrom(item.getClass())) { 
-            Job prj = (Job)item;
-            JobProperty prop = prj.getProperty(JobOwnerJobProperty.class);
+            Job prj = (Job)item;       
+            JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(prj);
+
             if (prop != null) {
-                ItemSpecificSecurity sec = ((JobOwnerJobProperty)prop).getItemSpecificSecurity();
+                ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
                 if (sec != null) {
                     return sec.getPermissionsMatrix().hasPermission(sid, p);
                 }

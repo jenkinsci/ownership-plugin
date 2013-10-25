@@ -30,7 +30,6 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.UserWrapper;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
-import hudson.model.JobProperty;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.model.View;
@@ -83,11 +82,11 @@ public class OwnershipJobFilter extends ViewJobFilter {
         for(TopLevelItem item : added) {
             // Convert to project
             AbstractProject project = (AbstractProject)item;
-            JobProperty prop = project.getProperty(JobOwnerJobProperty.class);
-              
+            JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(project);
+                  
             if (prop != null) {
                 boolean matches = false;
-                OwnershipDescription ownership = ((JobOwnerJobProperty)prop).getOwnership();    
+                OwnershipDescription ownership = prop.getOwnership();    
                 if (!ownership.isOwnershipEnabled()) {
                     continue;
                 }

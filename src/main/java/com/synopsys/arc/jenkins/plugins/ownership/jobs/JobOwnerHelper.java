@@ -30,7 +30,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
-import hudson.model.AbstractProject;
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.User;
@@ -46,13 +46,24 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>>{
     public final static JobOwnerHelper Instance = new JobOwnerHelper();
     
     /**
-     * Gets JobOwnerProperty from job if possible
+     * Gets JobOwnerProperty from job if possible.
+     * The function also handles multi-configuration jobs, so it should be used 
+     * wherever it is possible.
      * @param job Job
-     * @return JobOwnerJobProperty or null
+     * @return JobOwnerJobProperty or null if it is not configured
      */
     public static JobOwnerJobProperty getOwnerProperty(Job<?,?> job) {
+        // Get property from the main job
         JobProperty prop = job.getProperty(JobOwnerJobProperty.class);
-        return prop != null ? (JobOwnerJobProperty)prop : null;
+        if (prop != null) {
+            return (JobOwnerJobProperty)prop;
+        }
+        
+        // Handle matrix prject
+        if (job instanceof MatrixConfiguration) {
+            return getOwnerProperty(((MatrixConfiguration)job).getParent());
+        } 
+        return null;
     }
     
     public static boolean isUserExists(User user) {

@@ -25,6 +25,7 @@ package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipItem;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
@@ -65,9 +66,9 @@ abstract class AbstractOwnershipRoleMacro extends RoleMacroExtension {
             case Project:
                 if (Job.class.isAssignableFrom(item.getClass())) { 
                     Job prj = (Job)item;
-                    JobProperty prop = prj.getProperty(JobOwnerJobProperty.class);
+                    JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(prj);
                     if (prop != null) {
-                        ownership = ((JobOwnerJobProperty)prop);
+                        ownership = prop;
                     }                 
                 }
                 break;
