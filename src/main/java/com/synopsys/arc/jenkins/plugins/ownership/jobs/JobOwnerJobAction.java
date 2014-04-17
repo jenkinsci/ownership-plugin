@@ -39,6 +39,8 @@ import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Ownership action for jobs.
+ * The action displays "Manage Ownership" action on the left panel.
+ * Actually, this action injects {@link JobOwnerJobProperty} into the project.
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
 public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
@@ -84,7 +86,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     }
     
     private static ItemSpecificSecurity getGlobalItemSpecificSecurity() {
-        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.Instance().getDefaultJobsSecurity();
+        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.getInstance().getDefaultJobsSecurity();
         return defaultJobsSecurity;
     }
     
@@ -101,6 +103,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     /**
      * Gets descriptor of item-specific security page. 
      * This method is being used by UI.
+     * @return A descriptor of {@link ItemSpecificSecurity}
      */
     public ItemSpecificSecurity.ItemSpecificDescriptor getItemSpecificDescriptor() {
         return ItemSpecificSecurity.DESCRIPTOR;
@@ -115,7 +118,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         
         JSONObject jsonOwnership = (JSONObject) req.getSubmittedForm().getJSONObject("owners");
-        OwnershipDescription descr = OwnershipDescription.Parse(jsonOwnership);
+        OwnershipDescription descr = OwnershipDescription.parseJSON(jsonOwnership);
         JobOwnerHelper.setOwnership(getDescribedItem(), descr);
         
         rsp.sendRedirect(getDescribedItem().getAbsoluteUrl());
@@ -138,7 +141,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     public void doRestoreDefaultSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         // Get default security
-        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.Instance().getDefaultJobsSecurity();
+        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.getInstance().getDefaultJobsSecurity();
         ItemSpecificSecurity val = defaultJobsSecurity != null ? defaultJobsSecurity.clone() : null;
         
         JobOwnerHelper.setProjectSpecificSecurity(getDescribedItem(), val);

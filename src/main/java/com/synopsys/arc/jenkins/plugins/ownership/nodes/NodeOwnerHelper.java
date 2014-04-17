@@ -70,7 +70,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     
     @Override
     public Collection<User> getPossibleOwners(Node item) {
-        if (OwnershipPlugin.Instance().isRequiresConfigureRights()) {
+        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
             IUserFilter filter = new AccessRightsFilter(item, Computer.CONFIGURE);
             return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         } else {

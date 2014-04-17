@@ -64,6 +64,6 @@ public class UserStringFormatter {
     
     public static String formatEmail(User user) {
         return (user != null && user != User.getUnknown()) 
-            ? OwnershipPlugin.Instance().resolveEmail(user) : null;
+            ? OwnershipPlugin.getInstance().resolveEmail(user) : null;
     }
 }

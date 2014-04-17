@@ -60,7 +60,7 @@ public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodePropert
     
     @Override
     public Collection<User> getPossibleOwners(NodeProperty item) {
-        if (OwnershipPlugin.Instance().isRequiresConfigureRights()) {
+        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
             //FIXME: Fix after fix of bug at Jenkins
             return UserCollectionFilter.filterUsers(User.getAll(), true);
         } else {

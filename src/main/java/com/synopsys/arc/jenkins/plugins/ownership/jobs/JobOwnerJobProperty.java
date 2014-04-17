@@ -85,7 +85,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     public ItemSpecificSecurity getItemSpecificSecurity() {
         return itemSpecificSecurity != null 
                 ? itemSpecificSecurity 
-                : OwnershipPlugin.Instance().getDefaultJobsSecurity();
+                : OwnershipPlugin.getInstance().getDefaultJobsSecurity();
     }
     
     /**
@@ -145,7 +145,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         JSONObject formData = req.getSubmittedForm();
         JSONObject jsonOwnership = (JSONObject) formData.getJSONObject("owners");
-        setOwnershipDescription(OwnershipDescription.Parse(jsonOwnership));
+        setOwnershipDescription(OwnershipDescription.parseJSON(jsonOwnership));
     }
     
     public void setOwnershipDescription(OwnershipDescription descr) throws IOException {

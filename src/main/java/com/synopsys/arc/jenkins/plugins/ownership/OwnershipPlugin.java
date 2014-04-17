@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -54,6 +56,7 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
 public class OwnershipPlugin extends Plugin {
+    
     public static final String LOG_PREFIX="[OwnershipPlugin] - ";
     public static final String FAST_RESOLVER_ID="Fast resolver for UI (recommended)";
     
@@ -67,12 +70,19 @@ public class OwnershipPlugin extends Plugin {
      * @deprecated Replaced by {@link ItemOwnershipPolicy}
      */
     private transient boolean assignOnCreate;
-    private List<OwnershipAction> pluginActions = new ArrayList<OwnershipAction>();
+    private final List<OwnershipAction> pluginActions = new ArrayList<OwnershipAction>();
     public String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
     private OwnershipPluginConfiguration configuration;
     
+    /**
+     * @deprecated Use {@link #getInstance()} instead
+     */
     public static OwnershipPlugin Instance() {
+        return getInstance();
+    }
+    
+    public static OwnershipPlugin getInstance() {
         Plugin plugin = Jenkins.getInstance().getPlugin(OwnershipPlugin.class);
         return plugin != null ? (OwnershipPlugin)plugin : null;
     }
@@ -112,6 +122,7 @@ public class OwnershipPlugin extends Plugin {
         return (getConfiguration().getItemOwnershipPolicy() instanceof AssignCreatorPolicy);
     }
 
+    @CheckForNull
     public ItemSpecificSecurity getDefaultJobsSecurity() {
         return defaultJobsSecurity;
     }
@@ -125,6 +136,7 @@ public class OwnershipPlugin extends Plugin {
      * Required for jelly.
      * @return Descriptor
      */
+    @Nonnull
     public ItemSpecificSecurity.ItemSpecificDescriptor getItemSpecificDescriptor() {
         return ItemSpecificSecurity.DESCRIPTOR;
     }
@@ -158,15 +170,18 @@ public class OwnershipPlugin extends Plugin {
         pluginActions.clear();
     }
     
+    //TODO: clarify the default value
+    @Nonnull
     public static String getDefaultOwner() {
         User current = User.current();       
-        return current !=null ? current.getId() : "";
+        return current != null ? current.getId() : "";
     }
     
     public boolean hasMailResolverRestriction() {
         return mailResolverClassName != null;
     }
 
+    @CheckForNull
     public String getMailResolverClassName() {
         return mailResolverClassName;
     }
@@ -190,7 +205,7 @@ public class OwnershipPlugin extends Plugin {
      * @param user A user to be used
      * @return A e-mail string or null (if resolution fails)
      */
-    //TODO: Replace the implementation by Mailer-1.6
+    @CheckForNull
     public String resolveEmail(User user) {
         try {
             if (hasMailResolverRestriction()) {
@@ -209,6 +224,7 @@ public class OwnershipPlugin extends Plugin {
         return MailAddressResolver.resolve(user);
     }
     
+    @Nonnull
     public Collection<String> getPossibleMailResolvers() {
         ExtensionList<MailAddressResolver> extensions = MailAddressResolver.all();
         List<String> items =new ArrayList<String>(extensions.size());

@@ -92,7 +92,7 @@ public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
         getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
         
         JSONObject jsonOwnership = (JSONObject) req.getSubmittedForm().getJSONObject("owners");
-        OwnershipDescription descr = OwnershipDescription.Parse(jsonOwnership);
+        OwnershipDescription descr = OwnershipDescription.parseJSON(jsonOwnership);
         ComputerOwnerHelper.setOwnership(getDescribedItem(), descr);
         
         rsp.sendRedirect(getAbsoluteUrl(getDescribedItem()));

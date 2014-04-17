@@ -23,11 +23,14 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnershipAction;
 import hudson.model.Action;
 
 /**
  * Provides Floating box with ownership description.
  * @author Oleg Nenashev <nenashev@synopsys.com>
+ * @see ItemOwnershipAction
+ * @see NodeOwnershipAction 
  */
 public abstract class OwnershipAction implements Action {
     public static final String ICON_FILENAME = "user.gif";

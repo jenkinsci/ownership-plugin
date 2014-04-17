@@ -26,80 +26,77 @@ package com.synopsys.arc.jenkins.plugins.ownership.util;
 import hudson.model.User;
 
 /**
- * Implements wrapper, which allows to implement "non-existent" users.
- * 
+ * Implements a wrapper, which allows to implement "non-existent" user macros.
+ *
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
 public class UserWrapper {
+
     boolean isUser;
     User user;
     String macro;
     public static final String USER_MACRO_PREFIX = "@";
-    
-    public UserWrapper(User user)
-    {
+
+    public UserWrapper(User user) {
         this.isUser = true;
         this.user = user;
     }
-    
+
     /**
      * Creates Wrapper from user id or wrapper.
-     * @todo Just a hack for "@ME" macro. Need to extend functionality in the future. 
-     * @param userMacro 
+     *
+     * @todo Just a hack for "@ME" macro. Need to extend functionality in the
+     * future.
+     * @param userMacro
      */
-    public UserWrapper(String userMacro)
-    {
-        if (userMacro.startsWith(USER_MACRO_PREFIX))
-        {
+    public UserWrapper(String userMacro) {
+        if (userMacro.startsWith(USER_MACRO_PREFIX)) {
             this.isUser = false;
             this.macro = userMacro;
-        }
-        else
-        {
+        } else {
             this.isUser = true;
             this.user = User.get(userMacro, false, null);
             //   throw new UnsupportedOperationException("User macro must start with prefix '"+USER_MACRO_PREFIX+"'");
         }
-        
+
     }
 
-    public boolean IsUser()
-    {
+    public boolean IsUser() {
         return isUser;
     }
-    
+
     /**
      * Gets id of the user (calls User.getId() or returns macro).
-     * @return 
+     *
+     * @return
      */
-    public String getId()
-    {
+    public String getId() {
         return isUser ? user.getId() : macro;
     }
-    
+
     @Override
     public String toString() {
         return isUser ? UserStringFormatter.format(user) : macro;
     }
-    
-    public boolean meetsMacro(String userId) {           
+
+    public boolean meetsMacro(String userId) {
         // Handle macroses and get effective user's id
         String comparedId;
-        if (isUser)
-        {
-            if (user == null) return false;
+        if (isUser) {
+            if (user == null) {
+                return false;
+            }
             comparedId = user.getId();
-        }
-        else
-        {
+        } else {
             User current = User.current();
-            if (current == null) return false;
+            if (current == null) {
+                return false;
+            }
             comparedId = current.getId();
-        }        
+        }
 
         // Check      
         return comparedId.equals(userId);
     }
-    
-    
+
 }

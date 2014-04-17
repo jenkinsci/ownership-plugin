@@ -23,8 +23,13 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.ComputerOwnerHelper;
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
 import hudson.model.User;
 import java.util.Collection;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 /**
  * Adapter for typical ownership operations with different item types.
@@ -33,6 +38,9 @@ import java.util.Collection;
  * @author Oleg Nenashev <nenashev@synopsys.com>
  * @since 0.0.2
  * @see IOwnershipItem
+ * @see JobOwnerHelper
+ * @see ComputerOwnerHelper
+ * @see NodeOwnerHelper
  */
 public interface IOwnershipHelper<TObjectType>  {
     /**
@@ -40,6 +48,7 @@ public interface IOwnershipHelper<TObjectType>  {
      * @param item Item to be describes
      * @return userId or null
      */
+    @CheckForNull
     public String getOwner(TObjectType item);
     
     /**
@@ -48,6 +57,7 @@ public interface IOwnershipHelper<TObjectType>  {
      * @return Owner's e-mail
      * @since 0.0.4
      */
+    @CheckForNull
     public String getOwnerEmail(TObjectType item);
     
     /**
@@ -62,14 +72,17 @@ public interface IOwnershipHelper<TObjectType>  {
      * @param item Item to be described
      * @return User description string
      */
+    @Nonnull
     public String getOwnerLongString(TObjectType item);
     
     /**
      * Gets ownership description of the requested item.
      * @param item Item to be described
-     * @return Ownership description
+     * @return Ownership description. The method returns a 
+     * {@link OwnershipDescription.DISABLED}
      * @since 0.0.3
      */
+    @Nonnull
     public OwnershipDescription getOwnershipDescription(TObjectType item);
     
     /**
@@ -78,6 +91,7 @@ public interface IOwnershipHelper<TObjectType>  {
      * @return List of users, who can be item's owner (always non-null)
      * @since 0.0.3
      */
+    @Nonnull
     public Collection<User> getPossibleOwners(TObjectType item);
     
     /**
@@ -85,5 +99,6 @@ public interface IOwnershipHelper<TObjectType>  {
      * @param usr User
      * @return String for display
      */
+    @Nonnull
     public String getDisplayName(User usr);
 }

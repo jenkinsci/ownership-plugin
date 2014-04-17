@@ -31,6 +31,7 @@ import java.util.Collection;
 
 /**
  * Provides basic operations for ownership helpers.
+ * @param <TObjectType> An item type, which is supported by the class.
  * @since 0.0.4
  * @author Oleg Nenashev <nenashev@synopsys.com>
  */
@@ -53,10 +54,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
     
     @Override
     public final String getOwnerLongString(TObjectType item) {
-        OwnershipDescription descr = getOwnershipDescription(item);
-        if (descr == null)
-            return UserStringFormatter.UNKNOWN_USER_STRING;
-             
+        OwnershipDescription descr = getOwnershipDescription(item);     
         return descr.isOwnershipEnabled() 
                 ? UserStringFormatter.format(descr.getPrimaryOwner()) 
                 : UserStringFormatter.UNKNOWN_USER_STRING;
@@ -65,7 +63,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
     @Override
     public final String getOwner(TObjectType item) {
         OwnershipDescription descr = getOwnershipDescription(item);
-        return (descr != null && descr.isOwnershipEnabled()) 
+        return (descr.isOwnershipEnabled()) 
                 ? UserStringFormatter.formatShort(descr.getPrimaryOwnerId())
                 : UserStringFormatter.UNKNOWN_USER_STRING;
     }    
@@ -73,6 +71,6 @@ public abstract class AbstractOwnershipHelper<TObjectType>
     @Override
     public final boolean isOwnerExists(TObjectType item) {
         OwnershipDescription descr = getOwnershipDescription(item);
-        return (descr != null && descr.isOwnershipEnabled()) ? descr.hasPrimaryOwner() : false;
+        return descr.isOwnershipEnabled() ? descr.hasPrimaryOwner() : false;
     }
 }

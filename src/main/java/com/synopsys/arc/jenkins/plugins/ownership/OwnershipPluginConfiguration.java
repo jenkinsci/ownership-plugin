@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import javax.annotation.Nonnull;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -40,10 +41,11 @@ public class OwnershipPluginConfiguration
     private final ItemOwnershipPolicy itemOwnershipPolicy;
 
     @DataBoundConstructor
-    public OwnershipPluginConfiguration(ItemOwnershipPolicy itemOwnershipPolicy) {
+    public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy) {
         this.itemOwnershipPolicy = itemOwnershipPolicy;
     }
 
+    @Nonnull
     public ItemOwnershipPolicy getItemOwnershipPolicy() {
         return itemOwnershipPolicy;
     }

@@ -23,6 +23,8 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import javax.annotation.Nonnull;
+
 /**
  * Class provides basic methods for ownership handling.
  * @param <TObjectType> Type of the described object
@@ -31,21 +33,24 @@ package com.synopsys.arc.jenkins.plugins.ownership;
  */
 public interface IOwnershipItem<TObjectType> {
     /**
-     * Gets helper for typical operations.
+     * Gets a helper for typical operations.
      * @return Helper
      */
+    @Nonnull
     public abstract IOwnershipHelper<TObjectType> helper();
     
     /**
      * Gets item, which is being described by action.
      * @return Described item
      */
+    @Nonnull
     public TObjectType getDescribedItem();
     
-    
     /**
-     * Gets ownership description
+     * Gets ownership description.
+     * By default, returns {@link #OwnershipDescription.DISABLED_DESCR}
      * @return Ownership Description (not null)
      */
+    @Nonnull
     public OwnershipDescription getOwnership();
 }

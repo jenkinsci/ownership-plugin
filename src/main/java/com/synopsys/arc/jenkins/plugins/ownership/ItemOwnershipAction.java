@@ -25,6 +25,7 @@ package com.synopsys.arc.jenkins.plugins.ownership;
 
 import hudson.model.Actionable;
 import hudson.security.Permission;
+import javax.annotation.Nonnull;
 
 /**
  * Abstract class for ownership actions, which describes item at the floating box.
@@ -39,18 +40,30 @@ public abstract class ItemOwnershipAction<TObjectType extends Actionable>
         
     /**
      * Constructor.
-     * @param describedItem Item, which is related to action
+     * @param describedItem Item, which is related to the action
      */
-    public ItemOwnershipAction(TObjectType describedItem)  {
+    public ItemOwnershipAction(@Nonnull TObjectType describedItem)  {
         this.describedItem = describedItem;
     }
      
+    @Nonnull
     @Override
     public final TObjectType getDescribedItem() {
         return describedItem;
     } 
     
+    /**
+     * Gets a permission for "Manage Ownership" action.
+     * @return A permission to be checked
+     */
+    @Nonnull
     public abstract Permission getOwnerPermission();
+    
+    /**
+     * Gets a permission for "Configure project-specific security" action.
+     * @return A permission to be checked
+     */
+    @Nonnull
     public abstract Permission getProjectSpecificPermission();
     
 }
