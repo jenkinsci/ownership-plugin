@@ -46,6 +46,7 @@ import hudson.model.User;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.logging.Level;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
@@ -121,12 +122,16 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     public Job<?, ?> getDescribedItem() {
         return owner;   
     }
-
+ 
     @Override
     public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
+        if (!this.owner.hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP)) {
+            OwnershipPlugin.getLogger().log(Level.WARNING, "User {0} has no permissions to manage ownership of {1}", new Object[]{User.current(), owner.getFullName()});
+            return this; // Do not update ownership permission if a user has no manage ownership rights
+        }
         return new JobOwnerJobProperty(ownership, itemSpecificSecurity);
     }
-    
+     
     @Extension
     public static class DescriptorImpl extends JobPropertyDescriptor {
         @Override
@@ -137,7 +142,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
         @Override
         public boolean isApplicable(Class<? extends Job> jobType) {
             return true;
-        }          
+        }           
     }
 
     @Override
