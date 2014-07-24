@@ -45,18 +45,22 @@
                 <j:invokeStatic var="_ownerURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
                     <j:arg type="java.lang.String" value="${_ownerId}" />
                 </j:invokeStatic>
-                <b>Primary owner:</b> ${_ownerURL}
-                <p/>
-                <b>Contact e-mail:</b> ${_ownerEmail}
+                <dt>
+                   <pre>
+                       <j:whitespace trim="false"><b>Primary owner:</b>  ${_ownerURL}</j:whitespace>
+                   </pre>
+                </dt>
+                <dt>
+                   <pre>
+                       <j:whitespace trim="false"><b>Contact e-mail:</b> ${_ownerEmail}</j:whitespace>
+                   </pre>
+                </dt>
             </j:when>
             <j:otherwise>
                 Primary owner:  ${helper.getOwner(item)}
             </j:otherwise>
         </j:choose>
         <p/>
-        <!--
-        TODO: Co-owners:
-        -->
         <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
         <j:if test="${not coownersList.isEmpty()}">
             <dl>
@@ -66,12 +70,13 @@
                         <j:arg type="java.lang.String" value="${coownerId}" />
                     </j:invokeStatic>
                     <j:invokeStatic var="_coownerEmail" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatEmailURI">
-                    	<j:arg type="java.lang.String" value="${coownerId}" />
-                	</j:invokeStatic>
-                	<b>Coowner:</b> ${_coownerURL}
-	                <p/>
-	                <b>Contact e-mail:</b> ${_coownerEmail}
-	                <p/>
+                        <j:arg type="java.lang.String" value="${coownerId}" />
+                    </j:invokeStatic>
+	                <dt>
+                        <pre>
+                            <j:whitespace trim="false"><b> - </b>${_coownerURL}  <b>Contact e-mail:</b> ${_coownerEmail}</j:whitespace>
+                        </pre>
+	                </dt>
                 </j:forEach>
             </dl>
         </j:if>
