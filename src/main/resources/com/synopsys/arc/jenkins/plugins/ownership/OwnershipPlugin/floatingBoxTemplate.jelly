@@ -27,46 +27,57 @@
 -        helper - Helper, which provides info about item
 -        item - Item, which is being described by floating box. Action helper should provide appropriate action helper
 -        itemType - name of the item type for visualization (ex, Job or Slave)
--        styleClass - class of the div box   
+-        styleClass - class of the div box
 -
 -    @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
--    @since 0.0.3   
+-    @since 0.0.3
 -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <div align="left" style="width:400px;" class="${styleClass}">   
-        <div class="test-trend-caption">${itemType} ${%Ownership}</div>            
+    <div align="left" style="width:400px;" class="${styleClass}">
+        <div class="test-trend-caption">${itemType} ${%Ownership}</div>
         <j:choose>
             <j:when test="${helper.isOwnerExists(item)}">
                 <j:set var="_ownerId" value="${helper.getOwner(item)}"/>
                 <j:invokeStatic var="_ownerEmail" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatEmailURI">
-                    <j:arg type="java.lang.String" value="${_ownerId}" />              
-                </j:invokeStatic> 
-                <j:invokeStatic var="_ownerURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
-                    <j:arg type="java.lang.String" value="${_ownerId}" />              
+                    <j:arg type="java.lang.String" value="${_ownerId}" />
                 </j:invokeStatic>
-                <b>Primary owner:</b> ${_ownerURL}                 
-                <p/>
-                <b>Contact e-mail:</b> ${_ownerEmail}                  
+                <j:invokeStatic var="_ownerURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
+                    <j:arg type="java.lang.String" value="${_ownerId}" />
+                </j:invokeStatic>
+                <dt>
+                   <pre>
+                       <j:whitespace trim="false"><b>Primary owner:</b>  ${_ownerURL}</j:whitespace>
+                   </pre>
+                </dt>
+                <dt>
+                   <pre>
+                       <j:whitespace trim="false"><b>Contact e-mail:</b> ${_ownerEmail}</j:whitespace>
+                   </pre>
+                </dt>
             </j:when>
             <j:otherwise>
                 Primary owner:  ${helper.getOwner(item)}
             </j:otherwise>
         </j:choose>
         <p/>
-        <!--
-        TODO: Co-owners: 
-        -->
         <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
         <j:if test="${not coownersList.isEmpty()}">
             <dl>
-                <dt>Co-owners:</dt> 
-                <j:forEach var="coownerId" items="${coownersList}">                   
-                    <j:invokeStatic var="_userURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
-                        <j:arg type="java.lang.String" value="${coownerId}" />              
+                <dt>Co-owners:</dt>
+                <j:forEach var="coownerId" items="${coownersList}">
+                    <j:invokeStatic var="_coownerURL" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatUserURI">
+                        <j:arg type="java.lang.String" value="${coownerId}" />
                     </j:invokeStatic>
-                    <dd>- ${_userURL}</dd>
-                </j:forEach>  
+                    <j:invokeStatic var="_coownerEmail" className="com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter" method="formatEmailURI">
+                        <j:arg type="java.lang.String" value="${coownerId}" />
+                    </j:invokeStatic>
+	                <dt>
+                        <pre>
+                            <j:whitespace trim="false"><b> - </b>${_coownerURL}  <b>Contact e-mail:</b> ${_coownerEmail}</j:whitespace>
+                        </pre>
+	                </dt>
+                </j:forEach>
             </dl>
         </j:if>
     </div>
