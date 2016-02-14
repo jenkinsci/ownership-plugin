@@ -24,6 +24,8 @@
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.annotation.Nonnull;
 
 /**
@@ -59,11 +61,31 @@ public class OwnershipDescriptionHelper {
     /**
      * Gets a comma-separated list of co-owners.
      * @param descr Ownership description
+     * @param includeOwner Include owner to the list
+     * @return Set of co-owner user IDs
+     * @since TODO
+     */
+    public static @Nonnull Set<String> getCoOwnerIDList(@Nonnull OwnershipDescription descr, boolean includeOwner) {
+        Set<String> res = new TreeSet<String>();
+        if (includeOwner) {
+            res.add(getOwnerID(descr));
+        }
+        for (String userId : descr.getCoownersIds()) {
+            res.add(userId);      
+        }
+        return res;
+    }
+    
+    /**
+     * Gets a comma-separated list of co-owners.
+     * Owner will be also considered as co-owner.
+     * @param descr Ownership description
      * @return List of co-owner user IDs
      */
     public static @Nonnull String getCoOwnerIDs(@Nonnull OwnershipDescription descr) {
-        StringBuilder coowners= new StringBuilder(getOwnerID(descr));
-        for (String userId : descr.getCoownersIds()) {
+        StringBuilder coowners= new StringBuilder();
+        for (String userId : getCoOwnerIDList(descr, true)) {
+            //TODO: Bug? Should it be != ?
             if (coowners.length() == 0) {
                 coowners.append(",");
             }
@@ -73,20 +95,39 @@ public class OwnershipDescriptionHelper {
     }
     
     /**
-     * Gets e-mails of co-owners.
+     * Gets e-mails of co-owners (including owner).
+     * @param descr Ownership description
+     * @param includeOwner Include owner to the list
+     * @return Set of co-owner emails
+     * @since TODO
+     */
+    public static Set<String> getCoOwnerEmailList(@Nonnull OwnershipDescription descr, boolean includeOwner) {
+        Set<String> res = new TreeSet<String>();
+        
+        if (includeOwner) {
+            res.add(getOwnerEmail(descr));
+        }
+        for (String userId : descr.getCoownersIds()) {          
+            String coownerEmail = UserStringFormatter.formatEmail(userId);
+            if (coownerEmail != null) {
+                res.add(coownerEmail);
+            }       
+        }
+        return res;
+    }
+    
+    /**
+     * Gets e-mails of co-owners (including owner).
      * @param descr Ownership description
      * @return Comma-separated list of co-owner e-mails (may be empty)
      */
     public static String getCoOwnerEmails(@Nonnull OwnershipDescription descr) {
-        StringBuilder coownerEmails=new StringBuilder(getOwnerEmail(descr));
-        for (String userId : descr.getCoownersIds()) {          
-            String coownerEmail = UserStringFormatter.formatEmail(userId);
-            if (coownerEmail != null) {
-                if (coownerEmails.length() != 0) {
-                    coownerEmails.append(",");
-                }
-                coownerEmails.append(coownerEmail);
-            }       
+        StringBuilder coownerEmails=new StringBuilder();
+        for (String coownerEmail : getCoOwnerEmailList(descr, true)) {          
+            if (coownerEmails.length() != 0) {
+                coownerEmails.append(",");
+            }
+            coownerEmails.append(coownerEmail);    
         }
         return coownerEmails.toString();
     }

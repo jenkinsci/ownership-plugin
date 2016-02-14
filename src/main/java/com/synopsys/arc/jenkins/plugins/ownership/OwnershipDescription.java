@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import com.synopsys.arc.jenkins.plugins.ownership.util.OwnershipDescriptionHelper;
 import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.User;
@@ -30,6 +31,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.CheckForNull;
@@ -218,6 +220,46 @@ public class OwnershipDescription implements Serializable {
     
     public boolean isPrimaryOwner(User user) {
         return user != null && user == getPrimaryOwner();
+    }
+    
+    /**
+     * Gets id of the owner.
+     * @return userId of the primary owner. The result will be "unknown" if the
+     * user is not specified.
+     * @since TODO
+     */
+    public @Nonnull String getOwnerId() {
+        return getPrimaryOwnerId();
+    }
+    
+    /**
+     * Gets owner's e-mail.
+     * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
+     * @return Owner's e-mail or empty string if it is not available
+     * @since TODO
+     */
+    @Nonnull
+    public String getOwnerEmail() {
+        return OwnershipDescriptionHelper.getOwnerEmail(this);
+    }
+    
+    /**
+     * Gets a comma-separated list of co-owners.
+     * @return List of co-owner user IDs
+     * @since TODO
+     */
+    public @Nonnull Set<String> getCoOwnerIds() {
+        return coownersIds;
+    }
+    
+    /**
+     * Gets e-mails of co-owners.
+     * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
+     * @return List of co-owner e-mails (may be empty)
+     * @since TODO
+     */
+    public @Nonnull Set<String> getCoOwnerEmails() {
+        return OwnershipDescriptionHelper.getCoOwnerEmailList(this, false);
     }
 
     @Override
