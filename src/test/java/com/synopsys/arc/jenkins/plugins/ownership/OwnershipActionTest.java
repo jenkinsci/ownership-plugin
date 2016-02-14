@@ -23,7 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 

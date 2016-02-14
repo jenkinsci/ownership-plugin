@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2015 Oleg Nenashev.
+ * Copyright (c) 2016 CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.ownership.model.folders;
+package org.jenkinsci.plugins.ownership.model;
 
-import com.cloudbees.hudson.plugins.folder.Folder;
-import com.cloudbees.hudson.plugins.folder.TransientFolderActionFactory;
-import hudson.Extension;
-import hudson.model.Action;
-import java.util.Collection;
-import java.util.Collections;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.jenkinsci.plugins.workflow.cps.CpsScript;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 
-/**
- * Injects {@link FolderOwnershipAction}s.
- * @author Oleg Nenashev
- */
-@Extension(optional = true)
-@Restricted(NoExternalUse.class)
-public class FolderOwnershipActionFactory extends TransientFolderActionFactory {
+class OwnershipGlobalVariableImpl implements Serializable {
+  
+  private CpsScript script;
 
-    @Override
-    public Collection<? extends Action> createFor(Folder target) {
-        return Collections.singleton(new FolderOwnershipAction(target));
-    }
+  public OwnershipGlobalVariableImpl(CpsScript script) {
+    this.script = script
+  }
+
+  public OwnershipDescription getJob() {
+    return JobOwnerHelper.Instance.getOwnershipDescription(script.currentBuild.getRawBuild().getParent());
+  }
 }
