@@ -37,6 +37,8 @@ import java.util.Arrays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.remoting.RoleChecker;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,6 +73,24 @@ public class OwnershipBasedSecurityTest {
         
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project");
+        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "owner", Arrays.asList("coOwner")));
+        
+        // Verify that permissions are inherited by project
+        verifyItemPermissions(project);
+        
+        // Also check folder permissions
+        verifyItemPermissions(folder);
+    }
+    
+    @Test
+    @Issue("JENKINS-32353")
+    public void shouldWorkForPipelineProjects() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        OwnershipBasedSecurityTestHelper.setup(j.jenkins);
+        
+        Folder folder = j.jenkins.createProject(Folder.class, "folder");
+        WorkflowJob project = j.jenkins.createProject(WorkflowJob.class, "testWorkflowJob");
+        project.setDefinition(new CpsFlowDefinition("echo 'Hello, world!'", false));
         FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "owner", Arrays.asList("coOwner")));
         
         // Verify that permissions are inherited by project
