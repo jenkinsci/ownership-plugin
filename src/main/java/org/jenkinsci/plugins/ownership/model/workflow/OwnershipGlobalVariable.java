@@ -24,8 +24,10 @@
 package org.jenkinsci.plugins.ownership.model.workflow;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import groovy.lang.Binding;
 import hudson.Extension;
+import hudson.model.Run;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.annotation.Nonnull;
@@ -34,6 +36,7 @@ import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.ProxyWhitelist;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.StaticWhitelist;
 import org.jenkinsci.plugins.workflow.cps.CpsScript;
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable;
+import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -91,6 +94,15 @@ public class OwnershipGlobalVariable extends GlobalVariable {
         return IOUtils.toString(scriptStream, "UTF-8");
     }
     
+    @Restricted(NoExternalUse.class)
+    public static OwnershipDescription getJobOwnershipDescription(RunWrapper currentRun) {
+        Run<?, ?> rawBuild = currentRun.getRawBuild();
+        if (rawBuild == null) {
+            throw new IllegalStateException("Cannot retrieve build from Pipeline Run Wrapper");
+        }
+        return JobOwnerHelper.Instance.getOwnershipDescription(rawBuild.getParent());
+    }
+    
     @Extension(optional = true)
     public static class MiscWhitelist extends ProxyWhitelist {
 
@@ -99,7 +111,14 @@ public class OwnershipGlobalVariable extends GlobalVariable {
                     "new java.util.TreeMap",
                     "method groovy.lang.Closure call java.lang.Object",
                     "method java.lang.Object toString",
-                    "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
+                    "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object",
+                    "staticMethod org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable getJobOwnershipDescription org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper",
+                    // Allow accessing all Ownership fields and getter methods
+                    "field com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription *",
+                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getOwnerEmail",
+                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getOwnerId",
+                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getCoOwnerEmails",
+                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getCoOwnerIds"
             ));
         }
     }
