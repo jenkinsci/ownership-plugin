@@ -1,4 +1,69 @@
 <?jelly escape-by-default='true'?>
 <div>
  Provides ownership info for different item types.
+ <p/>
+ Currently the macro supports retrieval of ownership info for jobs and nodes only.
+ It can be done via the nested variables:
+<dl>
+  <dt>ownership.job</dt>
+  <dd>
+    Job ownership info.
+    This info may be inherited from parent folders.
+  </dd>
+  <dt>ownership.node</dt>
+  <dd>
+    Node ownership info. 
+    The expression must be used within the <code>node()</code> Pipeline block.
+    Otherwise the command will throw an exception.
+   </dd>
+ </dl>
+ 
+ Each call returns a structure, which provides the following fields:
+ <dl>
+   <dt>ownershipEnabled</dt>
+   <dd>Indicates that ownership is configured for the item. 
+     Type: <code>boolean</code>.
+   </dd>
+   
+   <dt>ownerId</dt>
+   <dd>
+     User ID of the item owner. 
+     Type: <code>java.lang.String</code>.
+   </dd>
+   
+   <dt>ownerEmail</dt>
+   <dd>
+     Email of the item owner. Type: <code>java.lang.String</code>.
+   </dd>
+   
+   <dt>ownershipEnabled</dt>
+   <dd>
+     Collection of the item co-owner user IDs (does not include the item owner). 
+     Type: <code>java.util.Set&lt;String&gt;</code>.
+   </dd>
+   
+   <dt>ownershipEnabled</dt>
+   <dd>Collection of the item co-owner e-mails (does not include the item owner). 
+     Type: <code>java.util.Set&lt;String&gt;</code>.
+   </dd>
+ </dl>
+ 
+ <pre>
+    Usage example:
+   
+    stage 'Print Job Ownership Info';
+    if (ownership.job.ownershipEnabled) {
+      println "Owner ID: " + ownership.job.ownerId;
+      println "Owner e-mail: " + ownership.job.ownerEmail;
+      println "Co-owner IDs: " + ownership.job.coOwnerIds;
+      println "Co-owner e-mails: " + ownership.job.coOwnerEmails;
+    } else {
+      println "Ownership is disabled";
+    }
+    
+    stage 'Send e-mail to the job owner'
+    mail to: ownership.job.ownerId,
+      subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) is waiting for input",
+      body: "Please go to ${env.BUILD_URL} and verify the build"
+  </pre>
 </div>
