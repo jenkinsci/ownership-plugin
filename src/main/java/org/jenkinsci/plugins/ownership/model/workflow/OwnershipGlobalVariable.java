@@ -25,12 +25,16 @@ package org.jenkinsci.plugins.ownership.model.workflow;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
 import groovy.lang.Binding;
 import hudson.Extension;
+import hudson.model.Node;
 import hudson.model.Run;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.ProxyWhitelist;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.StaticWhitelist;
@@ -103,6 +107,21 @@ public class OwnershipGlobalVariable extends GlobalVariable {
         return JobOwnerHelper.Instance.getOwnershipDescription(rawBuild.getParent());
     }
     
+    @CheckForNull
+    @Restricted(NoExternalUse.class)
+    public static OwnershipDescription getNodeOwnershipDescription(@CheckForNull String nodeName) {
+        if (nodeName == null) {
+            throw new IllegalStateException("Cannot get Ownership info outside the node() block");
+        }
+        final Node node = "master".equals(nodeName) 
+                ? Jenkins.getActiveInstance()
+                : Jenkins.getActiveInstance().getNode(nodeName);
+        if (node == null) {
+            throw new IllegalStateException("Cannot retrieve node by the name specified in env.NODE_NAME");
+        }     
+        return NodeOwnerHelper.Instance.getOwnershipDescription(node);
+    }
+    
     @Extension(optional = true)
     public static class MiscWhitelist extends ProxyWhitelist {
 
@@ -111,8 +130,12 @@ public class OwnershipGlobalVariable extends GlobalVariable {
                     "new java.util.TreeMap",
                     "method groovy.lang.Closure call java.lang.Object",
                     "method java.lang.Object toString",
+                    // env.NODE_NAME
+                    "method groovy.lang.GroovyObject getProperty java.lang.String",
                     "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object",
+                    // OwnershipGlobalVariable helper methods
                     "staticMethod org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable getJobOwnershipDescription org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper",
+                    "staticMethod org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable getNodeOwnershipDescription java.lang.String",
                     // Allow accessing all Ownership fields and getter methods
                     "field com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription *",
                     "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getOwnerEmail",

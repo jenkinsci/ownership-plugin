@@ -25,9 +25,12 @@ package org.jenkinsci.plugins.ownership.model.workflow;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
 import hudson.model.Action;
 import hudson.model.Result;
+import hudson.model.labels.LabelAtom;
 import hudson.model.queue.QueueTaskFuture;
+import hudson.slaves.DumbSlave;
 import hudson.tasks.MailAddressResolver;
 import hudson.tasks.Mailer;
 import java.util.Arrays;
@@ -76,35 +79,66 @@ public class OwnershipGlobalVariableTest {
     }
     
     @Test
-    public void jobOwnershipSnippet_noOwnership() throws Exception {
+    public void jobOwnershipSnippet_noOwnership_sandbox() throws Exception {
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
         WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, false);
         assertThat(run.getLog(), containsString("Ownership is disabled"));
     }
     
     @Test
-    public void jobOwnershipSnippet_noOwnership_sandbox() throws Exception {
+    public void jobOwnershipSnippet_noOwnership() throws Exception {
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
         WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, true);
         assertThat(run.getLog(), containsString("Ownership is disabled"));
-    }
-    
-    @Test
-    public void shouldProvideJobOwnershipInfo() throws Exception {
-        OwnershipDescription d = new OwnershipDescription(true, "owner",
-                Arrays.asList("coowner1", "coowner2"));
-        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, false);
-        assertThat(run.getLog(), containsString("owner"));
     }
     
     @Test
     public void shouldProvideJobOwnershipInfo_sandbox() throws Exception {
         OwnershipDescription d = new OwnershipDescription(true, "owner",
                 Arrays.asList("coowner1", "coowner2"));
+        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, false);
+        assertThat(run.getLog(), containsString("owner"));
+    }
+    
+    @Test
+    public void shouldProvideJobOwnershipInfo() throws Exception {
+        OwnershipDescription d = new OwnershipDescription(true, "owner",
+                Arrays.asList("coowner1", "coowner2"));
         WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, true);
         assertThat(run.getLog(), containsString("owner"));
     }
-
+    
+    @Test
+    public void nodeOwnershipSnippet_onSlave() throws Exception {
+        j.jenkins.setLabelString("requiredLabel");
+        DumbSlave slave = j.createOnlineSlave(new LabelAtom("requiredLabel"));
+        NodeOwnerHelper.setOwnership(slave, new OwnershipDescription(true, "ownerOfJenkins",
+                Arrays.asList("coowner1", "coowner2")));
+        OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
+        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d, false);
+        assertThat(run.getLog(), containsString("ownerOfJenkins"));
+    }
+    
+    @Test
+    public void nodeOwnershipSnippet_onMaster() throws Exception {
+        j.jenkins.setLabelString("requiredLabel");
+        NodeOwnerHelper.setOwnership(j.jenkins, new OwnershipDescription(true, "ownerOfJenkins",
+                Arrays.asList("coowner1", "coowner2")));
+        OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
+        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d, true);
+        assertThat(run.getLog(), containsString("ownerOfJenkins"));
+    }
+    
+    @Test
+    public void nodeOwnershipSnippet_onMaster_sandbox() throws Exception {
+        j.jenkins.setLabelString("requiredLabel");
+        NodeOwnerHelper.setOwnership(j.jenkins, new OwnershipDescription(true, "ownerOfJenkins",
+                Arrays.asList("coowner1", "coowner2")));
+        OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
+        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d, false);
+        assertThat(run.getLog(), containsString("ownerOfJenkins"));
+    }
+    
     private WorkflowRun buildSnippetAndAssertSuccess(@Nonnull String snippetName,
             @Nonnull OwnershipDescription ownershipDescription, boolean useSandbox) throws Exception {
         return buildAndAssertSuccess(OwnershipGlobalVariable.getSampleSnippet(snippetName),

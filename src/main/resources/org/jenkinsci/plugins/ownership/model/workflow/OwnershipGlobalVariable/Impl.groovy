@@ -39,4 +39,9 @@ class OwnershipGlobalVariableImpl implements Serializable {
     return org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable
               .getJobOwnershipDescription(script.currentBuild);
   }
+
+  public OwnershipDescription getNode() {
+    return org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable
+              .getNodeOwnershipDescription(script.env.NODE_NAME);
+  }
 }
