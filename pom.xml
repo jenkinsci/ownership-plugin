@@ -30,17 +30,14 @@
     </properties>
 
     <developers>
-        <developer>
-            <id>oleg_nenashev</id>
-            <name>Oleg Nenashev</name>
-            <email>nenashev@synopsys.com; o.v.nenashev@gmail.com</email>
-            <organizationUrl>http://www.synopsys.com</organizationUrl>
-            <organization>Synopsys Inc.</organization>                      
-            <roles>
-                <role>maintainer</role>
-            </roles>
-            <timezone>+4</timezone>
-        </developer>
+      <developer>
+        <id>oleg_nenashev</id>
+        <name>Oleg Nenashev</name>
+        <email>o.v.nenashev@gmail.com</email>                 
+        <roles>
+          <role>maintainer</role>
+        </roles>
+      </developer>
     </developers>
 
     <scm>
