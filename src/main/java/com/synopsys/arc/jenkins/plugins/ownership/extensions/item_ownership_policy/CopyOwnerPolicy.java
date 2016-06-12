@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2014 Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+ * Copyright 2014 Oleg Nenashev, Synopsys Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,15 @@
 
 package com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy;
 
-import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
- *
- * @author Oleg Nenashev <nenashev@synopsys.com>
+ * @deprecated Not implemented
+ * @author Oleg Nenashev
  */
+@Restricted(NoExternalUse.class)
+@Deprecated
 public class CopyOwnerPolicy  {
     //TODO: implement
 }

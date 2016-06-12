@@ -37,7 +37,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 /**
  * Provides ownership helper for {@link Computer}.
  * The class implements a wrapper of {@link NodeOwnerHelper}.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  */
 public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
 

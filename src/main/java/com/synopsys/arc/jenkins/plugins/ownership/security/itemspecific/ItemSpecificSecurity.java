@@ -42,7 +42,7 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * Implements item-specific property map.
  * This class relies on {@link AuthorizationMatrixProperty} from Jenkins core.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 0.3
  */
 public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, Cloneable {

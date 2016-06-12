@@ -37,7 +37,7 @@ import hudson.security.Permission;
 
 /**
  * Macro invokes evaluation of item-specific access rights.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 0.4
  */
 @Extension(optional = true)

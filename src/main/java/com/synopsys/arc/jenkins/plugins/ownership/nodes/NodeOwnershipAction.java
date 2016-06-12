@@ -49,7 +49,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Node ownership action.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 0.2
  */
 public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {

@@ -29,7 +29,7 @@
 -        itemType - name of the item type for visualization (ex, Job or Slave)
 -        styleClass - class of the div box   
 -
--    @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+-    @author Oleg Nenashev
 -    @since 0.0.3   
 -->
 <?jelly escape-by-default='true'?>

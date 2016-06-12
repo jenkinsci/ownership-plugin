@@ -118,7 +118,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
          * @return Instance of the node, which is being configured (or null)
          * 
          * @since 0.0.5
-         * @author Oleg Nenashev <nenashev@synopsys.com>
+         * @author Oleg Nenashev
          */
         private static Node getNodePropertyOwner(StaplerRequest req)
         {                

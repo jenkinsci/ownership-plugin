@@ -37,7 +37,7 @@ import jenkins.model.Jenkins;
 /**
  * Implements an ownership changes policy for {@link Item}s. 
  * This policy defines actions to be implemented if specific changes in jobs occur.
- * @author Oleg Nenashev <nenashev@synopsys.com>
+ * @author Oleg Nenashev
  */
 public abstract class ItemOwnershipPolicy 
         implements ExtensionPoint, Describable<ItemOwnershipPolicy> {
