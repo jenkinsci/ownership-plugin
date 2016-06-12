@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <div>
   Provides explicit support of Jobs and Nodes ownership (property fields, columns, etc.)
 </div>
