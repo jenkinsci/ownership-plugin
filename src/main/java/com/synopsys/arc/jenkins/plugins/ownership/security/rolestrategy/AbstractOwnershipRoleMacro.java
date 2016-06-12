@@ -35,6 +35,7 @@ import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleMacroExtension;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import static com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType.Project;
 import static com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType.Slave;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Computer;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -54,6 +55,7 @@ abstract class AbstractOwnershipRoleMacro extends RoleMacroExtension {
     protected static final String AUTHENTICATED_SID = "authenticated";
     
     @Override
+    @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "Part of other plugin API")
     public boolean IsApplicable(RoleType roleType) {
         switch (roleType) {
             case Project:

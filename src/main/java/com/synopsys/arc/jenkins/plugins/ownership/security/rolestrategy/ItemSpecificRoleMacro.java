@@ -29,6 +29,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.security.AccessControlled;
@@ -53,6 +54,7 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
     }
 
     @Override
+    @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "Part of other plugin API")
     public boolean IsApplicable(RoleType roleType) {
         return roleType == RoleType.Project;
     }

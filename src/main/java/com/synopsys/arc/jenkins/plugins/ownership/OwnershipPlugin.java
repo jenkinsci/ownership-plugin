@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.extensions.OwnershipLayoutForm
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.DropOwnershipPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.Util;
@@ -82,6 +83,8 @@ public class OwnershipPlugin extends Plugin {
     /**
      * @deprecated Use {@link #getInstance()} instead
      */
+    @Deprecated
+    @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "deprecated")
     public static OwnershipPlugin Instance() {
         return getInstance();
     }
