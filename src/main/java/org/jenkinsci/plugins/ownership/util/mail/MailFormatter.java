@@ -37,7 +37,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Provides the support of operations with e-mails.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  * @since 0.6
  */
 public class MailFormatter {

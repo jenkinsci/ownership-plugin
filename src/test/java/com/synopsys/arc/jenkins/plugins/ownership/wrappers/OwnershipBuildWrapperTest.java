@@ -59,7 +59,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 /**
  * Tests for {@link OwnershipBuildWrapper}.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  */
 public class OwnershipBuildWrapperTest {
     

@@ -43,7 +43,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
 /**
  * Helper for {@link Run} ownership management.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  * @since 0.6
  */
 public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {

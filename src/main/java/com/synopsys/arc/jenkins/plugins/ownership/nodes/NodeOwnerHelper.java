@@ -43,7 +43,7 @@ import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSourc
 
 /**
  * Provides helper for Node owner.
- * @todo Add Bug reference
+ * TODO: Add Bug reference
  * @since 0.0.3
  * @author Oleg Nenashev
  * @see OwnerNodeProperty

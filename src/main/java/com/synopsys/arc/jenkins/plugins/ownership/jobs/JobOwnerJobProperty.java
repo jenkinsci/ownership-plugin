@@ -54,7 +54,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Ownership job property.
- * @todo Implement generic approaches from 0.0.3
+ * TODO: Implement generic approaches from 0.0.3
  * @author Oleg Nenashev
  * @since 0.0.1
  */
