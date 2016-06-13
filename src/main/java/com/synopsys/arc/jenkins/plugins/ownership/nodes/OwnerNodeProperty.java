@@ -46,7 +46,6 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * Implements owner property for Jenkins Nodes.
  * @author Oleg Nenashev
- * @deprecated Will be removed in future versions
  * @since 0.0.3
  */
 public class OwnerNodeProperty extends NodeProperty<Node> 

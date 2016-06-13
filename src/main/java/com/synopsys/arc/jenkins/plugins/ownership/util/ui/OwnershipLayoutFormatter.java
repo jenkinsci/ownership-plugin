@@ -34,9 +34,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Formats layouts for UI interfaces.
- * This extension is being used by {@link OwnershipLayoutFormatterProvider}.
  * @param <TObjectType> Type of object, for which ownership should be resolved
- * @see OwnershipLayoutFormatterProvider
  * @since 0.5
  * @author Oleg Nenashev
  */

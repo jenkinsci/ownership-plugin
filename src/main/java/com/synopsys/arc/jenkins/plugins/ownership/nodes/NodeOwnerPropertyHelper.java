@@ -40,7 +40,8 @@ import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSourc
  * Provides helper for Node owner
  * @since 0.0.3
  * @author Oleg Nenashev
- * @see OwnerNodeProperty, NodeOwnerHelper
+ * @see OwnerNodeProperty
+ * @see NodeOwnerHelper
  */
 public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodeProperty> {
 

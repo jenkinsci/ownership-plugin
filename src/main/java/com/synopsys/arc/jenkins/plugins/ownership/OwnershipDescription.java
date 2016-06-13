@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.model.Descriptor;
@@ -163,9 +164,9 @@ public class OwnershipDescription implements Serializable {
     }
     
     /**
-     * Parse a JSON input to construct {@link OwershipDescription}.
+     * Parse a JSON input to construct the ownership description.
      * @param formData Object with a data
-     * @return OwnershipDescription 
+     * @return Ownership Description 
      * @throws hudson.model.Descriptor.FormException Parsing error
      */
     @Nonnull

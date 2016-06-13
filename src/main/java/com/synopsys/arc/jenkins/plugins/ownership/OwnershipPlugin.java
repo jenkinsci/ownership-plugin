@@ -127,9 +127,10 @@ public class OwnershipPlugin extends Plugin {
 
     /**
      * @deprecated This method is deprecated since 0.5
-     * @return true if the {@link #itemOwnershipPolicy} is an instance of
+     * @return {@code true} if the Item ownership policy is an instance of
      * {@link AssignCreatorPolicy}.
      */
+    @Deprecated
     public boolean isAssignOnCreate() {
         return (getConfiguration().getItemOwnershipPolicy() instanceof AssignCreatorPolicy);
     }
