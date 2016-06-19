@@ -24,6 +24,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership.wrappers;
 
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -51,7 +52,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     private transient final boolean injectJobOwnership = false;
 
     @DataBoundConstructor
-    public OwnershipBuildWrapper(EnvSetupOptions envSetupOptions) {
+    public OwnershipBuildWrapper(@Nonnull EnvSetupOptions envSetupOptions) {
         this.envSetupOptions = envSetupOptions;
     }
 
@@ -59,6 +60,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
         this(new EnvSetupOptions(injectJobOwnership, injectNodeOwnership));
     }
     
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Migration of the old data")
     public Object readResolve() {
         if (envSetupOptions == null) {
             envSetupOptions = new EnvSetupOptions(injectJobOwnership, injectNodeOwnership);

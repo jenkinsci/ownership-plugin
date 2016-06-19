@@ -192,7 +192,7 @@ public class OwnershipDescription implements Serializable {
     }
     
     private static void addUser(Set<String> target, JSONObject userObj) throws Descriptor.FormException {
-        String userId = Util.fixEmptyAndTrim(((JSONObject)userObj).getString("coOwner"));
+        String userId = Util.fixEmptyAndTrim(userObj.getString("coOwner"));
         
         //TODO: validate user string
         if (userId != null) {

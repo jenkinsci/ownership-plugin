@@ -103,7 +103,7 @@ public class OwnershipPlugin extends Plugin {
     public void start() throws Exception {
 	load();
         reinitActionsList();
-	Hudson.getInstance().getActions().addAll(pluginActions);
+	Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
 
     @Override
@@ -172,13 +172,13 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Hudson.getInstance().getActions().addAll(pluginActions);
+        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
 
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
-	Hudson.getInstance().getActions().removeAll(pluginActions);
+	Jenkins.getActiveInstance().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         
         // Configurations
@@ -197,7 +197,7 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Hudson.getInstance().getActions().addAll(pluginActions);
+        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
    
     private void reinitActionsList() {

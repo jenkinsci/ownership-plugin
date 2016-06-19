@@ -63,8 +63,7 @@ public class OwnershipAuthorizeProjectStrategy extends AuthorizeProjectStrategy 
             return Jenkins.ANONYMOUS;
         }
         try {
-            Authentication auth = owner.impersonate();
-            return (auth != null) ? auth : Jenkins.ANONYMOUS;
+            return owner.impersonate();
         } catch (UsernameNotFoundException ex) { // fallback to anonymous
             return Jenkins.ANONYMOUS;
         }

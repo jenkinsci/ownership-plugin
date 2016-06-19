@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.User;
 import javax.annotation.Nonnull;
 import org.kohsuke.accmod.Restricted;
@@ -65,7 +66,16 @@ public class UserWrapper {
 
     }
 
+    /**
+     * @deprecated Use {@link #isUser() }
+     */
+    @Deprecated
+    @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION")
     public boolean IsUser() {
+        return isUser;
+    }
+    
+    public boolean isUser() {
         return isUser;
     }
 

@@ -45,15 +45,15 @@ public abstract class OwnershipLayoutFormatterProvider {
     private static final OwnershipLayoutFormatter<Node> DEFAULT_NODE_FORMATTER = new OwnershipLayoutFormatter.DefaultJobFormatter<Node>();
     private static final OwnershipLayoutFormatter<Run> DEFAULT_RUN_FORMATTER = new OwnershipLayoutFormatter.DefaultJobFormatter<Run>();
     
-    public @Nonnull OwnershipLayoutFormatter<Job<?,?>> getLayoutFormatter(@Nonnull Job<?,?> job) {
+    public @Nonnull OwnershipLayoutFormatter<Job<?,?>> getLayoutFormatter(Job<?,?> job) {
         return DEFAULT_JOB_FORMATTER;
     }
     
-    public @Nonnull OwnershipLayoutFormatter<Node> getLayoutFormatter(@Nonnull Node node) {
+    public @Nonnull OwnershipLayoutFormatter<Node> getLayoutFormatter(Node node) {
         return DEFAULT_NODE_FORMATTER;
     }
     
-    public @Nonnull OwnershipLayoutFormatter<Run> getLayoutFormatter(@Nonnull Run run) {
+    public @Nonnull OwnershipLayoutFormatter<Run> getLayoutFormatter(Run run) {
         return DEFAULT_RUN_FORMATTER;
     }
     
