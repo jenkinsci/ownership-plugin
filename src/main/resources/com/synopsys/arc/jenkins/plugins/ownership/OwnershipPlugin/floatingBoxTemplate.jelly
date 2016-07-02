@@ -26,7 +26,7 @@
 -    Parameters:
 -        helper - Helper, which provides info about item
 -        item - Item, which is being described by floating box. Action helper should provide appropriate action helper
--        itemType - name of the item type for visualization (ex, Job or Slave)
+-        itemType - name of the item type for visualization (e.g., Job or Node)
 -        styleClass - class of the div box   
 -
 -    @author Oleg Nenashev

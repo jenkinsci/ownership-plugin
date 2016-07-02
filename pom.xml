@@ -9,9 +9,9 @@
     <groupId>com.synopsys.jenkinsci</groupId>
     <artifactId>ownership</artifactId>
     <version>0.9-SNAPSHOT</version>
-    <name>Job and Slave ownership plugin</name>
+    <name>Job and Node ownership plugin</name>
     <packaging>hpi</packaging>
-    <description>Provides explicit ownership of jobs and slaves</description>
+    <description>Provides explicit ownership of jobs and nodes</description>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Ownership+Plugin</url>
     
     <licenses>
