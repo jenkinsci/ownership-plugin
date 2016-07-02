@@ -29,6 +29,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.OwnershipDescriptionHelper;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
+import hudson.model.Node;
 import hudson.model.TaskListener;
 import java.io.IOException;
 import org.jenkinsci.plugins.tokenmacro.DataBoundTokenMacro;
@@ -72,8 +73,15 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
         }
             
         OwnershipDescription job = JobOwnerHelper.Instance.getOwnershipDescription(ab.getProject());
-        OwnershipDescription node = NodeOwnerHelper.Instance.getOwnershipDescription(ab.getBuiltOn());
-        return func.evaluate(job, node);
+        
+        // Get data for node
+        final Node node = ab.getBuiltOn();
+        OwnershipDescription nodeDescription = node != null 
+                ? NodeOwnerHelper.Instance.getOwnershipDescription(node) 
+                : OwnershipDescription.DISABLED_DESCR;
+        
+        // Evaluate the macro
+        return func.evaluate(job, nodeDescription);
     }
            
     private static enum OwnershipFunction {
@@ -86,7 +94,7 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
         NODE_COOWNERS(false),
         NODE_COOWNERS_EMAILS(false);
         
-        private boolean isJob;
+        private final boolean isJob;
         
         private OwnershipFunction(boolean isJob) {
             this.isJob = isJob;

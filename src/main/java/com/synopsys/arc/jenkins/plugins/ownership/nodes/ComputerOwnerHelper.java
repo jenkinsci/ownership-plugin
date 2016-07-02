@@ -32,12 +32,13 @@ import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.apache.commons.collections.ListUtils;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
 /**
  * Provides ownership helper for {@link Computer}.
  * The class implements a wrapper of {@link NodeOwnerHelper}.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  */
 public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
 
@@ -69,7 +70,7 @@ public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
         Node node = computer.getNode();
         return node != null 
                 ? NodeOwnerHelper.Instance.getPossibleOwners(node)
-                : EMPTY_USERS_COLLECTION;
+                : ListUtils.EMPTY_LIST;
     }  
     
     public static void setOwnership(@Nonnull Computer computer, 

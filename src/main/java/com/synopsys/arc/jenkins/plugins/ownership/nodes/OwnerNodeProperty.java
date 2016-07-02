@@ -46,7 +46,6 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * Implements owner property for Jenkins Nodes.
  * @author Oleg Nenashev
- * @deprecated Will be removed in future versions
  * @since 0.0.3
  */
 public class OwnerNodeProperty extends NodeProperty<Node> 
@@ -80,7 +79,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     @CheckForNull
     public Node getNode() {
         if (node == null) {
-            setNode(Jenkins.getInstance().getNode(nodeName));
+            setNode(Jenkins.getActiveInstance().getNode(nodeName));
         }
         return node;
     }
@@ -118,7 +117,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
          * @return Instance of the node, which is being configured (or null)
          * 
          * @since 0.0.5
-         * @author Oleg Nenashev <nenashev@synopsys.com>
+         * @author Oleg Nenashev
          */
         private static Node getNodePropertyOwner(StaplerRequest req)
         {                

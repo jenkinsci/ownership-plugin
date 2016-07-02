@@ -29,6 +29,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.ui.UserSelector;
 import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestriction;
 import com.synopsys.arc.jenkinsci.plugins.jobrestrictions.restrictions.JobRestrictionDescriptor;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Queue;
@@ -40,9 +41,11 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Allows to restrict job executions by ownership.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 0.2
  */
+@SuppressFBWarnings(value = "SE_NO_SERIALVERSIONID", 
+        justification = "JobRestriction should not be serializable, not required for Xstream")
 public class OwnersListJobRestriction extends JobRestriction {
     
     private static final JobOwnerHelper helper = new JobOwnerHelper();
@@ -101,17 +104,19 @@ public class OwnersListJobRestriction extends JobRestriction {
             return false;
         }
         
-        updateUsersMap();
-        if (usersMap.contains(descr.getPrimaryOwnerId())) {
-            return true;
-        }
-        
-        // Handle co-owners if required
-        Set<String> itemCoOwners = descr.getCoownersIds();
-        if (acceptsCoOwners && !itemCoOwners.isEmpty()) {
-            for (String userID : usersMap) {
-                if (itemCoOwners.contains(userID)) {
-                    return true;
+        synchronized(this) {
+            updateUsersMap();
+            if (usersMap.contains(descr.getPrimaryOwnerId())) {
+                return true;
+            }
+
+            // Handle co-owners if required
+            Set<String> itemCoOwners = descr.getCoownersIds();
+            if (acceptsCoOwners && !itemCoOwners.isEmpty()) {
+                for (String userID : usersMap) {
+                    if (itemCoOwners.contains(userID)) {
+                        return true;
+                    }
                 }
             }
         }

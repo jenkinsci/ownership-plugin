@@ -37,7 +37,7 @@ import jenkins.model.Jenkins;
 /**
  * Implements an ownership changes policy for {@link Item}s. 
  * This policy defines actions to be implemented if specific changes in jobs occur.
- * @author Oleg Nenashev <nenashev@synopsys.com>
+ * @author Oleg Nenashev
  */
 public abstract class ItemOwnershipPolicy 
         implements ExtensionPoint, Describable<ItemOwnershipPolicy> {
@@ -67,7 +67,8 @@ public abstract class ItemOwnershipPolicy
        
     @Override
     public ItemOwnershipPolicyDescriptor getDescriptor() {
-        return (ItemOwnershipPolicyDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return (ItemOwnershipPolicyDescriptor) Jenkins.getActiveInstance()
+                .getDescriptorOrDie(ItemOwnershipPolicy.class);
     }
     
     /**
@@ -75,7 +76,8 @@ public abstract class ItemOwnershipPolicy
      * @return List of {@link ItemOwnershipPolicy}s.
      */    
     public static DescriptorExtensionList<ItemOwnershipPolicy,ItemOwnershipPolicyDescriptor> all() {
-        return Jenkins.getInstance().<ItemOwnershipPolicy,ItemOwnershipPolicyDescriptor>
+        //TODO: rework to Extension list Lookup
+        return Jenkins.getActiveInstance().<ItemOwnershipPolicy,ItemOwnershipPolicyDescriptor>
                 getDescriptorList(ItemOwnershipPolicy.class);
     }
     

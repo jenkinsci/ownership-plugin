@@ -43,7 +43,7 @@ import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
  * Displays ownership info for builds. 
  * This implementation is a stub for summaries visualization.
  * Currently, users cannot manage builds ownership.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  * @since 0.6
  */
 public class RunOwnershipAction extends ItemOwnershipAction<Run> 

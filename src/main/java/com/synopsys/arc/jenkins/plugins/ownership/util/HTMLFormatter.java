@@ -70,7 +70,7 @@ public class HTMLFormatter {
             String userStr = useLongFormat 
                 ? usr.getDisplayName()
                 : UserStringFormatter.formatShort(usr.getId());
-            return "<a href=\""+Jenkins.getInstance().getRootUrl()+"user/"+Functions.escape(userId)+"\">"+Functions.escape(userStr)+"</a>";
+            return "<a href=\""+Jenkins.getActiveInstance().getRootUrl()+"user/"+Functions.escape(userId)+"\">"+Functions.escape(userStr)+"</a>";
         } else { // just return name w/o hyperlink
             return userId + " (unregistered)";
         }

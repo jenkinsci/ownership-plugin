@@ -54,7 +54,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Ownership job property.
- * @todo Implement generic approaches from 0.0.3
+ * TODO: Implement generic approaches from 0.0.3
  * @author Oleg Nenashev
  * @since 0.0.1
  */
@@ -86,10 +86,10 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
      * The function returns a default configuration if security is not
      * configured. Use {@link #hasItemSpecificSecurity() hasItemSpecificSecurity} 
      * to check an origin of permissions.
-     * @return ItemSpecific security or null if it is not configured
+     * @return ItemSpecific security or {@code null} if it is not configured
      * @since 0.3
      */
-    @Nonnull
+    @CheckForNull
     public ItemSpecificSecurity getItemSpecificSecurity() {
         return itemSpecificSecurity != null 
                 ? itemSpecificSecurity 
@@ -106,7 +106,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     }
     
     public String getDisplayName(User usr) {
-        return  JobOwnerHelper.Instance.getDisplayName(usr);
+        return JobOwnerHelper.Instance.getDisplayName(usr);
     }
       
     public Collection<User> getUsers()

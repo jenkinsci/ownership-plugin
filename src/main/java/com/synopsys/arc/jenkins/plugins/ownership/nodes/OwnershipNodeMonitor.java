@@ -36,7 +36,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Implements monitoring of ownership.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 0.4
  */
 public class OwnershipNodeMonitor extends NodeMonitor {

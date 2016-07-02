@@ -34,7 +34,7 @@ import org.junit.Test;
 
 /**
  * Tests for {@link MailFormatter}.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  */
 public class MailFormatterTest {
     

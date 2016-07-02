@@ -49,7 +49,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Node ownership action.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  * @since 0.2
  */
 public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
@@ -90,7 +90,7 @@ public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
      * @return 
      */
     public static String getAbsoluteUrl(@Nonnull Computer computer) {
-        String r = Jenkins.getInstance().getRootUrl();
+        String r = Jenkins.getActiveInstance().getRootUrl();
         if(r==null) {
             throw new IllegalStateException("Root URL isn't configured yet. Cannot compute absolute URL.");
         }

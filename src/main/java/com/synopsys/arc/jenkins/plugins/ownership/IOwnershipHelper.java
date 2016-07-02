@@ -106,7 +106,7 @@ public interface IOwnershipHelper<TObjectType>  {
      * Gets ownership description of the requested item.
      * @param item Item to be described
      * @return Ownership description. The method returns a 
-     * {@link OwnershipDescription.DISABLED}
+     * {@link OwnershipDescription#DISABLED_DESCR}
      * @since 0.0.3
      */
     @Nonnull

@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.extensions.OwnershipLayoutForm
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.DropOwnershipPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.Util;
@@ -82,6 +83,8 @@ public class OwnershipPlugin extends Plugin {
     /**
      * @deprecated Use {@link #getInstance()} instead
      */
+    @Deprecated
+    @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "deprecated")
     public static OwnershipPlugin Instance() {
         return getInstance();
     }
@@ -100,7 +103,7 @@ public class OwnershipPlugin extends Plugin {
     public void start() throws Exception {
 	load();
         reinitActionsList();
-	Hudson.getInstance().getActions().addAll(pluginActions);
+	Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
 
     @Override
@@ -124,9 +127,10 @@ public class OwnershipPlugin extends Plugin {
 
     /**
      * @deprecated This method is deprecated since 0.5
-     * @return true if the {@link #itemOwnershipPolicy} is an instance of
+     * @return {@code true} if the Item ownership policy is an instance of
      * {@link AssignCreatorPolicy}.
      */
+    @Deprecated
     public boolean isAssignOnCreate() {
         return (getConfiguration().getItemOwnershipPolicy() instanceof AssignCreatorPolicy);
     }
@@ -168,13 +172,13 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Hudson.getInstance().getActions().addAll(pluginActions);
+        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
 
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
-	Hudson.getInstance().getActions().removeAll(pluginActions);
+	Jenkins.getActiveInstance().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         
         // Configurations
@@ -193,7 +197,7 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Hudson.getInstance().getActions().addAll(pluginActions);
+        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
    
     private void reinitActionsList() {

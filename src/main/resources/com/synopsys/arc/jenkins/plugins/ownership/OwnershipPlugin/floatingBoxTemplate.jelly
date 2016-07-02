@@ -29,9 +29,10 @@
 -        itemType - name of the item type for visualization (ex, Job or Slave)
 -        styleClass - class of the div box   
 -
--    @author Oleg Nenashev <nenashev@synopsys.com>, Synopsys Inc.
+-    @author Oleg Nenashev
 -    @since 0.0.3   
 -->
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <!--Stuff-->
@@ -50,7 +51,7 @@
                 </td>
                 <td>
                     <div class="ownership-user-info">
-                        ${layoutFormatter.formatOwner(item, helper.getOwner(item))}
+                        <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
                     </div>
                 </td>
             </tr>
@@ -65,7 +66,7 @@
                     <td>
                         <j:forEach var="coownerId" items="${coownersList}">
                             <div class="ownership-user-info">                   
-                                ${layoutFormatter.formatOwner(item, coownerId)}
+                                <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
                             </div>
                         </j:forEach>  
                     </td>
@@ -103,7 +104,7 @@
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and !ownershipDescription.ownershipEnabled}">
       <div class="ownership-summary-box">   
         <div class="ownership-header">${itemType} ${%Ownership}</div>
-        ${%noOwnership.info.text(itemType)}                
+        <j:out value="${%noOwnership.info.text(itemType)}"/>                
       </div>
     </j:if>
 </j:jelly>

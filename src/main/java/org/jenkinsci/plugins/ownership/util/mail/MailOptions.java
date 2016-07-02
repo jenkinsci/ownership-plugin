@@ -34,7 +34,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Stores mailing options for {@link OwnershipPlugin}.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  * @since 0.6
  */
 public class MailOptions implements Describable<MailOptions> {

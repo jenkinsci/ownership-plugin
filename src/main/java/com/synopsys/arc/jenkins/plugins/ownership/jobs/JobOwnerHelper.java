@@ -64,11 +64,10 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
      * Gets {@link JobOwnerJobProperty} from the job if possible.
      * The function also handles multi-configuration jobs, so it should be used 
      * wherever it is possible.
-     * <p/>
      * This method should not be used to retrieve Ownership descriptions, 
      * because it does not take inheritance into account.
      * @param job Job
-     * @return JobOwnerJobProperty or null if it is not configured
+     * @return JobOwnerJobProperty or {@code null} if it is not configured
      */
     @CheckForNull
     public static JobOwnerJobProperty getOwnerProperty(@Nonnull Job<?,?> job) {

@@ -38,7 +38,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * Creates a "Manage Ownership" action for jobs.
  * Action will be available for all top-level job items. 
  * Matrix configurations will be ignored.
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  */
 @Extension
 @Restricted(NoExternalUse.class)

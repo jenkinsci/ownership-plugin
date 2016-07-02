@@ -32,7 +32,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Stores environment setup options for {@link OwnershipPlugin}.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  * @since 0.6
  */
 public class EnvSetupOptions implements Describable<EnvSetupOptions> {

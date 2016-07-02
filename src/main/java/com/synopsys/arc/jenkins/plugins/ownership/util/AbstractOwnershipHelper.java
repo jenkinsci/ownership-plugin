@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
+import org.apache.commons.collections.ListUtils;
 import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
@@ -49,10 +50,6 @@ import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
  */
 public abstract class AbstractOwnershipHelper<TObjectType>  
     implements IOwnershipHelper<TObjectType> {
-    
-    /**An empty collection of users*/
-    protected final static Collection<User> EMPTY_USERS_COLLECTION = new ArrayList<User>(0);
-    
     
     @Override
     public final @Nonnull String getDisplayName(@CheckForNull User usr) {
@@ -89,7 +86,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
 
     @Override
     public Collection<User> getPossibleOwners(TObjectType item) {
-        return EMPTY_USERS_COLLECTION;
+        return ListUtils.EMPTY_LIST;
     }
     
     //TODO: promote to interface
@@ -112,7 +109,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
      * Gets ownership info of the requested item.
      * @param item Item to be described
      * @return Ownership description. The method returns a 
-     * {@link OwnershipDescription.DISABLED}
+     * {@link OwnershipDescription#DISABLED_DESCR}
      * @since TODO
      */
     @Nonnull

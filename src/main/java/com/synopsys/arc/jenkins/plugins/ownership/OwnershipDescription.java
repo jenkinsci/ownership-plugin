@@ -24,6 +24,8 @@
 package com.synopsys.arc.jenkins.plugins.ownership;
 
 import com.synopsys.arc.jenkins.plugins.ownership.util.OwnershipDescriptionHelper;
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.User;
@@ -156,15 +158,17 @@ public class OwnershipDescription implements Serializable {
      * @deprecated Use {@link #parseJSON(net.sf.json.JSONObject)} instead.
      */
     @Nonnull
+    @Deprecated
+    @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "deprecated")
     public static OwnershipDescription Parse(JSONObject formData)
             throws Descriptor.FormException {
         return parseJSON(formData);
     }
     
     /**
-     * Parse a JSON input to construct {@link OwershipDescription}.
+     * Parse a JSON input to construct the ownership description.
      * @param formData Object with a data
-     * @return OwnershipDescription 
+     * @return Ownership Description 
      * @throws hudson.model.Descriptor.FormException Parsing error
      */
     @Nonnull
@@ -190,7 +194,7 @@ public class OwnershipDescription implements Serializable {
     }
     
     private static void addUser(Set<String> target, JSONObject userObj) throws Descriptor.FormException {
-        String userId = Util.fixEmptyAndTrim(((JSONObject)userObj).getString("coOwner"));
+        String userId = Util.fixEmptyAndTrim(userObj.getString("coOwner"));
         
         //TODO: validate user string
         if (userId != null) {

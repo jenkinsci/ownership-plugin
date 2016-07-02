@@ -26,6 +26,7 @@ package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -39,7 +40,9 @@ public class NodeOwnerWrapper {
 
     @DataBoundConstructor
     public NodeOwnerWrapper(@CheckForNull String primaryOwner) {
-        description = new OwnershipDescription(primaryOwner!=null, primaryOwner);
+        description = StringUtils.isBlank(primaryOwner) 
+                ? OwnershipDescription.DISABLED_DESCR
+                : new OwnershipDescription(true, primaryOwner);
     }
 
     @Nonnull

@@ -43,7 +43,7 @@ import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSourc
 
 /**
  * Provides helper for Node owner.
- * @todo Add Bug reference
+ * TODO: Add Bug reference
  * @since 0.0.3
  * @author Oleg Nenashev
  * @see OwnerNodeProperty
@@ -65,7 +65,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     }
         
     @Override
-    public OwnershipDescription getOwnershipDescription(Node item) {
+    public OwnershipDescription getOwnershipDescription(@CheckForNull Node item) {
         // TODO: This method impl is a performance hack. May be replaced by getOwnershipInfo() in 1.0
         if (item == null) { // Handle renames, etc.
             return OwnershipDescription.DISABLED_DESCR;

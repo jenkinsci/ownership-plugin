@@ -48,7 +48,7 @@ public interface IOwnershipItem<TObjectType> {
     
     /**
      * Gets ownership description.
-     * By default, returns {@link #OwnershipDescription.DISABLED_DESCR}
+     * By default, returns {@link OwnershipDescription#DISABLED_DESCR}
      * @return Ownership Description (not null)
      */
     @Nonnull

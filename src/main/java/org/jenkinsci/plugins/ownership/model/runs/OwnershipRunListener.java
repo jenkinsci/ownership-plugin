@@ -31,7 +31,7 @@ import hudson.model.listeners.RunListener;
 
 /**
  * Injects {@link RunOwnershipAction}s to all runs.
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  * @since 0.6
  */
 @Extension

@@ -41,7 +41,7 @@ import jenkins.model.Jenkins;
 
 /**
  *
- * @author Oleg Nenashev <o.v.nenashev@gmail.com>
+ * @author Oleg Nenashev
  */
 public class OwnershipMailHelper {
    
