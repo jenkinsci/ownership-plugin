@@ -24,7 +24,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <workflow.version>1.8</workflow.version>
+        <workflow.version>1.14.2</workflow.version>
     </properties>
 
     <developers>
@@ -142,14 +142,12 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>1.5.6</version>
             <scope>test</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>1.5.6</version>
             <scope>test</scope>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

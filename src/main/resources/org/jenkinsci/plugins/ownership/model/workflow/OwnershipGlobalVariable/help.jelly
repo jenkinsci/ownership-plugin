@@ -36,13 +36,13 @@
      Email of the item owner. Type: <code>java.lang.String</code>.
    </dd>
    
-   <dt>ownershipEnabled</dt>
+   <dt>coOwnerIds</dt>
    <dd>
      Collection of the item co-owner user IDs (does not include the item owner). 
      Type: <code>java.util.Set&lt;String&gt;</code>.
    </dd>
    
-   <dt>ownershipEnabled</dt>
+   <dt>coOwnerEmails</dt>
    <dd>Collection of the item co-owner e-mails (does not include the item owner). 
      Type: <code>java.util.Set&lt;String&gt;</code>.
    </dd>

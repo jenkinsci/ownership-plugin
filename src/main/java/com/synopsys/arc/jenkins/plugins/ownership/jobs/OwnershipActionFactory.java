@@ -31,6 +31,8 @@ import java.util.Collection;
 import static java.util.Collections.singleton;
 import java.util.LinkedList;
 import jenkins.model.TransientActionFactory;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Creates a "Manage Ownership" action for jobs.
@@ -39,6 +41,7 @@ import jenkins.model.TransientActionFactory;
  * @author Oleg Nenashev, Synopsys Inc.
  */
 @Extension
+@Restricted(NoExternalUse.class)
 public class OwnershipActionFactory extends TransientActionFactory<Job> {
     /**Empty actions collection for invalid project type*/
     private static final Collection<? extends Action> EMPTY_ACTIONS 
