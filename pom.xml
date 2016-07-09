@@ -116,17 +116,19 @@
             <artifactId>workflow-cps</artifactId>
             <version>${workflow.version}</version>
         </dependency>
-        <dependency> <!-- Test framework -->
+        
+        <!-- Test framework -->
+        <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
             <version>${workflow.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-        <dependency> 
+        <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-aggregator</artifactId>
-            <version>${workflow.version}</version>
+            <artifactId>${workflow.version}</artifactId>
+            <version>1.14</version>
             <scope>test</scope>
         </dependency>
         <dependency>
