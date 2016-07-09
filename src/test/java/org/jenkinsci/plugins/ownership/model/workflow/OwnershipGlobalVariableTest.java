@@ -27,15 +27,15 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
 import hudson.model.Action;
+import hudson.model.Descriptor;
 import hudson.model.Result;
 import hudson.model.labels.LabelAtom;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.slaves.DumbSlave;
-import hudson.tasks.MailAddressResolver;
 import hudson.tasks.Mailer;
 import java.util.Arrays;
+import java.util.Collection;
 import javax.annotation.Nonnull;
-import jenkins.model.JenkinsLocationConfiguration;
 import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
@@ -47,34 +47,36 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests of {@link OwnershipGlobalVariable}.
  *
  * @author Oleg Nenashev
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*" })
-@PrepareForTest({MailAddressResolver.class, Mailer.class, Mailer.DescriptorImpl.class})
+@RunWith(value = Parameterized.class)
 public class OwnershipGlobalVariableTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
-    private Mailer.DescriptorImpl descriptor;
-
-    //TODO: We have to do Mocking due to the Bad Mailer Plugin API
+    @Parameter(0)
+    public boolean useSandbox;
+    
+    @Parameters(name = "{index}: sandbox={0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{{true}, {false}});
+    }
+    
     @Before
     public void setupMailOptions() throws Exception {
-        PowerMockito.spy(Mailer.class);
-        descriptor = PowerMockito.mock(Mailer.DescriptorImpl.class);
-        PowerMockito.doReturn(descriptor).when(Mailer.class, "descriptor");
-        PowerMockito.when(descriptor.getDefaultSuffix()).thenReturn("mailsuff.ix");
+        // Initialize Mail Suffix
+        Descriptor mailerDescriptor = j.jenkins.getDescriptor(Mailer.class);
+        assertThat(mailerDescriptor, instanceOf(Mailer.DescriptorImpl.class));
+        ((Mailer.DescriptorImpl)mailerDescriptor).setDefaultSuffix("mailsuff.ix");
     }
 
     @Before
@@ -83,32 +85,17 @@ public class OwnershipGlobalVariableTest {
     }
     
     @Test
-    public void jobOwnershipSnippet_noOwnership_sandbox() throws Exception {
-        OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
-        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, false);
-        assertThat(run.getLog(), containsString("Ownership is disabled"));
-    }
-    
-    @Test
     public void jobOwnershipSnippet_noOwnership() throws Exception {
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
-        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, true);
+        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d);
         assertThat(run.getLog(), containsString("Ownership is disabled"));
     }
     
     @Test
-    public void shouldProvideJobOwnershipInfo_sandbox() throws Exception {
+    public void jobOwnershipSnippet_withOwner() throws Exception {
         OwnershipDescription d = new OwnershipDescription(true, "owner",
                 Arrays.asList("coowner1", "coowner2"));
-        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, false);
-        assertThat(run.getLog(), containsString("owner"));
-    }
-    
-    @Test
-    public void shouldProvideJobOwnershipInfo() throws Exception {
-        OwnershipDescription d = new OwnershipDescription(true, "owner",
-                Arrays.asList("coowner1", "coowner2"));
-        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d, true);
+        WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d);
         assertThat(run.getLog(), containsString("owner"));
     }
     
@@ -118,7 +105,7 @@ public class OwnershipGlobalVariableTest {
         NodeOwnerHelper.setOwnership(slave, new OwnershipDescription(true, "ownerOfJenkins",
                 Arrays.asList("coowner1", "coowner2")));
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
-        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d, false);
+        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d);
         assertThat(run.getLog(), containsString("ownerOfJenkins"));
     }
     
@@ -128,44 +115,33 @@ public class OwnershipGlobalVariableTest {
         NodeOwnerHelper.setOwnership(j.jenkins, new OwnershipDescription(true, "ownerOfJenkins",
                 Arrays.asList("coowner1", "coowner2")));
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
-        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d, true);
-        assertThat(run.getLog(), containsString("ownerOfJenkins"));
-    }
-    
-    @Test
-    public void nodeOwnershipSnippet_onMaster_sandbox() throws Exception {
-        j.jenkins.setLabelString("requiredLabel");
-        NodeOwnerHelper.setOwnership(j.jenkins, new OwnershipDescription(true, "ownerOfJenkins",
-                Arrays.asList("coowner1", "coowner2")));
-        OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
-        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d, false);
+        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d);
         assertThat(run.getLog(), containsString("ownerOfJenkins"));
     }
     
     private WorkflowRun buildSnippetAndAssertSuccess(@Nonnull String snippetName,
-            @Nonnull OwnershipDescription ownershipDescription, boolean useSandbox) throws Exception {
+            @Nonnull OwnershipDescription ownershipDescription) throws Exception {
         return buildAndAssertSuccess(OwnershipGlobalVariable.getSampleSnippet(snippetName),
-                ownershipDescription, snippetName, useSandbox);
+                ownershipDescription, snippetName);
     }
 
     private WorkflowRun buildAndAssertSuccess(@Nonnull String pipelineScript,
             @Nonnull OwnershipDescription ownershipDescription,
-            @Nonnull String projectName, boolean useSandbox) throws Exception {
+            @Nonnull String projectName) throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, projectName);
-        
-        // TODO: Actually sandbox flag in CpsFlowDefinition is inverted
         job.setDefinition(new CpsFlowDefinition(pipelineScript, useSandbox));
         JobOwnerHelper.setOwnership(job, ownershipDescription);
         
         // We are going to run Pipeline as System, and the script won't be automatically approved in such case.
         // So we approve the script.
-        ScriptApproval.get().preapprove(pipelineScript, GroovyLanguage.get());
+        if (!useSandbox) {
+            ScriptApproval.get().preapprove(pipelineScript, GroovyLanguage.get());
+        }
         
         return buildAndAssertSuccess(job);
     }
 
     private WorkflowRun buildAndAssertSuccess(@Nonnull WorkflowJob job) throws Exception {
-        // Run job
         QueueTaskFuture<WorkflowRun> runFuture = job.scheduleBuild2(0, new Action[0]);
         assertThat("build was actually scheduled", runFuture, notNullValue());
         WorkflowRun run = runFuture.get();
