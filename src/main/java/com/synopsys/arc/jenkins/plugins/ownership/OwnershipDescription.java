@@ -40,6 +40,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted;
 
 /**
  * Contains description of item's ownership. 
@@ -56,6 +57,7 @@ public class OwnershipDescription implements Serializable {
     /**
      * Indicates if ownership is enabled
      */
+    @Whitelisted
     boolean ownershipEnabled;
     
     /**
@@ -67,6 +69,7 @@ public class OwnershipDescription implements Serializable {
      * Sids of the co-Owners.
      * Sids can include users and groups.  
      */
+    @Whitelisted
     Set<String> coownersIds;
 
     /**
@@ -122,6 +125,7 @@ public class OwnershipDescription implements Serializable {
      * Check if ownership is enabled.
      * @return true if ownership is enabled
      */
+    @Whitelisted
     public boolean isOwnershipEnabled() {
         return ownershipEnabled;
     }
@@ -150,6 +154,7 @@ public class OwnershipDescription implements Serializable {
      * @return Collection of co-owners
      */
     @Nonnull
+    @Whitelisted
     public Set<String> getCoownersIds() {
         return coownersIds;
     }
@@ -218,6 +223,7 @@ public class OwnershipDescription implements Serializable {
         return acceptCoowners ? coownersIds.contains(user.getId()) : false;
     }
     
+    @Whitelisted
     public boolean hasPrimaryOwner() {
         return ownershipEnabled && getPrimaryOwner() != null;
     }
@@ -232,6 +238,7 @@ public class OwnershipDescription implements Serializable {
      * user is not specified.
      * @since TODO
      */
+    @Whitelisted
     public @Nonnull String getOwnerId() {
         return getPrimaryOwnerId();
     }
@@ -243,6 +250,7 @@ public class OwnershipDescription implements Serializable {
      * @since TODO
      */
     @Nonnull
+    @Whitelisted
     public String getOwnerEmail() {
         return OwnershipDescriptionHelper.getOwnerEmail(this);
     }
@@ -252,6 +260,7 @@ public class OwnershipDescription implements Serializable {
      * @return List of co-owner user IDs
      * @since TODO
      */
+    @Whitelisted
     public @Nonnull Set<String> getCoOwnerIds() {
         return coownersIds;
     }
@@ -262,6 +271,7 @@ public class OwnershipDescription implements Serializable {
      * @return List of co-owner e-mails (may be empty)
      * @since TODO
      */
+    @Whitelisted
     public @Nonnull Set<String> getCoOwnerEmails() {
         return OwnershipDescriptionHelper.getCoOwnerEmailList(this, false);
     }

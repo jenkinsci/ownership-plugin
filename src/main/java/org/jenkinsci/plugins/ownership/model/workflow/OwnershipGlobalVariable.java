@@ -38,6 +38,7 @@ import jenkins.model.Jenkins;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.ProxyWhitelist;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.StaticWhitelist;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted;
 import org.jenkinsci.plugins.workflow.cps.CpsScript;
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable;
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper;
@@ -99,6 +100,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
     }
     
     @Restricted(NoExternalUse.class)
+    @Whitelisted
     public static OwnershipDescription getJobOwnershipDescription(RunWrapper currentRun) {
         Run<?, ?> rawBuild = currentRun.getRawBuild();
         if (rawBuild == null) {
@@ -108,6 +110,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
     }
     
     @CheckForNull
+    @Whitelisted
     @Restricted(NoExternalUse.class)
     public static OwnershipDescription getNodeOwnershipDescription(@CheckForNull String nodeName) {
         if (nodeName == null) {
@@ -129,19 +132,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
             super(new StaticWhitelist(
                     "new java.util.TreeMap",
                     "method groovy.lang.Closure call java.lang.Object",
-                    "method java.lang.Object toString",
-                    // env.NODE_NAME
-                    "method groovy.lang.GroovyObject getProperty java.lang.String",
-                    "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object",
-                    // OwnershipGlobalVariable helper methods
-                    "staticMethod org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable getJobOwnershipDescription org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper",
-                    "staticMethod org.jenkinsci.plugins.ownership.model.workflow.OwnershipGlobalVariable getNodeOwnershipDescription java.lang.String",
-                    // Allow accessing all Ownership fields and getter methods
-                    "field com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription *",
-                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getOwnerEmail",
-                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getOwnerId",
-                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getCoOwnerEmails",
-                    "method com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription getCoOwnerIds"
+                    "method java.lang.Object toString"
             ));
         }
     }
