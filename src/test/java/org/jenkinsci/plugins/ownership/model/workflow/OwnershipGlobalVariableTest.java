@@ -37,6 +37,8 @@ import java.util.Arrays;
 import javax.annotation.Nonnull;
 import jenkins.model.JenkinsLocationConfiguration;
 import static org.hamcrest.Matchers.*;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -47,6 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -56,6 +59,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Oleg Nenashev
  */
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*" })
 @PrepareForTest({MailAddressResolver.class, Mailer.class, Mailer.DescriptorImpl.class})
 public class OwnershipGlobalVariableTest {
 
@@ -110,7 +114,6 @@ public class OwnershipGlobalVariableTest {
     
     @Test
     public void nodeOwnershipSnippet_onSlave() throws Exception {
-        j.jenkins.setLabelString("requiredLabel");
         DumbSlave slave = j.createOnlineSlave(new LabelAtom("requiredLabel"));
         NodeOwnerHelper.setOwnership(slave, new OwnershipDescription(true, "ownerOfJenkins",
                 Arrays.asList("coowner1", "coowner2")));
@@ -149,8 +152,15 @@ public class OwnershipGlobalVariableTest {
             @Nonnull OwnershipDescription ownershipDescription,
             @Nonnull String projectName, boolean useSandbox) throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, projectName);
+        
+        // TODO: Actually sandbox flag in CpsFlowDefinition is inverted
         job.setDefinition(new CpsFlowDefinition(pipelineScript, useSandbox));
         JobOwnerHelper.setOwnership(job, ownershipDescription);
+        
+        // We are going to run Pipeline as System, and the script won't be automatically approved in such case.
+        // So we approve the script.
+        ScriptApproval.get().preapprove(pipelineScript, GroovyLanguage.get());
+        
         return buildAndAssertSuccess(job);
     }
 

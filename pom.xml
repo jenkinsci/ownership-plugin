@@ -24,10 +24,9 @@
 
     <properties>
         <jenkins.version>1.609.3</jenkins.version>
-        <jenkins-test-harness.version>1.609.3</jenkins-test-harness.version>
         <java.level>6</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <workflow.version>1.14.2</workflow.version>
+        <workflow.version>1.14</workflow.version>
     </properties>
 
     <developers>
@@ -66,6 +65,12 @@
             <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
             <artifactId>job-restrictions</artifactId>
             <version>0.1</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>script-security</artifactId>
+            <version>1.20</version>
             <optional>true</optional>
         </dependency>
         <dependency>

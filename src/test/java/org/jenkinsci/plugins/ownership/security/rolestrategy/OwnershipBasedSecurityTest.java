@@ -84,12 +84,12 @@ public class OwnershipBasedSecurityTest {
     
     @Test
     @Issue("JENKINS-32353")
-    public void shouldWorkForPipelineProjects() throws Exception {
+    public void shouldWorkForPipelineProjectsInFolders() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         OwnershipBasedSecurityTestHelper.setup(j.jenkins);
         
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
-        WorkflowJob project = j.jenkins.createProject(WorkflowJob.class, "testWorkflowJob");
+        WorkflowJob project = folder.createProject(WorkflowJob.class, "testWorkflowJob");
         project.setDefinition(new CpsFlowDefinition("echo 'Hello, world!'", false));
         FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "owner", Arrays.asList("coOwner")));
         
