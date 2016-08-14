@@ -25,6 +25,7 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.UserComparator;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserWrapper;
 import hudson.Extension;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -82,28 +84,31 @@ public class OwnershipJobFilter extends ViewJobFilter {
         final UserWrapper userWrapper = new UserWrapper(ownerId);
 
         for (TopLevelItem item : added) {
-            if (item instanceof AbstractProject) { // Ignore non-project items
-                AbstractProject project = (AbstractProject) item;
-                OwnershipDescription ownership = JobOwnerHelper.Instance.getOwnershipDescription(project);
-                if (!ownership.isOwnershipEnabled()) {
-                    continue;
-                }
+            AbstractOwnershipHelper<TopLevelItem> helper = OwnershipHelperLocator.locate(item);
+            if (helper == null) {
+                // We cannot retrieve helper for the object => keep moving
+                continue;
+            }
+            
+            OwnershipDescription ownership = helper.getOwnershipDescription(item);
+            if (!ownership.isOwnershipEnabled()) {
+                continue;
+            }
 
-                boolean matches = false; // Check owner
-                if (userWrapper.meetsMacro(ownership.getPrimaryOwnerId())) {
-                    matches = true;
-                }
-                if (acceptsCoowners && !matches) { // Check co-owners
-                    for (String coOwnerId : ownership.getCoownersIds()) {
-                        if (userWrapper.meetsMacro(coOwnerId)) {
-                            matches = true;
-                            break;
-                        }
+            boolean matches = false; // Check owner
+            if (userWrapper.meetsMacro(ownership.getPrimaryOwnerId())) {
+                matches = true;
+            }
+            if (acceptsCoowners && !matches) { // Check co-owners
+                for (String coOwnerId : ownership.getCoownersIds()) {
+                    if (userWrapper.meetsMacro(coOwnerId)) {
+                        matches = true;
+                        break;
                     }
                 }
-                if (matches) {
-                    newList.add(item);
-                }
+            }
+            if (matches) {
+                newList.add(item);
             }
         }
 
