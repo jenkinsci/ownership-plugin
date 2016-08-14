@@ -26,6 +26,6 @@
     xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
     xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
     <f:block>
-        <p>${%This column shows owner of the job.}</p>
+        <p>${%This column shows the primary owner of the job.}</p>
     </f:block>
 </j:jelly>
