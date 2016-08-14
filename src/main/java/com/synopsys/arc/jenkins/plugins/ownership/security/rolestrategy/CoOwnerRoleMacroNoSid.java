@@ -33,7 +33,7 @@ import hudson.security.AccessControlled;
 import hudson.security.Permission;
 
 /**
- * Checks if the current user belongs to owners or co-owners of the item (w/o sid control).
+ * Checks if the current user is a primary or secondary owner of the item (w/o sid control).
  * @author Oleg Nenashev
  * @since 0.2
  */

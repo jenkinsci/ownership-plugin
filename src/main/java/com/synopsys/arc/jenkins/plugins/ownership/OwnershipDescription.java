@@ -68,7 +68,7 @@ public class OwnershipDescription implements Serializable {
     String primaryOwnerId;
     
     /**
-     * Sids of the co-Owners.
+     * Sids of the secondary owners (fka co-owners).
      * Sids can include users and groups.  
      */
     @Whitelisted
@@ -78,7 +78,7 @@ public class OwnershipDescription implements Serializable {
      * Constructor.
      * @param ownershipEnabled indicates that the ownership is enabled
      * @param primaryOwnerId userId of primary owner
-     * @deprecated Use constructor with co-owners specification
+     * @deprecated Use constructor with secondary owners specification
      */
     public OwnershipDescription(boolean ownershipEnabled, @Nonnull String primaryOwnerId) {
         this(ownershipEnabled, primaryOwnerId, null);
@@ -302,7 +302,7 @@ public class OwnershipDescription implements Serializable {
     /**
      * Gets e-mails of secondary owners.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
-     * @return List of co-owner e-mails (may be empty)
+     * @return List of secondary owner e-mails (may be empty)
      * @since TODO
      * @deprecated use {@link #getSecondaryOwnerEmails()}
      */
@@ -314,7 +314,7 @@ public class OwnershipDescription implements Serializable {
     /**
      * Gets e-mails of secondary owners.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
-     * @return List of co-owner e-mails (may be empty)
+     * @return List of secondary owner e-mails (may be empty)
      * @since TODO
      */
     @Whitelisted

@@ -151,7 +151,7 @@ public class MailOptions implements Describable<MailOptions> {
     }
 
     /**
-     * Check if displaying e-mails of item owners and co-owners is disabled.
+     * Check if displaying e-mails of item owners is disabled.
      * @return {@code} true if the links should not be visualized.
      * @since 0.8
      */

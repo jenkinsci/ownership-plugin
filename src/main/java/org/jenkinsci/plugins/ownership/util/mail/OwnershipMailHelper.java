@@ -121,8 +121,8 @@ public class OwnershipMailHelper {
             }
         }
 
-        // cc - job co-owners
-        final Set<String> coOwners = ownershipDescription.getCoownersIds();
+        // cc - job secondary owners
+        final Set<String> coOwners = ownershipDescription.getSecondaryOwnerIds();
         if (!coOwners.isEmpty()) {
             for (String coOwnerId : coOwners) {
                 String email = UserStringFormatter.formatEmail(coOwnerId);

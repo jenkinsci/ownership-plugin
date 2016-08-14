@@ -45,7 +45,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Filters owner's and co-owners.
+ * Filters jobs by primary and secondary owners.
  * @author Oleg Nenashev
  * @since 0.1
  */
@@ -108,8 +108,8 @@ public class OwnershipJobFilter extends ViewJobFilter {
                 if (userWrapper.meetsMacro(ownership.getPrimaryOwnerId())) {
                     matches = true;
                 }
-                if (acceptsCoowners && !matches) { // Check co-owners
-                    for (String coOwnerId : ownership.getCoownersIds()) {
+                if (acceptsCoowners && !matches) { // Check secondary owners
+                    for (String coOwnerId : ownership.getSecondaryOwnerIds()) {
                         if (userWrapper.meetsMacro(coOwnerId)) {
                             matches = true;
                             break;
