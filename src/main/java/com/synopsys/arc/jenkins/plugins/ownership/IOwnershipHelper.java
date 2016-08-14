@@ -95,7 +95,7 @@ public interface IOwnershipHelper<TObjectType>  {
     public boolean isOwnerExists(@Nonnull TObjectType item);
     
     /**
-     * Get Display string of the owner (and coowners).
+     * Get Display string of the owner.
      * @param item Item to be described
      * @return User description string
      */

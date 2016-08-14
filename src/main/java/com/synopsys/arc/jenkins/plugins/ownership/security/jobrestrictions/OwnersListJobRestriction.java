@@ -77,7 +77,20 @@ public class OwnersListJobRestriction extends JobRestriction {
         return usersList;
     }
 
+    /**
+     * @deprecated use {@link #isAcceptSecondaryOwners() } 
+     */
+    @Deprecated
     public boolean isAcceptsCoOwners() {
+        return acceptsCoOwners;
+    }
+    
+    /**
+     * Checks if the filter accepts secondary owners.
+     * @return {@code true} if secondary owners should be accepted
+     * @since TODO
+     */
+    public boolean isAcceptSecondaryOwners() {
         return acceptsCoOwners;
     }
     

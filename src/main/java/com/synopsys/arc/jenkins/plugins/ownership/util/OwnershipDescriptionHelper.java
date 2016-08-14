@@ -27,13 +27,19 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+//TODO: Do we really need this helper class now?
+//TODO co-owners have not been renamed to secondary owners, but it's an internal-only class
 /**
  * Provides handlers for ownership description.
  * @author Oleg Nenashev
- * @since 0.4
+ * @since 0.4 - Public API class
+ * @since TODO - Class API is restricted, use OwnershipDescription instead
  * @see OwnershipDescription
  */
+@Restricted(NoExternalUse.class)
 public class OwnershipDescriptionHelper {
     
     private OwnershipDescriptionHelper() {}
@@ -70,7 +76,7 @@ public class OwnershipDescriptionHelper {
         if (includeOwner) {
             res.add(getOwnerID(descr));
         }
-        for (String userId : descr.getCoownersIds()) {
+        for (String userId : descr.getSecondaryOwnerIds()) {
             res.add(userId);      
         }
         return res;
@@ -107,7 +113,7 @@ public class OwnershipDescriptionHelper {
         if (includeOwner) {
             res.add(getOwnerEmail(descr));
         }
-        for (String userId : descr.getCoownersIds()) {          
+        for (String userId : descr.getSecondaryOwnerIds()) {          
             String coownerEmail = UserStringFormatter.formatEmail(userId);
             if (coownerEmail != null) {
                 res.add(coownerEmail);

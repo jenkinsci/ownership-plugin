@@ -40,13 +40,48 @@ import javax.annotation.Nonnull;
  */
 public abstract class OwnershipLayoutFormatter<TObjectType> {
     
-    public abstract String formatUser(@Nonnull TObjectType item, String userId);
+    @Nonnull 
+    public abstract String formatUser(@Nonnull TObjectType item, @Nonnull String userId);
     
-    public String formatOwner(@Nonnull TObjectType item, String userId) {
+    /**
+     * Formats primary owner.
+     * @param item Item, for which the formatting is being performed
+     * @param userId User ID
+     * @return Raw HTML with user format
+     * @since TODO
+     */
+    @Nonnull 
+    public String formatPrimaryOwner(@Nonnull TObjectType item, @Nonnull String userId) {
+        return formatOwner(item, userId);
+    }
+    
+    /**
+     * @deprecated Use {@link #formatPrimaryOwner(java.lang.Object, java.lang.String)}
+     */
+    @Deprecated
+    @Nonnull 
+    public String formatOwner(@Nonnull TObjectType item, @Nonnull String userId) {
         return formatUser(item, userId);
     }
     
-    public String formatCoOwner(@Nonnull TObjectType item, String userId) {
+    /**
+     * Formats secondary owner.
+     * @param item Item, for which the formatting is being performed
+     * @param userId User ID
+     * @return Raw HTML with user format
+     * @since TODO
+     */
+    @Nonnull 
+    public String formatSecondaryOwner(@Nonnull TObjectType item, @Nonnull String userId) {
+        return formatCoOwner(item, userId);
+    }
+    
+    /**
+     * @deprecated Use {@link #formatSecondaryOwner(java.lang.Object, java.lang.String)}
+     */
+    @Deprecated
+    @Nonnull 
+    public String formatCoOwner(@Nonnull TObjectType item, @Nonnull String userId) {
         return formatUser(item, userId);
     }
     

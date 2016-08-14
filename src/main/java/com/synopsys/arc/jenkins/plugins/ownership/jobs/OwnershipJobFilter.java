@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nonnull;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -62,7 +63,20 @@ public class OwnershipJobFilter extends ViewJobFilter {
         return ownerId;
     }
 
+    /**
+     * @deprecated use {@link #isAcceptSecondaryOwners()}
+     */
+    @Deprecated
     public boolean isAcceptsCoowners() {
+        return acceptsCoowners;
+    }
+    
+    /**
+     * Enables checking of secondary owners
+     * @return 
+     * @since TODO
+     */
+    public boolean isAcceptSecondaryOwners() {
         return acceptsCoowners;
     }
 
@@ -76,6 +90,7 @@ public class OwnershipJobFilter extends ViewJobFilter {
         this.acceptsCoowners = acceptCoowners;
     }
 
+    //TODO: Bug, filtering of abstract projects only
     @Override
     public List<TopLevelItem> filter(List<TopLevelItem> added, List<TopLevelItem> all, View filteringView) {
         final ArrayList<TopLevelItem> newList = new ArrayList<TopLevelItem>();
@@ -132,6 +147,7 @@ public class OwnershipJobFilter extends ViewJobFilter {
      *
      * @return Collection of all registered users
      */
+    @Nonnull
     public static Collection<UserWrapper> getAvailableUsers() {
         // Sort users
         UserComparator comparator = new UserComparator();
