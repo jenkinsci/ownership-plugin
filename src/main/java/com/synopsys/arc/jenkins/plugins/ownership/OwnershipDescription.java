@@ -89,7 +89,7 @@ public class OwnershipDescription implements Serializable {
      * Class is being used as DataBound in {@link OwnerNodeProperty}.
      * @param ownershipEnabled Indicates that the ownership is enabled.
      * @param primaryOwnerId userId of primary owner. Use null if there is no owner 
-     * @param secondaryOwnerIds userIds of secondary owners. Use {@coe null} if there is no secondary owners.
+     * @param secondaryOwnerIds userIds of secondary owners. Use {@code null} if there is no secondary owners.
      */
     public OwnershipDescription(boolean ownershipEnabled, @Nullable String primaryOwnerId, @Nullable Collection<String> secondaryOwnerIds) {
         this.ownershipEnabled = ownershipEnabled;
