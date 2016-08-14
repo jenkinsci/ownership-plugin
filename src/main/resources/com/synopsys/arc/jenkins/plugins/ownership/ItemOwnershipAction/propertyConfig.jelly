@@ -59,11 +59,11 @@
         </select> 
 
     </f:entry>
-    <f:entry title="Co-owners" help="/plugin/ownership/help/coOwner.html"/>
+    <f:entry title="${%Secondary owners}" help="/plugin/ownership/help/coOwner.html"/>
     <f:entry>
-        <f:repeatable name="coOwners" add="${%Add co-owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">                                    
+        <f:repeatable name="coOwners" add="${%Add secondary owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">                                    
             <table width="100%">
-                <f:entry title="Co-owner">
+                <f:entry title="Secondary owner">
                     <f:textbox field="coOwner" value="${_coownerId}"
                                checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"
                     />

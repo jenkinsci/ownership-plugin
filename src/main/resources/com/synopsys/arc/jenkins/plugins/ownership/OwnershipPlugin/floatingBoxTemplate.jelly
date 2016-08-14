@@ -43,11 +43,11 @@
     <!-- Layout for ownership with available data -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and ownershipDescription.ownershipEnabled}">
       <div class="ownership-summary-box">   
-        <div class="ownership-header">${itemType} ${%Ownership}</div>            
+        <div class="ownership-header">${itemType} ${%Owners}</div>            
         <table>
             <tr>
                 <td>
-                    <div class="ownership-section">${%Owner}</div>
+                    <div class="ownership-section">${%Primary}</div>
                 </td>
                 <td>
                     <div class="ownership-user-info">
@@ -56,12 +56,12 @@
                 </td>
             </tr>
         
-            <!-- Co-owners -->    
+            <!-- Secondary owners (fka Co-owners) -->    
             <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
             <j:if test="${not coownersList.isEmpty()}">
                 <tr>
                     <td>        
-                        <div class="ownership-section">${%Co-owners}</div>
+                        <div class="ownership-section">${%Secondary}</div>
                     </td>       
                     <td>
                         <j:forEach var="coownerId" items="${coownersList}">

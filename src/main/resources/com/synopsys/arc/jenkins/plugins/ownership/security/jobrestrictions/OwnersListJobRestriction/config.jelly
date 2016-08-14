@@ -25,8 +25,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
     xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
     xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-    <f:entry field="acceptsCoOwners" title="${%Co-owners}">
-        <f:checkbox title="${%Accept job co-owners}" checked="${it.acceptsCoOwners}"/>
+    <f:entry field="acceptsCoOwners" title="${%Secondary owners}">
+        <f:checkbox title="${%Accept job secondary owners}" checked="${it.acceptsCoOwners}"/>
     </f:entry>
     <f:entry title="${%Users list}"> 
         <f:repeatableProperty field="usersList" add="${%Add owner}"/>  

@@ -48,7 +48,7 @@
 
             <table style="padding-left: 2em;" id="management-links">
               <local:feature icon="user.gif" href="manage-owners" title="${it.manageOwnershipTitle}">
-                ${%Manage Owners, add co-owners, etc.}
+                ${%Manage primary and secondary owners}
               </local:feature>
               <local:feature icon="fingerprint.gif" href="configure-project-specifics" title="${it.configureSpecificAccessTitle}">
                 ${%Configure job-specific access rights}.
