@@ -104,7 +104,12 @@
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and !ownershipDescription.ownershipEnabled}">
       <div class="ownership-summary-box">   
         <div class="ownership-header">${itemType} ${%Ownership}</div>
-        <j:out value="${%noOwnership.info.text(itemType)}"/>                
+        <p>
+          ${%noOwnership.info.text(itemType)}
+        </p>
+        <p>
+          <b>${%noOwnership.info.hint}</b> ${%noOwnership.disableDisplayHint.text} <code>${%noOwnership.disableDisplayHint.configPath}</code>
+        </p>
       </div>
     </j:if>
 </j:jelly>

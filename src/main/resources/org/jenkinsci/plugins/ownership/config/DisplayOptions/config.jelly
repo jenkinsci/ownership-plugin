@@ -28,10 +28,10 @@
     <f:entry title="" description="">
         <table width="100%">
           <f:entry field="hideOwnershipIfNoData">
-            <f:checkbox title="${%Hide ownership info if there is no data}"/>
+            <f:checkbox title="${%Hide ownership summaries for missing ownership info}"/>
           </f:entry>
           <f:entry field="hideRunOwnership">
-            <f:checkbox title="${%Hide ownership info on Run pages}"/>
+            <f:checkbox title="${%Hide ownership summaries on Run pages}"/>
           </f:entry>
         </table>   
     </f:entry> 
