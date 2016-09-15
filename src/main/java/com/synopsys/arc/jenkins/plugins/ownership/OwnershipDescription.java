@@ -306,7 +306,7 @@ public class OwnershipDescription implements Serializable {
      */
     @Deprecated
     public @Nonnull Set<String> getCoOwnerEmails() {
-        return OwnershipDescriptionHelper.getCoOwnerEmailList(this, false);
+        return OwnershipDescriptionHelper.getSecondaryOwnerEmailList(this, false);
     }
     
     /**
@@ -317,7 +317,7 @@ public class OwnershipDescription implements Serializable {
      */
     @Whitelisted
     public @Nonnull Set<String> getSecondaryOwnerEmails() {
-        return OwnershipDescriptionHelper.getCoOwnerEmailList(this, false);
+        return OwnershipDescriptionHelper.getSecondaryOwnerEmailList(this, false);
     }
 
     @Override

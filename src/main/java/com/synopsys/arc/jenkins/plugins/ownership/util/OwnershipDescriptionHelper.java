@@ -101,13 +101,13 @@ public class OwnershipDescriptionHelper {
     }
     
     /**
-     * Gets e-mails of co-owners (including owner).
+     * Gets e-mails of secondary owners (including owner if required).
      * @param descr Ownership description
      * @param includeOwner Include owner to the list
-     * @return Set of co-owner emails
-     * @since TODO
+     * @return Set of secondary owner emails
+     * @since 0.9
      */
-    public static Set<String> getCoOwnerEmailList(@Nonnull OwnershipDescription descr, boolean includeOwner) {
+    public static Set<String> getSecondaryOwnerEmailList(@Nonnull OwnershipDescription descr, boolean includeOwner) {
         Set<String> res = new TreeSet<String>();
         
         if (includeOwner) {
@@ -123,13 +123,14 @@ public class OwnershipDescriptionHelper {
     }
     
     /**
-     * Gets e-mails of co-owners (including owner).
+     * Gets e-mails of secondary owners (including primary owner).
      * @param descr Ownership description
-     * @return Comma-separated list of co-owner e-mails (may be empty)
+     * @return Comma-separated list of secondary owner e-mails (may be empty)
+     * @since 0.9
      */
-    public static String getCoOwnerEmails(@Nonnull OwnershipDescription descr) {
+    public static String getAllOwnerEmails(@Nonnull OwnershipDescription descr) {
         StringBuilder coownerEmails=new StringBuilder();
-        for (String coownerEmail : getCoOwnerEmailList(descr, true)) {          
+        for (String coownerEmail : getSecondaryOwnerEmailList(descr, true)) {          
             if (coownerEmails.length() != 0) {
                 coownerEmails.append(",");
             }

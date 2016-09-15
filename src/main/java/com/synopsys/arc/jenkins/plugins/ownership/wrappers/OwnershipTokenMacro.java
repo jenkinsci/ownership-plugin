@@ -124,7 +124,7 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
                 case JOB_COOWNERS:
                     return OwnershipDescriptionHelper.getCoOwnerIDs(job);
                 case JOB_COOWNERS_EMAILS:
-                    return OwnershipDescriptionHelper.getCoOwnerEmails(job);   
+                    return OwnershipDescriptionHelper.getAllOwnerEmails(job);   
                 case NODE_OWNER:
                     return OwnershipDescriptionHelper.getOwnerID(node);
                 case NODE_OWNER_EMAIL:
@@ -132,7 +132,7 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
                 case NODE_COOWNERS:
                     return OwnershipDescriptionHelper.getCoOwnerIDs(node);
                 case NODE_COOWNERS_EMAILS:
-                    return OwnershipDescriptionHelper.getCoOwnerEmails(node); 
+                    return OwnershipDescriptionHelper.getAllOwnerEmails(node); 
                 default:
                     throw new IOException(this+" ownership function is not implemented");
             }
