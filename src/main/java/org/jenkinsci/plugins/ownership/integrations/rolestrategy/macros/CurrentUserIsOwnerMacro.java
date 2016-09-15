@@ -44,7 +44,7 @@ public class CurrentUserIsOwnerMacro extends AbstractOwnershipRoleMacro {
     
     @Override
     public String getName() {
-        return "CurrentUserIsOwnerMacro"; 
+        return "CurrentUserIsOwner"; 
     }
     
     @Override

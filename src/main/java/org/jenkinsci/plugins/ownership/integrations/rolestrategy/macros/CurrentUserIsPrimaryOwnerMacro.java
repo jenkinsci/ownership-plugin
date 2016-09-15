@@ -43,7 +43,7 @@ public class CurrentUserIsPrimaryOwnerMacro extends AbstractOwnershipRoleMacro {
     
     @Override
     public String getName() {
-        return "CurrentUserIsPrimaryOwnerMacro"; 
+        return "CurrentUserIsPrimaryOwner"; 
     }
     
     @Override
