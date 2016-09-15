@@ -119,16 +119,9 @@ public class OwnershipDescriptionHelper {
      * @deprecated Use {@link #getAllOwnerIdsString(com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription)}
      */
     @Deprecated
-    public static @Nonnull String getCoOwnerIDs(@Nonnull OwnershipDescription descr) {
-        StringBuilder coowners= new StringBuilder();
-        for (String userId : getSecondaryOwnerIds(descr, true)) {
-            //TODO: Bug? Should it be != ?
-            if (coowners.length() == 0) {
-                coowners.append(",");
-            }
-            coowners.append(userId);      
-        }
-        return coowners.toString();
+    @Nonnull
+    public static String getCoOwnerIDs(@Nonnull OwnershipDescription descr) {
+        return getAllOwnerEmailsString(descr);
     }
     
     /**
@@ -141,8 +134,7 @@ public class OwnershipDescriptionHelper {
     public static String getAllOwnerIdsString(@Nonnull OwnershipDescription descr) {
         StringBuilder coowners= new StringBuilder();
         for (String userId : getSecondaryOwnerIds(descr, true)) {
-            //TODO: Bug? Should it be != ?
-            if (coowners.length() == 0) {
+            if (coowners.length() != 0) {
                 coowners.append(",");
             }
             coowners.append(userId);      
