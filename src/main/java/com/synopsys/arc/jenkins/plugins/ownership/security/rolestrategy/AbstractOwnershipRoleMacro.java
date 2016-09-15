@@ -49,7 +49,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
  * @author Oleg Nenashev
  * @since 0.1
  */
-abstract class AbstractOwnershipRoleMacro extends RoleMacroExtension {
+public abstract class AbstractOwnershipRoleMacro extends RoleMacroExtension {
     
     public static final String NO_SID_SUFFIX="NoSid";
     protected static final String AUTHENTICATED_SID = "authenticated";

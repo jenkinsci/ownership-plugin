@@ -31,13 +31,16 @@ import hudson.Extension;
 import hudson.model.User;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
+import org.jenkinsci.plugins.ownership.integrations.rolestrategy.macros.CurrentUserIsOwnerMacro;
 
 /**
  * Checks if the current user is a primary or secondary owner of the item (w/o sid control).
  * @author Oleg Nenashev
  * @since 0.2
+ * @deprecated Use {@link CurrentUserIsOwnerMacro}
  */
-@Extension(optional = true)
+@Deprecated
+@Extension(optional = true, ordinal = -1000)
 public class CoOwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro{
     
     @Override

@@ -36,7 +36,7 @@ import hudson.security.Permission;
  * @author Oleg Nenashev
  * @since 0.4
  */
-@Extension(optional = true)
+@Extension(optional = true, ordinal = -5)
 public class ItemSpecificRoleMacroWithUserID extends ItemSpecificRoleMacro {
 
     @Override

@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
+package org.jenkinsci.plugins.ownership.integrations.rolestrategy.macros;
 
-import com.synopsys.arc.jenkins.plugins.ownership.Messages;
+import com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro;
 import static com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro.hasPermission;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
@@ -31,26 +31,24 @@ import hudson.Extension;
 import hudson.model.User;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
-import org.jenkinsci.plugins.ownership.integrations.rolestrategy.macros.CurrentUserIsPrimaryOwnerMacro;
+import org.jenkinsci.plugins.ownership.integrations.rolestrategy.Messages;
 
 /**
- * Provides owner RoleMacro for the role-based strategy (w/o Sid check).
+ * Checks if the current user is a primary owner of the item.
  * @author Oleg Nenashev
- * @since 0.2
- * @deprecated Use {@link CurrentUserIsPrimaryOwnerMacro}
+ * @since 0.9
  */
-@Deprecated
-@Extension(optional = true, ordinal = -1000)
-public class OwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro {
+@Extension(optional = true)
+public class CurrentUserIsPrimaryOwnerMacro extends AbstractOwnershipRoleMacro {
     
     @Override
     public String getName() {
-        return Messages.Security_RoleStrategy_OwnerRoleMacro_Name()+NO_SID_SUFFIX; 
+        return "CurrentUserIsPrimaryOwnerMacro"; 
     }
     
     @Override
     public String getDescription() {
-        return Messages.Security_RoleStrategy_OwnerRoleMacro_Description()+Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+        return Messages.CurrentUserIsPrimaryOwnerMacro_description();
     }
 
     @Override

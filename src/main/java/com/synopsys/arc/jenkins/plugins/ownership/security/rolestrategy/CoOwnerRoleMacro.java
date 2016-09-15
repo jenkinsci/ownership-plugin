@@ -37,7 +37,7 @@ import hudson.security.Permission;
  * @author Oleg Nenashev
  * @since 0.2
  */
-@Extension(optional = true)
+@Extension(optional = true, ordinal = -1000)
 public class CoOwnerRoleMacro extends AbstractOwnershipRoleMacro {
     
     @Override

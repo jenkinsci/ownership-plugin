@@ -25,25 +25,25 @@
      Type: <code>boolean</code>.
    </dd>
    
-   <dt>ownerId</dt>
+   <dt>primaryOwnerId</dt>
    <dd>
-     User ID of the item owner. 
+     User ID of the primary owner. 
      Type: <code>java.lang.String</code>.
    </dd>
    
-   <dt>ownerEmail</dt>
+   <dt>primaryOwnerEmail</dt>
    <dd>
-     Email of the item owner. Type: <code>java.lang.String</code>.
+     Email of the primary owner. Type: <code>java.lang.String</code>.
    </dd>
    
-   <dt>coOwnerIds</dt>
+   <dt>secondaryOwnerIds</dt>
    <dd>
-     Collection of the item co-owner user IDs (does not include the item owner). 
+     Collection of the item secondary owner user IDs (does not include the item owner). 
      Type: <code>java.util.Set&lt;String&gt;</code>.
    </dd>
    
-   <dt>coOwnerEmails</dt>
-   <dd>Collection of the item co-owner e-mails (does not include the item owner). 
+   <dt>secondaryOwnerEmails</dt>
+   <dd>Collection of the secondary owner e-mails (does not include the item owner). 
      Type: <code>java.util.Set&lt;String&gt;</code>.
    </dd>
  </dl>
@@ -52,10 +52,10 @@
     Usage example:
    
     stage 'Print Job Ownership Info';
-    def ownerEmail = ownership.job.primaryOwnerEmail
+    def primaryOwnerEmail = ownership.job.primaryOwnerEmail
     if (ownership.job.ownershipEnabled) {
       println "Owner ID: ${ownership.job.primaryOwnerId}"
-      println "Owner e-mail: ${ownerEmail}"
+      println "Owner e-mail: ${primaryOwnerEmail}"
       println "Co-owner IDs: ${ownership.job.secondaryOwnerIds}"
       println "Co-owner e-mails: ${ownership.job.secondaryOwnerEmails}"
     } else {
@@ -63,7 +63,7 @@
     }
     
     stage 'Send e-mail to the job owner'
-    mail to: ownerEmail,
+    mail to: primaryOwnerEmail,
       subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) is waiting for input",
       body: "Please go to ${env.BUILD_URL} and verify the build"
   </pre>
