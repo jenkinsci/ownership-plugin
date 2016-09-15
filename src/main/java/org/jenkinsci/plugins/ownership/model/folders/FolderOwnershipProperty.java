@@ -41,7 +41,7 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * Ownership property for {@link Folder}s.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class FolderOwnershipProperty 
         extends AbstractFolderProperty<AbstractFolder<?>> 

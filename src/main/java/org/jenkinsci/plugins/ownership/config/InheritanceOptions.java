@@ -39,7 +39,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * This section is attached as an advanced section to {@link OwnershipPluginConfiguration}.
  * These options has been created 
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class InheritanceOptions implements Describable<InheritanceOptions> {
        

@@ -88,7 +88,7 @@ public class OwnersListJobRestriction extends JobRestriction {
     /**
      * Checks if the filter accepts secondary owners.
      * @return {@code true} if secondary owners should be accepted
-     * @since TODO
+     * @since 0.9
      */
     public boolean isAcceptSecondaryOwners() {
         return acceptsCoOwners;

@@ -30,7 +30,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
 /**
  * References {@link OwnershipDescription}s provided by various {@link Node}s.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class NodeOwnershipDescriptionSource extends OwnershipDescriptionSource<Node> {
     

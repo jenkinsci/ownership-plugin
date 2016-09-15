@@ -47,7 +47,7 @@ import org.kohsuke.stapler.StaplerResponse;
 /**
  * Allows managing actions for {@link Folder}s.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class FolderOwnershipAction extends ItemOwnershipAction<AbstractFolder<?>> {
 

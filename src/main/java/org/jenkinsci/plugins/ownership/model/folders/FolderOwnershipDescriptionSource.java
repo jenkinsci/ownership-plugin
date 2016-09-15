@@ -31,7 +31,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
 /**
  * References {@link OwnershipDescription}s provided by various {@link AbstractFolder}s.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class FolderOwnershipDescriptionSource extends OwnershipDescriptionSource<AbstractFolder<?>> {
     

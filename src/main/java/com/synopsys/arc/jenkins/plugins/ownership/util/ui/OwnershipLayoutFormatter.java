@@ -48,7 +48,7 @@ public abstract class OwnershipLayoutFormatter<TObjectType> {
      * @param item Item, for which the formatting is being performed
      * @param userId User ID
      * @return Raw HTML with user format
-     * @since TODO
+     * @since 0.9
      */
     @Nonnull 
     public String formatPrimaryOwner(@Nonnull TObjectType item, @Nonnull String userId) {
@@ -69,7 +69,7 @@ public abstract class OwnershipLayoutFormatter<TObjectType> {
      * @param item Item, for which the formatting is being performed
      * @param userId User ID
      * @return Raw HTML with user format
-     * @since TODO
+     * @since 0.9
      */
     @Nonnull 
     public String formatSecondaryOwner(@Nonnull TObjectType item, @Nonnull String userId) {

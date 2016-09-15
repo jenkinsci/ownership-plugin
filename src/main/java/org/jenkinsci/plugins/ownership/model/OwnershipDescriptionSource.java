@@ -34,7 +34,7 @@ import javax.annotation.CheckForNull;
  * The summary info can be retrieved using {@code summary.jelly}.
  * @param <TSourceType> Type of the source items.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public abstract class OwnershipDescriptionSource<TSourceType extends Object> {
     

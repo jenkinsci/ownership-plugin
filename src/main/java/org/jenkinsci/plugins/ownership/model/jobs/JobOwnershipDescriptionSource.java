@@ -31,7 +31,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
 /**
  * References {@link OwnershipDescription}s provided by various {@link Job}s.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class JobOwnershipDescriptionSource extends OwnershipDescriptionSource<Job<?,?>> {
     

@@ -110,7 +110,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
      * @param item Item to be described
      * @return Ownership description. The method returns a 
      * {@link OwnershipDescription#DISABLED_DESCR}
-     * @since TODO
+     * @since 0.9
      */
     @Nonnull
     public abstract OwnershipInfo getOwnershipInfo(@Nonnull TObjectType item);

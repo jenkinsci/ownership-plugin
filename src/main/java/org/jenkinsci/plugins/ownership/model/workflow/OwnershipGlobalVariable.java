@@ -48,7 +48,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 /**
  * Provides {@link OwnershipDescription}s for different item types.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 @Extension
 public class OwnershipGlobalVariable extends GlobalVariable {

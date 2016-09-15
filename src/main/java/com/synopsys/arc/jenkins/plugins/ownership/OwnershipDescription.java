@@ -166,7 +166,7 @@ public class OwnershipDescription implements Serializable {
     /**
      * Gets list of secondary owners.
      * @return Collection of secondary owners
-     * @since TODO
+     * @since 0.9
      */
     @Nonnull
     @Whitelisted
@@ -255,7 +255,7 @@ public class OwnershipDescription implements Serializable {
      * Gets ID of the primary owner.
      * @return userId of the primary owner. The result will be "unknown" if the
      * user is not specified.
-     * @since TODO
+     * @since 0.9
      * @deprecated Use {@link #getPrimaryOwnerId()}
      */
     @Deprecated
@@ -267,7 +267,7 @@ public class OwnershipDescription implements Serializable {
      * Gets primary owner's e-mail.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
      * @return Primary owner's e-mail or empty string if it is not available
-     * @since TODO
+     * @since 0.9
      * @deprecated Use {@link #getPrimaryOwnerEmail()} 
      */
     @Nonnull
@@ -280,7 +280,7 @@ public class OwnershipDescription implements Serializable {
      * Gets primary owner's e-mail.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
      * @return Primary owner's e-mail or empty string if it is not available
-     * @since TODO
+     * @since 0.9
      */
     @Nonnull
     @Whitelisted
@@ -291,7 +291,6 @@ public class OwnershipDescription implements Serializable {
     /**
      * Gets a comma-separated list of co-owners.
      * @return List of co-owner user IDs
-     * @since TODO
      * @deprecated use {@link #getSecondaryOwnerIds()}
      */
     @Deprecated
@@ -303,7 +302,6 @@ public class OwnershipDescription implements Serializable {
      * Gets e-mails of secondary owners.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
      * @return List of secondary owner e-mails (may be empty)
-     * @since TODO
      * @deprecated use {@link #getSecondaryOwnerEmails()}
      */
     @Deprecated
@@ -315,7 +313,7 @@ public class OwnershipDescription implements Serializable {
      * Gets e-mails of secondary owners.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
      * @return List of secondary owner e-mails (may be empty)
-     * @since TODO
+     * @since 0.9
      */
     @Whitelisted
     public @Nonnull Set<String> getSecondaryOwnerEmails() {

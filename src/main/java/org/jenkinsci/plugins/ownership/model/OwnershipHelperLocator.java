@@ -35,7 +35,7 @@ import jenkins.model.Jenkins;
  * Extension point, which allows to identify {@link IOwnershipHelper} for particular classes.
  * @param <T> Type of the item
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public abstract class OwnershipHelperLocator <T extends Object> implements ExtensionPoint {
     

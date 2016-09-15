@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  * {@link OwnershipDescription} is designed to store the persisted data only,
  * this class also provides a runtime content. It should not be serialized anywhere.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class OwnershipInfo {
     

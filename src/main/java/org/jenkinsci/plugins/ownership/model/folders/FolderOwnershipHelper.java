@@ -52,7 +52,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 /**
  * Integration with Folders plugin.
  * @author Oleg Nenashev
- * @since TODO
+ * @since 0.9
  */
 public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolder<?>> {
     
