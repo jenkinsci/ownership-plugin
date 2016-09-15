@@ -42,8 +42,6 @@ import javax.annotation.Nullable;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted;
 
-// TODO: cleanup unreleased methods
-
 /**
  * Contains description of item's ownership. 
  * This class is a main information entry for all ownership features.
