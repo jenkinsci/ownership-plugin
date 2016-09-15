@@ -45,21 +45,49 @@ public class OwnershipDescriptionHelper {
     private OwnershipDescriptionHelper() {}
     
     /**
-     * Gets id of the owner.
+     * Gets ID of the primary owner.
+     * @param descr Ownership description 
+     * @return userId of the primary owner. The result will be "unknown" if the
+     * user is not specified.
+     * @deprecated Use {@link #getPrimaryOwnerId(com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription)}
+     */
+    @Nonnull 
+    @Deprecated
+    public static String getOwnerID(@Nonnull OwnershipDescription descr) {
+        return getPrimaryOwnerId(descr);
+    }
+    
+    /**
+     * Gets id of the primary owner.
      * @param descr Ownership description 
      * @return userId of the primary owner. The result will be "unknown" if the
      * user is not specified.
      */
-    public static @Nonnull String getOwnerID(@Nonnull OwnershipDescription descr) {
+    @Nonnull
+    public static String getPrimaryOwnerId(@Nonnull OwnershipDescription descr) {
         return descr.getPrimaryOwnerId();
     }
     
     /**
      * Gets owner's e-mail.
      * @param descr Ownership description
-     * @return Owner's e-mail or empty string if it is not available 
+     * @return Owner's e-mail or empty string if it is not available
+     * @deprecated Use {@link #getPrimaryOwnerEmail(com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription)}
      */
+    @Nonnull
+    @Deprecated
     public static String getOwnerEmail(@Nonnull OwnershipDescription descr) {
+        return getPrimaryOwnerEmail(descr);
+    }
+    
+    /**
+     * Gets e-mail of the primary owner.
+     * @param descr Ownership description
+     * @return Owner's e-mail or empty string if it is not available
+     * @since 0.9
+     */
+    @Nonnull
+    public static String getPrimaryOwnerEmail(@Nonnull OwnershipDescription descr) {
         String ownerEmail = UserStringFormatter.formatEmail(descr.getPrimaryOwnerId());
         return ownerEmail != null ? ownerEmail : "";
     }
@@ -69,12 +97,13 @@ public class OwnershipDescriptionHelper {
      * @param descr Ownership description
      * @param includeOwner Include owner to the list
      * @return Set of co-owner user IDs
-     * @since TODO
+     * @since 0.9
      */
-    public static @Nonnull Set<String> getCoOwnerIDList(@Nonnull OwnershipDescription descr, boolean includeOwner) {
+    @Nonnull
+    public static Set<String> getSecondaryOwnerIds(@Nonnull OwnershipDescription descr, boolean includeOwner) {
         Set<String> res = new TreeSet<String>();
         if (includeOwner) {
-            res.add(getOwnerID(descr));
+            res.add(getPrimaryOwnerId(descr));
         }
         for (String userId : descr.getSecondaryOwnerIds()) {
             res.add(userId);      
@@ -87,10 +116,31 @@ public class OwnershipDescriptionHelper {
      * Owner will be also considered as co-owner.
      * @param descr Ownership description
      * @return List of co-owner user IDs
+     * @deprecated Use {@link #getAllOwnerIdsString(com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription)}
      */
+    @Deprecated
     public static @Nonnull String getCoOwnerIDs(@Nonnull OwnershipDescription descr) {
         StringBuilder coowners= new StringBuilder();
-        for (String userId : getCoOwnerIDList(descr, true)) {
+        for (String userId : getSecondaryOwnerIds(descr, true)) {
+            //TODO: Bug? Should it be != ?
+            if (coowners.length() == 0) {
+                coowners.append(",");
+            }
+            coowners.append(userId);      
+        }
+        return coowners.toString();
+    }
+    
+    /**
+     * Gets a comma-separated list of primary and secondary owners.
+     * @param descr Ownership description
+     * @return String containing comma-separated list of owner user IDs
+     * @since 0.9
+     */
+    @Nonnull 
+    public static String getAllOwnerIdsString(@Nonnull OwnershipDescription descr) {
+        StringBuilder coowners= new StringBuilder();
+        for (String userId : getSecondaryOwnerIds(descr, true)) {
             //TODO: Bug? Should it be != ?
             if (coowners.length() == 0) {
                 coowners.append(",");
@@ -107,7 +157,7 @@ public class OwnershipDescriptionHelper {
      * @return Set of secondary owner emails
      * @since 0.9
      */
-    public static Set<String> getSecondaryOwnerEmailList(@Nonnull OwnershipDescription descr, boolean includeOwner) {
+    public static Set<String> getSecondaryOwnerEmails(@Nonnull OwnershipDescription descr, boolean includeOwner) {
         Set<String> res = new TreeSet<String>();
         
         if (includeOwner) {
@@ -128,9 +178,9 @@ public class OwnershipDescriptionHelper {
      * @return Comma-separated list of secondary owner e-mails (may be empty)
      * @since 0.9
      */
-    public static String getAllOwnerEmails(@Nonnull OwnershipDescription descr) {
+    public static String getAllOwnerEmailsString(@Nonnull OwnershipDescription descr) {
         StringBuilder coownerEmails=new StringBuilder();
-        for (String coownerEmail : getSecondaryOwnerEmailList(descr, true)) {          
+        for (String coownerEmail : getSecondaryOwnerEmails(descr, true)) {          
             if (coownerEmails.length() != 0) {
                 coownerEmails.append(",");
             }

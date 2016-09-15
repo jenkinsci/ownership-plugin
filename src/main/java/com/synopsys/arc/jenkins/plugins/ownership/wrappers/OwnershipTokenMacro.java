@@ -83,7 +83,9 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
         // Evaluate the macro
         return func.evaluate(job, nodeDescription);
     }
-           
+          
+    // TODO: This implementation needs some polishing in order to address naming changes
+    // in primary and secondary owners
     private static enum OwnershipFunction {
         JOB_OWNER(true),
         JOB_OWNER_EMAIL(true),
@@ -118,21 +120,21 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
             
             switch(this) {
                 case JOB_OWNER:
-                    return OwnershipDescriptionHelper.getOwnerID(job);
+                    return OwnershipDescriptionHelper.getPrimaryOwnerId(job);
                 case JOB_OWNER_EMAIL:
-                    return OwnershipDescriptionHelper.getOwnerEmail(job);
+                    return OwnershipDescriptionHelper.getPrimaryOwnerEmail(job);
                 case JOB_COOWNERS:
-                    return OwnershipDescriptionHelper.getCoOwnerIDs(job);
+                    return OwnershipDescriptionHelper.getAllOwnerIdsString(job);
                 case JOB_COOWNERS_EMAILS:
-                    return OwnershipDescriptionHelper.getAllOwnerEmails(job);   
+                    return OwnershipDescriptionHelper.getAllOwnerEmailsString(job);   
                 case NODE_OWNER:
-                    return OwnershipDescriptionHelper.getOwnerID(node);
+                    return OwnershipDescriptionHelper.getPrimaryOwnerId(node);
                 case NODE_OWNER_EMAIL:
-                    return OwnershipDescriptionHelper.getOwnerEmail(node);
+                    return OwnershipDescriptionHelper.getPrimaryOwnerEmail(node);
                 case NODE_COOWNERS:
-                    return OwnershipDescriptionHelper.getCoOwnerIDs(node);
+                    return OwnershipDescriptionHelper.getAllOwnerIdsString(node);
                 case NODE_COOWNERS_EMAILS:
-                    return OwnershipDescriptionHelper.getAllOwnerEmails(node); 
+                    return OwnershipDescriptionHelper.getAllOwnerEmailsString(node); 
                 default:
                     throw new IOException(this+" ownership function is not implemented");
             }
