@@ -92,7 +92,6 @@ public class OwnershipJobFilter extends ViewJobFilter {
         this.acceptsCoowners = acceptCoowners;
     }
 
-    //TODO: Bug, filtering of abstract projects only
     @Override
     public List<TopLevelItem> filter(List<TopLevelItem> added, List<TopLevelItem> all, View filteringView) {
         final ArrayList<TopLevelItem> newList = new ArrayList<TopLevelItem>();
