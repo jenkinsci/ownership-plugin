@@ -36,6 +36,6 @@
     </f:entry> 
     <f:description>Filter will check ownership of the specified user</f:description>
     <f:entry help="/plugin/ownership/help/filter_acceptCoowners.html">
-        <f:checkbox name="acceptsCoowners" field="acceptsCoowners"/> ${%Accept co-owned jobs}
+        <f:checkbox name="acceptsCoowners" field="acceptsCoowners"/> ${%Accept items, where the user is a secondary owner}
     </f:entry> 
 </j:jelly>
