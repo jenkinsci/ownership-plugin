@@ -48,7 +48,6 @@ import org.jenkinsci.plugins.securityinspector.Messages;
 import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
 import org.jenkinsci.plugins.securityinspector.UserContext;
 import org.jenkinsci.plugins.securityinspector.UserContextCache;
-import org.jenkinsci.plugins.securityinspector.impl.users.PermissionsForItemReportBuilder;
 import org.jenkinsci.plugins.securityinspector.impl.users.UserReportBuilder;
 import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
 import org.jenkinsci.plugins.securityinspector.model.SecurityInspectorReport;
@@ -101,7 +100,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
     public SecurityInspectorReport getReportJob() {
         Set<TopLevelItem> items = getRequestedJobs();
         User user = getRequestedUser();
-        final PermissionsForItemReportBuilder.ReportImpl report;
+        final PermissionsForOwnerReportBuilder.ReportImpl report;
 
         // Impersonate to check the permission
         final Authentication auth;
@@ -115,7 +114,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         SecurityContext initialContext = null;
         try {
             initialContext = hudson.security.ACL.impersonate(auth);
-            report = PermissionsForItemReportBuilder.ReportImpl.createReport(items, user);
+            report = PermissionsForOwnerReportBuilder.ReportImpl.createReport(items, user);
         } finally {
             if (initialContext != null) {
                 SecurityContextHolder.setContext(initialContext);
@@ -138,7 +137,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             throw HttpResponses.error(500, "The retrieved context does not contain job filter settings");
         }
 
-        final Set<TopLevelItem> res = new HashSet<TopLevelItem>(selectedJobs.size());
+        final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
         for (TopLevelItem item : selectedJobs) {
             if (item != null) {
                 res.add(item);
@@ -182,7 +181,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         }
 
         public final void generateReport(@Nonnull Set<TopLevelItem> rows) {
-            Set<PermissionGroup> groups = new HashSet<PermissionGroup>(PermissionGroup.getAll());
+            Set<PermissionGroup> groups = new HashSet<>(PermissionGroup.getAll());
             groups.remove(PermissionGroup.get(Permission.class));
             groups.remove(PermissionGroup.get(Hudson.class));
             groups.remove(PermissionGroup.get(Computer.class));

@@ -87,7 +87,7 @@ public class OwnerFilter {
     @Restricted(NoExternalUse.class)
     public List<TopLevelItem> doFilter(User owner) {
         
-        final SortedSet<String> names = new TreeSet<String>();
+        final SortedSet<String> names = new TreeSet<>();
         
         final Jenkins jenkins = JenkinsHelper.getInstanceOrFail();
         final List<Item> allItems = jenkins.getAllItems(Item.class);
@@ -116,7 +116,7 @@ public class OwnerFilter {
                 itemName = item.getFullName();
                 OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
                 if (ownershipDescription.isOwner(owner, true) 
-                        & includePattern.matcher(itemName).matches()) {
+                        && includePattern.matcher(itemName).matches()) {
                     names.add(itemName);
                 }
             }
@@ -135,7 +135,7 @@ public class OwnerFilter {
             }
         }
         
-        List<TopLevelItem> items = new ArrayList<TopLevelItem>();
+        List<TopLevelItem> items = new ArrayList<>();
         for (String n : names) {
             TopLevelItem item = jenkins.getItemByFullName(n, TopLevelItem.class);
             if (item != null) {
