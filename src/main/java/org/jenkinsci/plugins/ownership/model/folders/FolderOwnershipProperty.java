@@ -29,6 +29,7 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipItem;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import java.io.IOException;
@@ -87,6 +88,7 @@ public class FolderOwnershipProperty
     public static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
 
         @Override
+        @SuppressFBWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "TODO: should be fixed, see jenkinsci PR #1880")
         public String getDisplayName() {
             // It prevents the property from displaying
             return null;

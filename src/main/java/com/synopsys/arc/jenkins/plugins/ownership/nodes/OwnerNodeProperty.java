@@ -29,6 +29,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Node;
@@ -137,10 +138,11 @@ public class OwnerNodeProperty extends NodeProperty<Node>
         }
         
         @Override
+        @SuppressFBWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "TODO: should be fixed, see jenkinsci PR #1880")
         public String getDisplayName() {
                 return null;
         }
-
+        
         @Override
         public boolean isApplicable( Class<? extends Node> Type ) {
                 return true;
