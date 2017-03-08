@@ -147,7 +147,7 @@ public class OwnershipDescription implements Serializable {
      */
     @CheckForNull
     public User getPrimaryOwner() {
-        return User.get(primaryOwnerId, false, null);
+        return ownershipEnabled ? User.get(primaryOwnerId, false, null) : null;
     }
 
     /**
