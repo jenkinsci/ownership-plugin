@@ -25,7 +25,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   
     <j:set var="_user" value="${it.requestedUser}"/>
-    <j:set var="_report" value="${it.reportJob}"/>                        
+    <j:set var="_report" value="${it.report}"/>                        
   
     <h3>${%Permissions of} &quot;${_user.id}&quot; ${%for items}</h3>  
     

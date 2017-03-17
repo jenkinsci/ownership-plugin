@@ -95,9 +95,8 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         UserContextCache.updateSearchCache(selectedJobs, null, null, selectedItem);
     }
     
-    @Nonnull
-    @Restricted(NoExternalUse.class)
-    public SecurityInspectorReport getReportJob() {
+    @Override
+    public SecurityInspectorReport getReport() {
         Set<TopLevelItem> items = getRequestedJobs();
         User user = getRequestedUser();
         final PermissionsForOwnerReportBuilder.ReportImpl report;
@@ -153,6 +152,12 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
 
         /**package*/ ReportImpl(@Nonnull User user) {
             this.user4report = user;
+        }
+        
+        @Nonnull
+        @Override
+        public String getItemForReport() {
+            return user4report.getDisplayName();
         }
         
         @Override
