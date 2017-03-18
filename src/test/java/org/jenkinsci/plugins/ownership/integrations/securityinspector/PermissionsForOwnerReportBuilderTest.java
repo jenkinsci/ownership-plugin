@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Rule;
@@ -255,5 +256,30 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         PermissionReportAssert.assertHasNotRow(report, j.jenkins.getItem("project2"));
         PermissionReportAssert.assertHasNotRow(report, j.jenkins.getItem("folder"));
         PermissionReportAssert.assertHasNotRow(report, (TopLevelItem)j.jenkins.getItemByFullName("folder/projectInFolder"));
+    }
+    
+    @Test
+    public void shouldDownloadReport4User1() throws Exception {
+        
+        initializeDefaultMatrixAuthSecurity();
+        
+        User usr = User.get("user1");
+        final PermissionsForOwnerReportBuilder.ReportImpl report = 
+                new PermissionsForOwnerReportBuilder.ReportImpl(usr);
+        assertNotNull(report);
+        
+        final OwnerFilter filter = new OwnerFilter();
+        final Set<TopLevelItem> items4Report =new HashSet<>(filter.doFilter(usr));
+        assertNotNull(items4Report);
+        report.generateReport(items4Report);
+        
+        assertThat("Report target name must be equal to 'user1'", report.getReportTargetName().equals("user1")); 
+
+        String reportInCSV = report.getReportInCSV();
+        assertNotNull(reportInCSV);
+        
+        for (TopLevelItem item : items4Report) {
+            assertThat("CSV Report must had row " + item, reportInCSV.contains(item.getFullDisplayName()));
+        }
     }
 }
