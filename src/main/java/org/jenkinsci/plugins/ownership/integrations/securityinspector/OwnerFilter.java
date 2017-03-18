@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
@@ -45,7 +46,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class OwnerFilter {
+class OwnerFilter {
     
     /**
      * Include regex string.
@@ -57,7 +58,7 @@ public class OwnerFilter {
      * Compiled include pattern from the includeRegex string.
      */
     @CheckForNull
-    private transient Pattern includePattern;
+    private final Pattern includePattern;
     
     /**
      * Constructs empty filter.
@@ -75,7 +76,11 @@ public class OwnerFilter {
             if (includeRegex == null) {
                 includePattern = null;
             } else {
-                includePattern = Pattern.compile(includeRegex);
+                try {
+                    includePattern = Pattern.compile(includeRegex);
+                } catch(PatternSyntaxException ex) {
+                    throw new Descriptor.FormException(ex, "includeRegex");
+                }
             }
         } else {
             includeRegex = null;
@@ -93,19 +98,7 @@ public class OwnerFilter {
         final List<Item> allItems = jenkins.getAllItems(Item.class);
         String itemName;
         
-        for (Item item : allItems) {
-            AbstractOwnershipHelper<Item> located = OwnershipHelperLocator.locate(item);
-            if (located == null) {
-                continue;
-            }
-            
-            OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
-            if (ownershipDescription.isOwner(owner, true)) {
-                itemName = item.getFullName();
-                names.add(itemName);
-            }
-        }
-        
+        // TODO !!!
         if (includePattern != null) {
             for (Item item : allItems) {
                 AbstractOwnershipHelper<Item> located = OwnershipHelperLocator.locate(item);
@@ -115,7 +108,8 @@ public class OwnerFilter {
             
                 itemName = item.getFullName();
                 OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
-                if (ownershipDescription.isOwner(owner, true) 
+                if (ownershipDescription.isOwnershipEnabled()
+                        && ownershipDescription.isOwner(owner, true) 
                         && includePattern.matcher(itemName).matches()) {
                     names.add(itemName);
                 }
@@ -128,14 +122,15 @@ public class OwnerFilter {
                 }
             
                 OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
-                if (ownershipDescription.isOwner(owner, true)) {
+                if (ownershipDescription.isOwnershipEnabled()
+                        && ownershipDescription.isOwner(owner, true)) {
                     itemName = item.getFullName();
                     names.add(itemName);
                 }
             }
         }
         
-        List<TopLevelItem> items = new ArrayList<>();
+        List<TopLevelItem> items = new ArrayList<>(names.size());
         for (String n : names) {
             TopLevelItem item = jenkins.getItemByFullName(n, TopLevelItem.class);
             if (item != null) {

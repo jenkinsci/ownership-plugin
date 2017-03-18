@@ -26,11 +26,12 @@ package org.jenkinsci.plugins.ownership.integrations.securityinspector;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.model.Item;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.model.View;
+import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import java.util.HashSet;
@@ -40,10 +41,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.securityinspector.Messages;
 import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
 import org.jenkinsci.plugins.securityinspector.UserContext;
@@ -71,7 +69,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
 
     @Override
     public String getDisplayName() {
-        return "Single owner, multiple jobs";
+        return "Single owner, multiple items";
     }
 
     @Override
@@ -101,23 +99,8 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         User user = getRequestedUser();
         final PermissionsForOwnerReportBuilder.ReportImpl report;
 
-        // Impersonate to check the permission
-        final Authentication auth;
-        try {
-            auth = user.impersonate();
-        } catch (UsernameNotFoundException ex) {
-            return new PermissionsForOwnerReportBuilder.ReportImpl(user);
-        }
-
-        //TODO: rework the logic to guarantee that report is initialized
-        SecurityContext initialContext = null;
-        try {
-            initialContext = hudson.security.ACL.impersonate(auth);
+        try (ACLContext aclContext = ACL.as(user)){
             report = PermissionsForOwnerReportBuilder.ReportImpl.createReport(items, user);
-        } finally {
-            if (initialContext != null) {
-                SecurityContextHolder.setContext(initialContext);
-            }
         }
         return report;
     }
@@ -138,6 +121,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
 
         final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
         for (TopLevelItem item : selectedJobs) {
+            // TODO ???
             if (item != null) {
                 res.add(item);
             }
@@ -161,33 +145,20 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         
         @Override
         protected Boolean getEntryReport(TopLevelItem column, Permission item) {
-            
-            final Authentication auth;
-            try {
-                auth = user4report.impersonate();
-            } catch (UsernameNotFoundException ex) {
-                return Boolean.FALSE;
-            }
-            
-            SecurityContext initialContext = null;
+                        
             Item i = JenkinsHelper.getInstanceOrFail().getItemByFullName(column.getFullName());
             if (i == null) {
                 return Boolean.FALSE;
             }
-            try {
-                initialContext = hudson.security.ACL.impersonate(auth);
+            try (ACLContext aclContext = ACL.as(user4report)){
                 return i.hasPermission(item);
-            } finally {
-                if (initialContext != null) {
-                    SecurityContextHolder.setContext(initialContext);
-                }
             }
         }
 
         public final void generateReport(@Nonnull Set<TopLevelItem> rows) {
             Set<PermissionGroup> groups = new HashSet<>(PermissionGroup.getAll());
             groups.remove(PermissionGroup.get(Permission.class));
-            groups.remove(PermissionGroup.get(Hudson.class));
+            groups.remove(PermissionGroup.get(Jenkins.class));
             groups.remove(PermissionGroup.get(Computer.class));
             groups.remove(PermissionGroup.get(View.class));
 
