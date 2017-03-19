@@ -32,8 +32,6 @@ import hudson.model.TopLevelItem;
 import hudson.model.User;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.CheckForNull;
@@ -110,16 +108,14 @@ class OwnerFilter {
             if (ownershipDescription.isOwnershipEnabled()
                     && ownershipDescription.isOwner(owner, true)) {
                 
-                if (includePattern != null 
-                        && includePattern.matcher(itemName).matches()
-                        && item instanceof TopLevelItem) {
-                    items.add((TopLevelItem) item);
-                    
-                } else if (includePattern == null
+                if (includePattern == null) {
+                    if (item instanceof TopLevelItem) {
+                       items.add((TopLevelItem) item); 
+                    }
+                } else if (includePattern.matcher(itemName).matches()
                         && item instanceof TopLevelItem) {
                     items.add((TopLevelItem) item);
                 }
-                
             }
         }
              
