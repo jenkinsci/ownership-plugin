@@ -260,8 +260,6 @@ public class OwnershipPlugin extends Plugin {
                     MailAddressResolver res = MailAddressResolver.all().get(resolverClass);
                     if (res != null) {
                         return res.findMailAddressFor(user);
-                    } else { 
-                        return null; 
                     }
                 }
             } 

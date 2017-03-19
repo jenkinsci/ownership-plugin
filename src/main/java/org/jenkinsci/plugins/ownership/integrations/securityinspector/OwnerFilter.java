@@ -92,52 +92,37 @@ class OwnerFilter {
     @Restricted(NoExternalUse.class)
     public List<TopLevelItem> doFilter(User owner) {
         
-        final SortedSet<String> names = new TreeSet<>();
-        
         final Jenkins jenkins = JenkinsHelper.getInstanceOrFail();
         final List<Item> allItems = jenkins.getAllItems(Item.class);
         String itemName;
         
-        // TODO !!!
-        if (includePattern != null) {
-            for (Item item : allItems) {
-                AbstractOwnershipHelper<Item> located = OwnershipHelperLocator.locate(item);
-                if (located == null) {
-                    continue;
-                }
-            
-                itemName = item.getFullName();
-                OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
-                if (ownershipDescription.isOwnershipEnabled()
-                        && ownershipDescription.isOwner(owner, true) 
-                        && includePattern.matcher(itemName).matches()) {
-                    names.add(itemName);
-                }
+        List<TopLevelItem> items = new ArrayList<>();
+        
+        for (Item item : allItems) {
+            AbstractOwnershipHelper<Item> located = OwnershipHelperLocator.locate(item);
+            if (located == null) {
+                continue;
             }
-        } else {
-            for (Item item : allItems) {
-                AbstractOwnershipHelper<Item> located = OwnershipHelperLocator.locate(item);
-                if (located == null) {
-                    continue;
-                }
+
+            itemName = item.getFullName();
+            OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
             
-                OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
-                if (ownershipDescription.isOwnershipEnabled()
-                        && ownershipDescription.isOwner(owner, true)) {
-                    itemName = item.getFullName();
-                    names.add(itemName);
+            if (ownershipDescription.isOwnershipEnabled()
+                    && ownershipDescription.isOwner(owner, true)) {
+                
+                if (includePattern != null 
+                        && includePattern.matcher(itemName).matches()
+                        && item instanceof TopLevelItem) {
+                    items.add((TopLevelItem) item);
+                    
+                } else if (includePattern == null
+                        && item instanceof TopLevelItem) {
+                    items.add((TopLevelItem) item);
                 }
+                
             }
         }
-        
-        List<TopLevelItem> items = new ArrayList<>(names.size());
-        for (String n : names) {
-            TopLevelItem item = jenkins.getItemByFullName(n, TopLevelItem.class);
-            if (item != null) {
-                items.add(item);
-            }
-        }
-        
+             
         return items;
     }
     

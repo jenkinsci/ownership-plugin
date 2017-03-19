@@ -30,8 +30,6 @@ import hudson.model.Item;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.model.View;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import java.util.HashSet;
@@ -42,6 +40,10 @@ import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.jenkinsci.plugins.securityinspector.Messages;
 import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
 import org.jenkinsci.plugins.securityinspector.UserContext;
@@ -69,7 +71,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
 
     @Override
     public String getDisplayName() {
-        return "Single owner, multiple items";
+        return "Single any owner, multiple items";
     }
 
     @Override
@@ -99,8 +101,23 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         User user = getRequestedUser();
         final PermissionsForOwnerReportBuilder.ReportImpl report;
 
-        try (ACLContext aclContext = ACL.as(user)){
+        // Impersonate to check the permission
+        final Authentication auth;
+        try {
+            auth = user.impersonate();
+        } catch (UsernameNotFoundException ex) {
+            return new PermissionsForOwnerReportBuilder.ReportImpl(user);
+        }
+
+        //TODO: rework the logic to guarantee that report is initialized
+        SecurityContext initialContext = null;
+        try {
+            initialContext = hudson.security.ACL.impersonate(auth);
             report = PermissionsForOwnerReportBuilder.ReportImpl.createReport(items, user);
+        } finally {
+            if (initialContext != null) {
+                SecurityContextHolder.setContext(initialContext);
+            }
         }
         return report;
     }
@@ -146,12 +163,25 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         @Override
         protected Boolean getEntryReport(TopLevelItem column, Permission item) {
                         
+            final Authentication auth;
+            try {
+                auth = user4report.impersonate();
+            } catch (UsernameNotFoundException ex) {
+                return Boolean.FALSE;
+            }
+            
+            SecurityContext initialContext = null;
             Item i = JenkinsHelper.getInstanceOrFail().getItemByFullName(column.getFullName());
             if (i == null) {
                 return Boolean.FALSE;
             }
-            try (ACLContext aclContext = ACL.as(user4report)){
+            try {
+                initialContext = hudson.security.ACL.impersonate(auth);
                 return i.hasPermission(item);
+            } finally {
+                if (initialContext != null) {
+                    SecurityContextHolder.setContext(initialContext);
+                }
             }
         }
 
