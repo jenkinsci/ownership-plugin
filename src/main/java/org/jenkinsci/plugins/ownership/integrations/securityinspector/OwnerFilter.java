@@ -95,25 +95,28 @@ class OwnerFilter {
         String itemName;
         
         List<TopLevelItem> items = new ArrayList<>();
+        OwnershipDescription ownershipDescription;
+        AbstractOwnershipHelper<Item> located;
         
         for (Item item : allItems) {
-            AbstractOwnershipHelper<Item> located = OwnershipHelperLocator.locate(item);
+            
+            if (!(item instanceof TopLevelItem)) {
+                continue;
+            }
+            
+            located = OwnershipHelperLocator.locate(item);
             if (located == null) {
                 continue;
             }
 
             itemName = item.getFullName();
-            OwnershipDescription ownershipDescription = located.getOwnershipDescription(item);
+            ownershipDescription = located.getOwnershipDescription(item);
             
             if (ownershipDescription.isOwnershipEnabled()
                     && ownershipDescription.isOwner(owner, true)) {
                 
-                if (includePattern == null) {
-                    if (item instanceof TopLevelItem) {
-                       items.add((TopLevelItem) item); 
-                    }
-                } else if (includePattern.matcher(itemName).matches()
-                        && item instanceof TopLevelItem) {
+                if (includePattern == null
+                        || includePattern.matcher(itemName).matches()) {
                     items.add((TopLevelItem) item);
                 }
             }
