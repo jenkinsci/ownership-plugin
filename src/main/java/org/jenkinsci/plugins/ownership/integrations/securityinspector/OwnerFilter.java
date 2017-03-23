@@ -28,9 +28,11 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -59,11 +61,18 @@ class OwnerFilter {
     private final Pattern includePattern;
     
     /**
+     * Folder name for report
+     */
+    @CheckForNull
+    private final String report4folder;
+    
+    /**
      * Constructs empty filter.
      */
     public OwnerFilter() {
         this.includeRegex = null;
         this.includePattern = null;
+        this.report4folder = null;
     }
     
     @Restricted(NoExternalUse.class)
@@ -84,6 +93,12 @@ class OwnerFilter {
             includeRegex = null;
             includePattern = null;
         }
+        
+        if (req.getParameter("usefolder") != null) {
+            report4folder = req.getParameter("selectedFolder");
+        } else {
+            report4folder = null;
+        }
     }
     
     @Nonnull
@@ -91,7 +106,24 @@ class OwnerFilter {
     public List<TopLevelItem> doFilter(User owner) {
         
         final Jenkins jenkins = JenkinsHelper.getInstanceOrFail();
-        final List<Item> allItems = jenkins.getAllItems(Item.class);
+        final List<Item> allItems;
+        
+        if (report4folder != null) {
+            Item folder = jenkins.getItem(report4folder);
+            if (folder instanceof ItemGroup) {
+                Collection<Item> items = ((ItemGroup)folder).getItems();
+                allItems = new ArrayList<>(items.size());
+                for (Item item : items) {
+                    allItems.add(item);
+                }
+                allItems.add(folder);
+            } else {
+                throw new IllegalStateException(report4folder + " is not an ItemGroup");
+            }
+        } else {
+            allItems = jenkins.getAllItems(Item.class);
+        }
+        
         String itemName;
         
         List<TopLevelItem> items = new ArrayList<>();

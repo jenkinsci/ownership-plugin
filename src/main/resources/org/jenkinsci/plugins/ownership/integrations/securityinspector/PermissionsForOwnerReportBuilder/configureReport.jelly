@@ -37,7 +37,22 @@
     <f:block> 
         <f:entry>
             <table width="100%"> 
-                <f:section title="${%Filters items to be reported}">                               
+                <f:section title="${%Filters items to be reported}"> 
+                    
+                    <f:optionalBlock name="usefolder" title="${%Build report for selected folder}"
+                                     checked="${it.filters.report4folder != null}" >
+                        <f:entry title="${%Selected folder:}">
+                            
+                            <j:set var="_folderList"  value="${it.allFolders}"/>
+                            <select name="selectedFolder" class="setting-input">
+                            <j:forEach var="folder" items="${_folderList}">
+                                <f:option value="${folder.getId()}">
+                                    ${it.getDisplayName(folder)}
+                                </f:option>
+                            </j:forEach>
+                            </select>  
+                        </f:entry>
+                    </f:optionalBlock>                              
                                                              
                     <f:optionalBlock name="useincluderegex" title="${%Use a regular expression to include items into the view}"
                            checked="${it.filters.includeRegex != null}" >
