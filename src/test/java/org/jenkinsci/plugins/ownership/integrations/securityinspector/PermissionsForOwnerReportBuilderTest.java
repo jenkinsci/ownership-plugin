@@ -145,24 +145,30 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         assertNotNull(items4Report);
         report.generateReport(items4Report);
         
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("project1"));
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("project2"));
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("folder"));
-        PermissionReportAssert.assertHasRow(report, (TopLevelItem)j.jenkins.getItemByFullName("folder/projectInFolder"));
+        // Items:
+        TopLevelItem project1 = j.jenkins.getItem("project1");
+        TopLevelItem project2 = j.jenkins.getItem("project2");
+        TopLevelItem folder = j.jenkins.getItem("folder");
+        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("project1"), 
+        PermissionReportAssert.assertHasRow(report, project1);
+        PermissionReportAssert.assertHasRow(report, project2);
+        PermissionReportAssert.assertHasRow(report, folder);
+        PermissionReportAssert.assertHasRow(report, projectInFolder);
+        
+        PermissionReportAssert.assertHasPermissions(report, project1, 
                 Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
                 Item.DISCOVER, Item.READ, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("project2"), 
+        PermissionReportAssert.assertHasPermissions(report, project2, 
                 Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
                 Item.DISCOVER, Item.READ, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("folder"), 
+        PermissionReportAssert.assertHasPermissions(report, folder, 
                 Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
                 Item.DISCOVER, Item.READ, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class), 
+        PermissionReportAssert.assertHasPermissions(report, projectInFolder, 
                 Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
                 Item.DISCOVER, Item.READ, Item.WORKSPACE);
     }
@@ -182,24 +188,30 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         assertNotNull(items4Report);
         report.generateReport(items4Report);
         
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("project1"));
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("project2"));
+        // Items:
+        TopLevelItem project1 = j.jenkins.getItem("project1");
+        TopLevelItem project2 = j.jenkins.getItem("project2");
+        TopLevelItem folder = j.jenkins.getItem("folder");
+        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
+       
+        PermissionReportAssert.assertHasRow(report, project1);
+        PermissionReportAssert.assertHasRow(report, project2);
         PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("folder"));
-        PermissionReportAssert.assertHasNotRow(report, (TopLevelItem)j.jenkins.getItemByFullName("folder/projectInFolder"));
+        PermissionReportAssert.assertHasNotRow(report, projectInFolder);
 
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("project1"), 
+        PermissionReportAssert.assertHasPermissions(report, project1, 
                 Item.READ, Item.CONFIGURE, Item.BUILD, Item.CANCEL, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, j.jenkins.getItem("project1"), 
+        PermissionReportAssert.assertHasNotPermissions(report, project1, 
                 Item.CREATE, Item.DELETE, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("project2"), 
+        PermissionReportAssert.assertHasPermissions(report, project2, 
                 Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, j.jenkins.getItem("project2"), 
+        PermissionReportAssert.assertHasNotPermissions(report, project2, 
                 Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("folder"), 
+        PermissionReportAssert.assertHasPermissions(report, folder, 
                 Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, j.jenkins.getItem("folder"), 
+        PermissionReportAssert.assertHasNotPermissions(report, folder, 
                 Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
     }
     
@@ -217,24 +229,30 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         assertNotNull(items4Report);
         report.generateReport(items4Report);
         
-        PermissionReportAssert.assertHasNotRow(report, j.jenkins.getItem("project1"));
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("project2"));
-        PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("folder"));
-        PermissionReportAssert.assertHasRow(report, (TopLevelItem)j.jenkins.getItemByFullName("folder/projectInFolder"));
+        // Items:
+        TopLevelItem project1 = j.jenkins.getItem("project1");
+        TopLevelItem project2 = j.jenkins.getItem("project2");
+        TopLevelItem folder = j.jenkins.getItem("folder");
+        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("project2"), 
+        PermissionReportAssert.assertHasNotRow(report, project1);
+        PermissionReportAssert.assertHasRow(report, project2);
+        PermissionReportAssert.assertHasRow(report, folder);
+        PermissionReportAssert.assertHasRow(report, projectInFolder);
+        
+        PermissionReportAssert.assertHasPermissions(report, project2, 
                 Item.READ, Item.DELETE, Item.BUILD, Item.CANCEL, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, j.jenkins.getItem("project2"), 
+        PermissionReportAssert.assertHasNotPermissions(report, project2, 
                 Item.CREATE, Item.CONFIGURE, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItem("folder"), 
+        PermissionReportAssert.assertHasPermissions(report, folder, 
                 Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, j.jenkins.getItem("folder"), 
+        PermissionReportAssert.assertHasNotPermissions(report, folder, 
                 Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
         
-        PermissionReportAssert.assertHasPermissions(report, j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class), 
+        PermissionReportAssert.assertHasPermissions(report, projectInFolder, 
                 Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class), 
+        PermissionReportAssert.assertHasNotPermissions(report, projectInFolder, 
                 Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
     }
     
@@ -252,10 +270,16 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         assertNotNull(items4Report);
         report.generateReport(items4Report);
         
-        PermissionReportAssert.assertHasNotRow(report, j.jenkins.getItem("project1"));
-        PermissionReportAssert.assertHasNotRow(report, j.jenkins.getItem("project2"));
-        PermissionReportAssert.assertHasNotRow(report, j.jenkins.getItem("folder"));
-        PermissionReportAssert.assertHasNotRow(report, (TopLevelItem)j.jenkins.getItemByFullName("folder/projectInFolder"));
+        // Items:
+        TopLevelItem project1 = j.jenkins.getItem("project1");
+        TopLevelItem project2 = j.jenkins.getItem("project2");
+        TopLevelItem folder = j.jenkins.getItem("folder");
+        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
+        
+        PermissionReportAssert.assertHasNotRow(report, project1);
+        PermissionReportAssert.assertHasNotRow(report, project2);
+        PermissionReportAssert.assertHasNotRow(report, folder);
+        PermissionReportAssert.assertHasNotRow(report, projectInFolder);
     }
     
     @Test
