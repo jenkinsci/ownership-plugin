@@ -37,7 +37,7 @@
     <f:block> 
         <f:entry>
             <table width="100%"> 
-                <f:section title="${%Filters items to be reported}"> 
+                <f:section title="${%Filter items to be reported}"> 
                     
                     <f:optionalBlock name="usefolder" title="${%Build report for selected folder}"
                                      checked="${it.filters.report4folder != null}" >

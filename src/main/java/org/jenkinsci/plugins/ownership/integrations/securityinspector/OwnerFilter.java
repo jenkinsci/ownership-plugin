@@ -33,7 +33,10 @@ import hudson.model.TopLevelItem;
 import hudson.model.User;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.CheckForNull;
@@ -47,6 +50,8 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 
 class OwnerFilter {
+    
+    private static final Logger LOGGER = Logger.getLogger(OwnerFilter.class.getName());
     
     /**
      * Include regex string.
@@ -118,7 +123,8 @@ class OwnerFilter {
                 }
                 allItems.add(folder);
             } else {
-                throw new IllegalStateException(report4folder + " is not an ItemGroup");
+                LOGGER.log(Level.WARNING, report4folder + " is not an ItemGroup");
+                return Collections.emptyList();
             }
         } else {
             allItems = jenkins.getAllItems(Item.class);
