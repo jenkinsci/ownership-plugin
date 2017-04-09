@@ -3,12 +3,12 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.24</version>
+        <version>2.25</version>
     </parent>
     
     <groupId>com.synopsys.jenkinsci</groupId>
     <artifactId>ownership</artifactId>
-    <version>0.9.2-SNAPSHOT</version>
+    <version>0.10-SNAPSHOT</version>
     <name>Job and Node ownership plugin</name>
     <packaging>hpi</packaging>
     <description>Provides explicit ownership of jobs and nodes</description>
@@ -23,8 +23,8 @@
     </licenses>	
 
     <properties>
-        <jenkins.version>1.651.3</jenkins.version>
-        <java.level>7</java.level>
+        <jenkins.version>1.609.3</jenkins.version>
+        <java.level>6</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <workflow.version>1.14</workflow.version>
     </properties>
@@ -59,7 +59,6 @@
             <artifactId>token-macro</artifactId>
             <version>1.6</version>
             <optional>true</optional>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
@@ -84,7 +83,6 @@
             <artifactId>authorize-project</artifactId>
             <version>1.1.0</version>
             <optional>true</optional>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -163,4 +161,30 @@
         <url>http://repo.jenkins-ci.org/public/</url>
       </pluginRepository>
     </pluginRepositories>
+    
+    <build>
+      <!--TODO: Remove once the plugin is updated to 1.651.x-->
+      <plugins>
+        <plugin>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>display-info</id>
+              <configuration>
+                <rules>
+                  <enforceBytecodeVersion>
+                    <excludes combine.children="append">
+                      <!-- Optional plugins, for Security Inspector -->
+                      <exclude>org.jenkins-ci.plugins:cloudbees-folder</exclude>
+                      <exclude>org.jenkins-ci.plugins:credentials</exclude>
+                      <exclude>org.jenkins-ci.plugins:security-inspector</exclude>
+                    </excludes>
+                  </enforceBytecodeVersion>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
 </project>

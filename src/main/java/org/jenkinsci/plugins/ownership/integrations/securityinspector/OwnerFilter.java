@@ -117,7 +117,7 @@ class OwnerFilter {
             Item folder = jenkins.getItem(report4folder);
             if (folder instanceof ItemGroup) {
                 Collection<Item> items = ((ItemGroup)folder).getItems();
-                allItems = new ArrayList<>(items.size());
+                allItems = new ArrayList<Item>(items.size());
                 for (Item item : items) {
                     allItems.add(item);
                 }
@@ -132,7 +132,7 @@ class OwnerFilter {
         
         String itemName;
         
-        List<TopLevelItem> items = new ArrayList<>();
+        List<TopLevelItem> items = new ArrayList<TopLevelItem>();
         OwnershipDescription ownershipDescription;
         AbstractOwnershipHelper<Item> located;
         

@@ -136,7 +136,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             throw HttpResponses.error(500, "The retrieved context does not contain job filter settings");
         }
 
-        final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
+        final Set<TopLevelItem> res = new HashSet<TopLevelItem>(selectedJobs.size());
         for (TopLevelItem item : selectedJobs) {
             // TODO ???
             if (item != null) {
@@ -186,7 +186,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         }
 
         public final void generateReport(@Nonnull Set<TopLevelItem> rows) {
-            Set<PermissionGroup> groups = new HashSet<>(PermissionGroup.getAll());
+            Set<PermissionGroup> groups = new HashSet<PermissionGroup>(PermissionGroup.getAll());
             groups.remove(PermissionGroup.get(Permission.class));
             groups.remove(PermissionGroup.get(Jenkins.class));
             groups.remove(PermissionGroup.get(Computer.class));
