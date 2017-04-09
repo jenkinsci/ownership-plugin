@@ -130,7 +130,7 @@ class OwnerFilter {
             allItems = jenkins.getAllItems(Item.class);
         }
         
-        String itemName, itemFullName;
+        String itemName;
         
         List<TopLevelItem> items = new ArrayList<>();
         OwnershipDescription ownershipDescription;
@@ -147,16 +147,14 @@ class OwnerFilter {
                 continue;
             }
 
-            itemFullName = item.getFullName();
-            itemName = item.getName();
+            itemName = item.getFullName();
             ownershipDescription = located.getOwnershipDescription(item);
             
             if (ownershipDescription.isOwnershipEnabled()
                     && ownershipDescription.isOwner(owner, true)) {
                 
                 if (includePattern == null
-                        || includePattern.matcher(itemName).matches()
-                        || includePattern.matcher(itemFullName).matches()) {
+                        || includePattern.matcher(itemName).matches()) {
                     items.add((TopLevelItem) item);
                 }
             }
