@@ -1,30 +1,56 @@
 Ownership Plugin for Jenkins
 ================
 
-This plugin provides an ownership engine for [Jenkins][3]. 
+[![Join the chat at https://gitter.im/jenkinsci/ownership-plugin](https://badges.gitter.im/jenkinsci/ownership-plugin.svg)](https://gitter.im/jenkinsci/ownership-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Summary
--------
-* Ownership visualization for jobs, folders, builds and nodes (Summary boxes, ListView columns, etc.)
+This plugin provides an ownership engine for [Jenkins](https://jenkins.io/) automation server. 
+
+# Supported features
+
+* Ownership management for jobs, folders, runs and nodes (Summary boxes, ListView columns, etc.)
 * Injection of ownership variables into the build environment
 * Easy MailTo links for "Contact owners" and "Contact admins" with pre-formatted messages
-* Advanced security support (Role Strategy, Job Restrictions, Authorize Project, etc.)
+* [Ownership-Based Security](doc/OwnershipBasedSecurity.md) (Role Strategy, Job Restrictions, Authorize Project, etc.)
 * Integration with Jenkins Pipeline
-* Ownership Job View Filter for views
+* Ownership Filter for List Views
 
-See [Ownership Plugin][4] wiki page for more info.
+# Documentation
 
-License
---------
-[MIT License][1]
+* [Configuration](doc/Configuration.md)
+* [Ownership-Based Security](doc/OwnershipBasedSecurity.md)
+* [AbstractProject Integration](doc/AbstractProjectSupport.md)
+* [Pipeline Integration](doc/PipelineIntegration.md)
+* [Contributing](CONTRIBUTING.md)
+* [Changelog](https://wiki.jenkins-ci.org/display/JENKINS/Ownership+Plugin#OwnershipPlugin-Versionhistory)
 
-Maintainers
---------
-1. [Oleg Nenashev][2] (maintainer)
- * First plugin versions have been sponsored by [Synopsys Inc.][5] 
+# Examples
 
-[1]: http://www.opensource.org/licenses/mit-license.php
-[2]: https://github.com/oleg-nenashev
-[3]: https://jenkins.io/
-[4]: https://wiki.jenkins-ci.org/display/JENKINS/Ownership+Plugin
-[5]: http://www.synopsys.com
+Below you can find several Ownership Plugin UI examples.
+
+Ownership Info Summary box:
+
+![Ownership Summary box](doc/images/summaryBox.png)
+
+Ownership Column:
+
+![Ownership Column](doc/images/ownerColumn.png)
+
+# Plugin Integrations
+
+Ownership Plugin provides integration with multiple Jenkins plugins:
+
+* Role Strategy - see [Ownership-Based Security](doc/OwnershipBasedSecurity.md)
+* Job Restrictions - see [Ownership-Based Security](doc/OwnershipBasedSecurity.md)
+* Authorize Project - see [Ownership-Based Security](doc/OwnershipBasedSecurity.md)
+* Token Macro - see [AbstractProject Integration](doc/AbstractProjectSupport.md)
+* Pipeline - see [Pipeline Integration](doc/PipelineIntegration.md)
+
+The plugin also contributes extension points, which can be used by other plugins.
+
+# License
+
+[MIT License](http://www.opensource.org/licenses/mit-license.php)
+
+# Changelog
+
+See [the plugin's Wiki](https://wiki.jenkins-ci.org/display/JENKINS/Ownership+Plugin#OwnershipPlugin-Versionhistory).
