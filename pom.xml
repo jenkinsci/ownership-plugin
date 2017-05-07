@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>5.1</version>
+            <version>6.0.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -115,6 +115,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.3.4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>branch-api</artifactId>
+            <version>2.0.8</version>
             <type>jar</type>
         </dependency>
         <dependency>
