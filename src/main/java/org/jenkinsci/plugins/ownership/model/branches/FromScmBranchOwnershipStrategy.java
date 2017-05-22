@@ -23,32 +23,31 @@
  */
 package org.jenkinsci.plugins.ownership.model.branches;
 
-import hudson.ExtensionPoint;
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.Descriptor;
+
+import com.synopsys.arc.jenkins.plugins.ownership.Messages;
+import hudson.Extension;
 import jenkins.branch.Branch;
+import jenkins.scm.api.metadata.ContributorMetadataAction;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class BranchOwnershipStrategy extends AbstractDescribableImpl<BranchOwnershipStrategy> implements ExtensionPoint {
+public class FromScmBranchOwnershipStrategy extends BranchOwnershipStrategy {
     
-    /**
-     * Determine the owner for the given branch using the implemented strategy.
-     *
-     * @param branch The branch
-     * @return The prospective owner's user ID or full name. {@code null} if the owner cannot be determined.
-     */
-    @CheckForNull
-    public abstract String determineOwner(Branch branch);
     
-    @Nonnull
-    @SuppressWarnings("unchecked")
-    public BranchOwnershipStrategyDescriptor getDescriptor() {
-        return (BranchOwnershipStrategyDescriptor) super.getDescriptor();
+    @Nullable
+    @Override
+    public String determineOwner(Branch branch) {
+        ContributorMetadataAction contributorMetadataAction = branch.getAction(ContributorMetadataAction.class);
+        return contributorMetadataAction != null ? contributorMetadataAction.getContributor() : null;
     }
     
-    static abstract class BranchOwnershipStrategyDescriptor extends Descriptor<BranchOwnershipStrategy> {
-        
+    @Extension
+    public static class DescriptorImpl extends BranchOwnershipStrategy.BranchOwnershipStrategyDescriptor {
+        @Override
+        @Nonnull
+        public String getDisplayName() {
+            return Messages.BranchOwnership_Strategy_FromScmOwnershipStrategy_DisplayName();
+        }
     }
 }
