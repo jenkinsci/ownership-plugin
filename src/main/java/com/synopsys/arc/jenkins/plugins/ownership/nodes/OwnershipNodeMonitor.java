@@ -51,6 +51,12 @@ public class OwnershipNodeMonitor extends NodeMonitor {
 
     public static class DescriptorImpl extends AbstractNodeMonitorDescriptor<Data> {
         
+        //TODO: no need to use AsyncNodeMonitor from the performance PoV, but there is no supported sync option in the core
+        DescriptorImpl() {
+            // Check every 10 minutes
+            super(1000*60*10L);
+        }
+        
         @Override
         protected Data monitor(Computer c) throws IOException, InterruptedException {
             OwnershipDescription ownership = ComputerOwnerHelper.getInstance().getOwnershipDescription(c);

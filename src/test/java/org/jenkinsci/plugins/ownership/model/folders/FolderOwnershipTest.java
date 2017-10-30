@@ -32,20 +32,24 @@ import hudson.model.FreeStyleProject;
 import hudson.model.User;
 import hudson.remoting.Callable;
 import hudson.security.ACL;
-import hudson.security.SecurityRealm;
-import java.util.Arrays;
-import static org.hamcrest.Matchers.*;
+import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.ownership.config.InheritanceOptions;
+import org.jenkinsci.plugins.ownership.config.PreserveOwnershipPolicy;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.remoting.RoleChecker;
-import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Stores tests of {@link AbstractFolder} ownership.
@@ -241,5 +245,67 @@ public class FolderOwnershipTest {
                 folderOwnershipInfo.getDescription(), equalTo(OwnershipDescription.DISABLED_DESCR));
         assertThat("Project should not inherit the ownerhip info when inheritance is disabled",
                 projectOwnershipInfo.getDescription(), equalTo(OwnershipDescription.DISABLED_DESCR));
-    }  
+    }
+
+    private static final String FOLDER_CONFIG_XML = "<?xml version='1.0' encoding='UTF-8'?>\n"+
+            "<com.cloudbees.hudson.plugins.folder.Folder plugin=\"cloudbees-folder@5.17\">\n"+
+            "  <actions/>\n"+
+            "  <description></description>\n"+
+            "  <properties>\n"+
+            "    <org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty plugin=\"ownership@0.9.1\">\n"+
+            "      <ownership>\n"+
+            "        <ownershipEnabled>true</ownershipEnabled>\n"+
+            "        <primaryOwnerId>the.owner</primaryOwnerId>\n"+
+            "        <coownersIds class=\"sorted-set\"/>\n"+
+            "      </ownership>\n"+
+            "    </org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty>\n"+
+            "    <org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig plugin=\"pipeline-model-definition@1.0.1\">\n"+
+            "      <dockerLabel></dockerLabel>\n"+
+            "      <registry plugin=\"docker-commons@1.6\"/>\n"+
+            "    </org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig>\n"+
+            "  </properties>\n"+
+            "  <folderViews class=\"com.cloudbees.hudson.plugins.folder.views.DefaultFolderViewHolder\">\n"+
+            "    <views>\n"+
+            "      <hudson.model.AllView>\n"+
+            "        <owner class=\"com.cloudbees.hudson.plugins.folder.Folder\" reference=\"../../../..\"/>\n"+
+            "        <name>All</name>\n"+
+            "        <filterExecutors>false</filterExecutors>\n"+
+            "        <filterQueue>false</filterQueue>\n"+
+            "        <properties class=\"hudson.model.View$PropertyList\"/>\n"+
+            "      </hudson.model.AllView>\n"+
+            "    </views>\n"+
+            "    <tabBar class=\"hudson.views.DefaultViewsTabBar\"/>\n"+
+            "  </folderViews>\n"+
+            "  <healthMetrics>\n"+
+            "    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>\n"+
+            "      <nonRecursive>false</nonRecursive>\n"+
+            "    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>\n"+
+            "  </healthMetrics>\n"+
+            "  <icon class=\"com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon\"/>\n"+
+            "</com.cloudbees.hudson.plugins.folder.Folder>";
+
+    @Test
+    public void folderShouldSupportPreserveOwnershipPolicy() throws Exception {
+        InputStream folderConfigIS = null;
+        try {
+            // Configure the policy
+            OwnershipPluginConfigurer.forJenkinsRule(j)
+                    .withItemOwnershipPolicy(new PreserveOwnershipPolicy())
+                    .configure();
+
+            folderConfigIS = new ByteArrayInputStream(FOLDER_CONFIG_XML.getBytes());
+            j.jenkins.createProjectFromXML("job-dsl-generated-folder", folderConfigIS);
+
+            Folder folder = j.jenkins.getItemByFullName("job-dsl-generated-folder", Folder.class);
+            assertThat("Cannot locate folder 'job-dsl-generated-folder'", folder, notNullValue());
+
+            OwnershipInfo folderOwnershipInfo = FolderOwnershipHelper.getInstance().getOwnershipInfo(folder);
+            assertThat("Ownership should still be enabled according to PreserveJobOwnershipPolicy",
+            folderOwnershipInfo.getDescription().isOwnershipEnabled(), equalTo(true));
+            assertThat("Owner should still be 'the.owner'",
+                    folderOwnershipInfo.getDescription().getPrimaryOwnerId(), equalTo("the.owner"));
+        } finally {
+            IOUtils.closeQuietly(folderConfigIS);
+        }
+    }
 }

@@ -29,8 +29,6 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import org.kohsuke.stapler.DataBoundConstructor;
 import hudson.Extension;
 import hudson.model.Item;
-import hudson.model.Job;
-import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.views.ListViewColumnDescriptor;
 import hudson.views.ListViewColumn;

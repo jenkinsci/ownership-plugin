@@ -37,7 +37,7 @@ import java.io.IOException;
  * applies and modifies its ownership info.
  * By default, the plugin drops initial ownership settings.
  * It can also set the current user as a new owner (can be enabled in global configs). 
- * @author Oleg Nenashev, Synopsys Inc.
+ * @author Oleg Nenashev
  */
 @Extension
 public class OwnershipItemListener extends ItemListener {

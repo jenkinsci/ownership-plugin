@@ -29,7 +29,6 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.UserComparator;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserWrapper;
 import hudson.Extension;
-import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.TopLevelItem;
 import hudson.model.User;

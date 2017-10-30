@@ -160,7 +160,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     
     public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         JSONObject formData = req.getSubmittedForm();
-        JSONObject jsonOwnership = (JSONObject) formData.getJSONObject("owners");
+        JSONObject jsonOwnership = formData.getJSONObject("owners");
         setOwnershipDescription(OwnershipDescription.parseJSON(jsonOwnership));
     }
     

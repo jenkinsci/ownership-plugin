@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSource;
 
@@ -60,8 +59,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
      */
     @CheckForNull
     public static OwnerNodeProperty getOwnerProperty(@Nonnull Node node) {
-        NodeProperty prop = node.getNodeProperties().get(OwnerNodeProperty.class);
-        return prop != null ? (OwnerNodeProperty)prop : null;
+        return node.getNodeProperties().get(OwnerNodeProperty.class);
     }
         
     @Override
@@ -126,6 +124,6 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     @Override
     public String getItemURL(Node item) {
         Computer c = item.toComputer();
-        return c != null ? ComputerOwnerHelper.Instance.getItemURL(c) : null;
+        return c != null ? ComputerOwnerHelper.INSTANCE.getItemURL(c) : null;
     }
 }

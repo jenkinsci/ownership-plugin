@@ -1,0 +1,68 @@
+<!--
+* The MIT License
+*
+* Copyright 2017 Ksenia Nenasheva <ks.nenasheva@gmail.com>
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry title="${%Selected ownership:}">
+        <j:set var="_userList"  value="${it.possibleUsers}"/>
+        <select name="selectedOwner" class="setting-input">
+            <j:forEach var="user" items="${_userList}">
+                <f:option value="${user.getId()}">
+                    ${it.getDisplayName(user)}
+                </f:option>
+            </j:forEach>
+        </select> 
+    </f:entry>
+                    
+    <f:block> 
+        <f:entry>
+            <table width="100%"> 
+                <f:section title="${%Filter items to be reported}"> 
+                    
+                    <f:optionalBlock name="usefolder" title="${%Build report for selected folder}"
+                                     checked="${it.filters.report4folder != null}" >
+                        <f:entry title="${%Selected folder:}">
+                            
+                            <j:set var="_folderList"  value="${it.allFolders}"/>
+                            <select name="selectedFolder" class="setting-input">
+                            <j:forEach var="folder" items="${_folderList}">
+                                <f:option value="${folder.getId()}">
+                                    ${it.getDisplayName(folder)}
+                                </f:option>
+                            </j:forEach>
+                            </select>  
+                        </f:entry>
+                    </f:optionalBlock>                              
+                                                             
+                    <f:optionalBlock name="useincluderegex" title="${%Use a regular expression to include items into the view}"
+                           checked="${it.filters.includeRegex != null}" >
+                        <f:entry title="${%Regular expression for items:}" field="includeRegex">
+                            <f:textbox value="${it.filters.includeRegex}"
+                                    checkUrl="'${rootURL}/plugin/security-inspector/checkRegex?regex='+this.value"/>
+                        </f:entry>
+                    </f:optionalBlock>
+                </f:section>
+            </table>
+        </f:entry>
+    </f:block>
+</j:jelly>

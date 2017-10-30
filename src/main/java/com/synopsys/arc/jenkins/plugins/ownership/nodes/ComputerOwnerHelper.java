@@ -30,9 +30,9 @@ import hudson.model.Node;
 import hudson.model.User;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.apache.commons.collections.ListUtils;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
 /**
@@ -42,10 +42,10 @@ import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
  */
 public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
 
-    static final ComputerOwnerHelper Instance = new ComputerOwnerHelper();
+    static final ComputerOwnerHelper INSTANCE = new ComputerOwnerHelper();
 
     public static ComputerOwnerHelper getInstance() {
-        return Instance;
+        return INSTANCE;
     }
         
     @Override
@@ -70,7 +70,7 @@ public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
         Node node = computer.getNode();
         return node != null 
                 ? NodeOwnerHelper.Instance.getPossibleOwners(node)
-                : ListUtils.EMPTY_LIST;
+                : Collections.<User>emptyList();
     }  
     
     public static void setOwnership(@Nonnull Computer computer, 
@@ -88,10 +88,12 @@ public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
         return "computer";
     }
 
+    @Override
     public String getItemDisplayName(Computer item) {
         return item.getDisplayName();
     }
 
+    @Override
     public String getItemURL(Computer item) {
         //TODO: Absolute URL
         return item.getUrl();

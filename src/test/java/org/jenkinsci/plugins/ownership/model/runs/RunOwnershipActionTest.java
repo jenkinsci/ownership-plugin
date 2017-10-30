@@ -32,6 +32,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.User;
 import java.util.Arrays;
+import java.util.Collections;
 import org.jenkinsci.plugins.ownership.config.DisplayOptions;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.Rule;
@@ -43,7 +44,7 @@ import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import static org.junit.Assert.assertThat;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * Tests for {@link RunOwnershipAction}.
@@ -55,7 +56,7 @@ public class RunOwnershipActionTest {
     public JenkinsRule jenkinsRule = new JenkinsRule();
     
     @Test
-    @Bug(28881)
+    @Issue("JENKINS-28881")
     public void shouldInheritOwnershipInfoFromFolders() throws Exception {
         Folder folder = jenkinsRule.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "projectInFolder");
@@ -99,7 +100,7 @@ public class RunOwnershipActionTest {
         User user = User.get("testUser");
         
         FreeStyleProject project = jenkinsRule.createFreeStyleProject();
-        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, user.getId()));
+        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, user.getId(), Collections.<String>emptyList()));
         FreeStyleBuild build = jenkinsRule.buildAndAssertSuccess(project);
         
         assertThat("Run Ownership Box should be enabled in configs", 
@@ -117,7 +118,7 @@ public class RunOwnershipActionTest {
     }
     
     @Test
-    @Bug(28714)
+    @Issue("JENKINS-28714")
     public void shouldHideRunOwnershipIfRequested() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule)
                 .withDisplayOptions(new DisplayOptions(true, false))
@@ -137,7 +138,7 @@ public class RunOwnershipActionTest {
     }
     
     @Test
-    @Bug(28712)
+    @Issue("JENKINS-28712")
     public void shouldHideBoxesForNonConfiguredOwnershipIfConfigured() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule)
                 .withDisplayOptions(new DisplayOptions(false, true))

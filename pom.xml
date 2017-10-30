@@ -3,12 +3,12 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.11</version>
+        <version>2.24</version>
     </parent>
     
     <groupId>com.synopsys.jenkinsci</groupId>
     <artifactId>ownership</artifactId>
-    <version>0.9.2-SNAPSHOT</version>
+    <version>0.10.1-SNAPSHOT</version>
     <name>Job and Node ownership plugin</name>
     <packaging>hpi</packaging>
     <description>Provides explicit ownership of jobs and nodes</description>
@@ -23,8 +23,8 @@
     </licenses>	
 
     <properties>
-        <jenkins.version>1.609.3</jenkins.version>
-        <java.level>6</java.level>
+        <jenkins.version>1.651.3</jenkins.version>
+        <java.level>7</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <workflow.version>1.14</workflow.version>
     </properties>
@@ -85,6 +85,12 @@
             <version>1.1.0</version>
             <optional>true</optional>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>security-inspector</artifactId>
+            <version>0.4</version>
+            <optional>true</optional>
         </dependency>
         <!--Plugins decoupled from the core. Would be great to make these deps optional.-->
         <dependency>

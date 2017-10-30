@@ -24,22 +24,13 @@
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
-import org.jenkinsci.plugins.ownership.util.mail.MailFormatter;
 import hudson.model.User;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jenkins.model.Jenkins;
-import org.apache.commons.collections.ListUtils;
-import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
 /**
@@ -86,7 +77,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
 
     @Override
     public Collection<User> getPossibleOwners(TObjectType item) {
-        return ListUtils.EMPTY_LIST;
+        return Collections.emptyList();
     }
     
     //TODO: promote to interface

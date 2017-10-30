@@ -38,23 +38,26 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Run;
 import hudson.model.Slave;
 import hudson.model.TaskListener;
 import hudson.model.User;
 import hudson.scm.NullSCM;
+import hudson.scm.SCMRevisionState;
 import hudson.tasks.Shell;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.Future;
-import static junit.framework.Assert.*;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 /**
@@ -87,11 +90,11 @@ public class OwnershipBuildWrapperTest {
         
         // Create node with ownership
         node = r.createOnlineSlave();
-        NodeOwnerHelper.setOwnership(node, new OwnershipDescription(true, NODE_OWNER_ID));
+        NodeOwnerHelper.setOwnership(node, new OwnershipDescription(true, NODE_OWNER_ID, Collections.<String>emptyList()));
         
         // Create project
         project = r.createFreeStyleProject();
-        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, PROJECT_OWNER_ID));
+        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.<String>emptyList()));
         project.getBuildersList().add(new Shell("env"));
     }
     
@@ -102,7 +105,7 @@ public class OwnershipBuildWrapperTest {
         testVarsPresense(false);
     }
     
-    @Bug(23926)
+    @Issue("JENKINS-23926")
     public @Test void testVarsPresenseOnSCMFailure() throws Exception {
         initJenkinsInstance();
         final OwnershipBuildWrapper wrapper = new OwnershipBuildWrapper(true, true);
@@ -111,7 +114,7 @@ public class OwnershipBuildWrapperTest {
         testVarsPresense(true);
     }
     
-    @Bug(23947)
+    @Issue("JENKINS-23947")
     public @Test void testVarsPresenseOnGlobalOptions() throws Exception {
         initJenkinsInstance();
         final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
@@ -121,7 +124,7 @@ public class OwnershipBuildWrapperTest {
         testVarsPresense(true);
     }
     
-    @Bug(27715)
+    @Issue("JENKINS-27715")
     public @Test void testCoOwnersVarsInjection() throws Exception {
         initJenkinsInstance();
         final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
@@ -135,7 +138,7 @@ public class OwnershipBuildWrapperTest {
     }
     
     @Test
-    @Bug(28881)
+    @Issue("JENKINS-28881")
     public void shouldInjectInheritedOwnershipInfo() throws Exception {
         initJenkinsInstance();
         OwnershipPluginConfigurer.forJenkinsRule(r)
@@ -179,8 +182,8 @@ public class OwnershipBuildWrapperTest {
     private static class AlwaysFailNullSCM extends NullSCM {
         
         @Override
-        public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener, File changeLogFile) throws IOException, InterruptedException {
+        public void checkout(Run<?, ?> build, Launcher launcher, FilePath workspace, TaskListener listener, File changelogFile, SCMRevisionState baseline) throws IOException, InterruptedException {
             throw new IOException("Checkout failed (as designed)");
-        }
+        }     
     }
 }

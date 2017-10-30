@@ -74,7 +74,7 @@ public class OwnershipGlobalVariableTest {
     @Before
     public void setupMailOptions() throws Exception {
         // Initialize Mail Suffix
-        Descriptor mailerDescriptor = j.jenkins.getDescriptor(Mailer.class);
+        Descriptor<?> mailerDescriptor = j.jenkins.getDescriptor(Mailer.class);
         assertThat(mailerDescriptor, instanceOf(Mailer.DescriptorImpl.class));
         ((Mailer.DescriptorImpl)mailerDescriptor).setDefaultSuffix("mailsuff.ix");
     }

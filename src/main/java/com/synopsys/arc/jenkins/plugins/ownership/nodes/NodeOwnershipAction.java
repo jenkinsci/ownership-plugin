@@ -75,7 +75,7 @@ public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
 
     @Override
     public IOwnershipHelper<Computer> helper() {
-        return ComputerOwnerHelper.Instance;
+        return ComputerOwnerHelper.INSTANCE;
     }
 
     @Override

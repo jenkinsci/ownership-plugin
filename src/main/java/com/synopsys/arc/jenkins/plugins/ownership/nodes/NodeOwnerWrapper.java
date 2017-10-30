@@ -24,6 +24,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import java.util.Collections;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
@@ -42,7 +43,7 @@ public class NodeOwnerWrapper {
     public NodeOwnerWrapper(@CheckForNull String primaryOwner) {
         description = StringUtils.isBlank(primaryOwner) 
                 ? OwnershipDescription.DISABLED_DESCR
-                : new OwnershipDescription(true, primaryOwner);
+                : new OwnershipDescription(true, primaryOwner, Collections.<String>emptyList());
     }
 
     @Nonnull

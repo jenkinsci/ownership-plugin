@@ -31,9 +31,9 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatt
 import com.synopsys.arc.jenkins.plugins.ownership.wrappers.OwnershipBuildWrapper;;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
+import hudson.model.BuildableItemWithBuildWrappers;
 import hudson.model.EnvironmentContributingAction;
 import hudson.model.Job;
-import hudson.model.Project;
 import hudson.model.Run;
 import hudson.security.Permission;
 import javax.annotation.Nonnull;
@@ -92,10 +92,9 @@ public class RunOwnershipAction extends ItemOwnershipAction<Run>
         
         // Check BuildWrapper options id available
         final Job parent = build.getParent();
-        if (parent instanceof Project) { 
-            final Project prj = (Project) parent;
-            final OwnershipBuildWrapper wrapper = (OwnershipBuildWrapper) 
-                    prj.getBuildWrappersList().get(OwnershipBuildWrapper.class);
+        if (parent instanceof BuildableItemWithBuildWrappers) { 
+            final BuildableItemWithBuildWrappers prj = (BuildableItemWithBuildWrappers) parent;
+            final OwnershipBuildWrapper wrapper = prj.getBuildWrappersList().get(OwnershipBuildWrapper.class);
             if (wrapper != null) {
                 injectJobOwnership |= wrapper.isInjectJobOwnership();
                 injectNodeOwnership |= wrapper.isInjectNodeOwnership();             
