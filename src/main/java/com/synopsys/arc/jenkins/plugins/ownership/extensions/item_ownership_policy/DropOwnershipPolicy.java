@@ -58,7 +58,7 @@ public class DropOwnershipPolicy extends ItemOwnershipPolicy {
 
         @Override
         public String getDisplayName() {
-            return Messages.ItemOwnershipPolicy_DropOwnershipPolicy_dipslayName();
+            return Messages.ItemOwnershipPolicy_DropOwnershipPolicy_displayName();
         }
     }
 }

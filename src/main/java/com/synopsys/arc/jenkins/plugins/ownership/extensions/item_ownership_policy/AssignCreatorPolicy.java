@@ -60,7 +60,7 @@ public class AssignCreatorPolicy extends ItemOwnershipPolicy {
 
         @Override
         public String getDisplayName() {
-            return Messages.ItemOwnershipPolicy_AssignCreatorPolicy_dipslayName();
+            return Messages.ItemOwnershipPolicy_AssignCreatorPolicy_displayName();
         }       
     }
 }
