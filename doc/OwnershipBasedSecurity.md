@@ -69,7 +69,7 @@ In order to enable this functionality, use the `@ItemSpecificWithUserID` in item
 
 ### Restricting execution on the master
 
-It is a common use-case to restrict job runs on the master for security reasons. Script build steps in on-master builds may get access to Jenkins system files with the Jenkins user account, hence there is a risk of data corruption in the case of errornous or malicious scripts. 
+It is a common use-case to restrict job runs on the master for security reasons. Script build steps in on-master builds may get access to Jenkins system files with the Jenkins user account, hence there is a risk of data corruption in the case of erroneous or malicious scripts. 
 On the other hand, it may be a valid case for the backend jobs being owned by admins.
 
 :exclamation: The example below restricts all executions.
