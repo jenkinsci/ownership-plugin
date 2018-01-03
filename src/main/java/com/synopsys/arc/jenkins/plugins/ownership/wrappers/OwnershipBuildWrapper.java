@@ -71,7 +71,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     @Override
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         return new Environment() {
-            // Empty instantination. The entire code has been moved to OwnershipRunListener
+            // Empty instantiation. The entire code has been moved to OwnershipRunListener
         };
     }
 
