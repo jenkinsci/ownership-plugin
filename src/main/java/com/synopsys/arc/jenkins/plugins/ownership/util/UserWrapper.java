@@ -94,7 +94,7 @@ public class UserWrapper {
     }
 
     public boolean meetsMacro(String userId) {
-        // Handle macroses and get effective user's id
+        // Handle macros and get effective user's id
         String comparedId;
         if (isUser) {
             if (user == null) {
