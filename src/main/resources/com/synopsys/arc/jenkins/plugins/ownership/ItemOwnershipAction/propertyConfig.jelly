@@ -48,7 +48,7 @@
     
     <j:set var="_item" value="${it.getDescribedItem()}"/>          
     <f:entry title="${%Primary Owner}" help="/plugin/ownership/help/primaryOwner.html">
-        <!--Already instantinated ownership-->
+        <!--Already instantiated ownership-->
         <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>   
         <select name="${blockName}.primaryOwner" class="setting-input">
             <j:forEach var="user" items="${_userList}">
