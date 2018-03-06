@@ -27,14 +27,17 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
+import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatter;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.User;
+import hudson.security.Permission;
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
@@ -53,11 +56,19 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  */
 public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolder<?>> {
     
-    static final FolderOwnershipHelper INSTANCE = new FolderOwnershipHelper();
+    static final FolderOwnershipHelper Instance
+            = new FolderOwnershipHelper();
+    
+    private static final OwnershipLayoutFormatter<AbstractFolder<?>> DEFAULT_FOLDER_FORMATTER
+            = new OwnershipLayoutFormatter.DefaultJobFormatter<>();
 
     @Nonnull
     public static FolderOwnershipHelper getInstance() {
-        return INSTANCE;
+        return Instance;
+    }
+    
+    public OwnershipLayoutFormatter<AbstractFolder<?>> getLayoutFormatter() {
+        return DEFAULT_FOLDER_FORMATTER;
     }
     
     /**
@@ -71,19 +82,13 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         return prop != null ? prop : null;
     }
     
-    @Override
-    public String getItemTypeName(AbstractFolder<?> item) {
-        return "folder";
+    public static boolean isUserExists(@Nonnull User user) {
+        assert (user != null);
+        return isUserExists(user.getId());
     }
-
-    @Override
-    public String getItemDisplayName(AbstractFolder<?> item) {
-        return item.getDisplayName();
-    }
-
-    @Override
-    public String getItemURL(AbstractFolder<?> item) {
-        return item.getUrl();
+    
+    public static boolean isUserExists(@Nonnull String userIdOrFullName) {
+        return User.getById(userIdOrFullName, false) != null;
     }
     
     @Override
@@ -91,18 +96,18 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         // TODO: Maybe makes sense to unwrap the method to get a better performance (esp. for Security)
         return getOwnershipInfo(item).getDescription();
     }
-
+    
     @Nonnull
     @Override
     public Permission getRequiredPermission() {
         return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
     }
-
+    
     @Override
     public boolean hasLocallyDefinedOwnership(@Nonnull AbstractFolder<?> folder) {
         return getOwnerProperty(folder) != null;
     }
-
+    
     @Override
     public OwnershipInfo getOwnershipInfo(AbstractFolder<?> item) {
         if (item == null) { // Handle renames, etc.
@@ -114,7 +119,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         if (prop != null) {
             OwnershipDescription d = prop.getOwnership();
             if (d.isOwnershipEnabled()) {
-                return new OwnershipInfo(prop.getOwnership(), new FolderOwnershipDescriptionSource(item));
+                return new OwnershipInfo(d, new FolderOwnershipDescriptionSource(item));
             }
         }
         
@@ -141,6 +146,51 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
     }
     
     @Override
+    public boolean hasItemSpecificPermission(@Nonnull AbstractFolder<?> folder, String sid, Permission p) {
+        FolderOwnershipProperty prop = getOwnerProperty(folder);
+        if (prop != null) {
+            FolderSpecificSecurity sec = prop.getItemSpecificSecurity();
+            if (sec != null) {
+                return sec.getPermissionsMatrix().hasPermission(sid, p);
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Sets the ownership information.
+     * @param folder Folder to be modified
+     * @param descr A description to be set. Use null to drop settings.
+     * @throws IOException
+     */
+    public static void setOwnership(@Nonnull AbstractFolder<?> folder,
+                                    @CheckForNull OwnershipDescription descr) throws IOException {
+        FolderOwnershipProperty prop = getOwnerProperty(folder);
+        if (prop == null) {
+            prop = new FolderOwnershipProperty(descr, null);
+            folder.addProperty(prop);
+        } else {
+            prop.setOwnershipDescription(descr);
+        }
+    }
+    
+    /**
+     * Sets the project-specific security.
+     * @param job A job to be modified
+     * @param security Security settings to be set. Use null to drop settings
+     * @throws IOException
+     */
+    public static void setProjectSpecificSecurity(@Nonnull AbstractFolder<?> folder,
+                                                  @CheckForNull FolderSpecificSecurity security) throws IOException {
+        FolderOwnershipProperty prop = getOwnerProperty(folder);
+        if (prop == null) {
+            throw new IOException("Ownership is not configured for "+folder);
+        } else {
+            prop.setItemSpecificSecurity(security);
+        }
+    }
+    
+    @Override
     public Collection<User> getPossibleOwners(AbstractFolder<?> item) {
         if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
             IUserFilter filter = new AccessRightsFilter(item, AbstractFolder.CONFIGURE);
@@ -150,21 +200,19 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         }
     }
     
-    /**
-     * Sets the ownership information.
-     * @param folder Folder to be modified
-     * @param descr A description to be set. Use null to drop settings.
-     * @throws IOException 
-     */
-    public static void setOwnership(@Nonnull AbstractFolder<?> folder, 
-            @CheckForNull OwnershipDescription descr) throws IOException {
-        FolderOwnershipProperty prop = getOwnerProperty(folder);
-        if (prop == null) {
-            prop = new FolderOwnershipProperty(descr);
-            folder.addProperty(prop);
-        } else {
-            prop.setOwnershipDescription(descr);
-        }
+    @Override
+    public String getItemTypeName(AbstractFolder<?> item) {
+        return "folder";
+    }
+
+    @Override
+    public String getItemDisplayName(AbstractFolder<?> item) {
+        return item.getDisplayName();
+    }
+
+    @Override
+    public String getItemURL(AbstractFolder<?> item) {
+        return item.getUrl();
     }
     
     @Extension(optional = true)
@@ -174,7 +222,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         @Override
         public AbstractOwnershipHelper<AbstractFolder<?>> findHelper(Object item) {
             if (item instanceof AbstractFolder<?>) {
-                return INSTANCE;
+                return Instance;
             }
             return null;
         }      

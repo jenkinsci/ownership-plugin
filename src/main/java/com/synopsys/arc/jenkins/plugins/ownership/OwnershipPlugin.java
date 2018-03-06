@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.extensions.OwnershipLayoutForm
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.DropOwnershipPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.Plugin;
@@ -78,6 +79,7 @@ public class OwnershipPlugin extends Plugin {
     private final List<OwnershipAction> pluginActions = new ArrayList<>();
     public String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
+    private FolderSpecificSecurity defaultFoldersSecurity;
     private OwnershipPluginConfiguration configuration;
     
     /**
@@ -101,9 +103,9 @@ public class OwnershipPlugin extends Plugin {
     
     @Override 
     public void start() throws Exception {
-	load();
+        load();
         reinitActionsList();
-	Jenkins.getActiveInstance().getActions().addAll(pluginActions);
+        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
 
     @Override
@@ -140,6 +142,11 @@ public class OwnershipPlugin extends Plugin {
         return defaultJobsSecurity;
     }
     
+    @CheckForNull
+    public FolderSpecificSecurity getDefaultFoldersSecurity() {
+        return defaultFoldersSecurity;
+    }
+    
     public OwnershipPluginConfiguration getConfiguration() {
         return configuration;
     }
@@ -153,6 +160,16 @@ public class OwnershipPlugin extends Plugin {
     public ItemSpecificSecurity.ItemSpecificDescriptor getItemSpecificDescriptor() {
         return ItemSpecificSecurity.DESCRIPTOR;
     }
+    
+    /**
+     * Gets descriptor of FolderSpecificProperty.
+     * Required for jelly.
+     * @return Descriptor
+     */
+    @Nonnull
+    public FolderSpecificSecurity.FolderSpecificDescriptor getFolderSpecificDescriptor() {
+        return FolderSpecificSecurity.DESCRIPTOR;
+    }
 
     /**
      * {@link OwnershipPlugin} initialization for test suites.
@@ -162,23 +179,26 @@ public class OwnershipPlugin extends Plugin {
      * @param configuration
      * @throws IOException 
      */
-    public void configure(boolean requiresConfigureRights, String mailResolverClassName, 
-            ItemSpecificSecurity defaultJobsSecurity, 
+    public void configure(boolean requiresConfigureRights,
+            String mailResolverClassName,
+            ItemSpecificSecurity defaultJobsSecurity,
+            FolderSpecificSecurity defaultFoldersSecurity,
             OwnershipPluginConfiguration configuration) throws IOException {
         this.requiresConfigureRights = requiresConfigureRights;
         this.mailResolverClassName = mailResolverClassName;
         this.defaultJobsSecurity = defaultJobsSecurity;
+        this.defaultFoldersSecurity = defaultFoldersSecurity;
         this.configuration = configuration;
         
         reinitActionsList();
-	save();
+        save();
         Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
 
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
-	Jenkins.getActiveInstance().getActions().removeAll(pluginActions);
+        Jenkins.getActiveInstance().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         
         // Configurations
@@ -194,9 +214,13 @@ public class OwnershipPlugin extends Plugin {
         if (formData.containsKey("defaultJobsSecurity")) {
             this.defaultJobsSecurity = getItemSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultJobsSecurity"));
         }
+            
+        if (formData.containsKey("defaultFoldersSecurity")) {
+            this.defaultFoldersSecurity = getFolderSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultFoldersSecurity"));
+        }
         
         reinitActionsList();
-	save();
+        save();
         Jenkins.getActiveInstance().getActions().addAll(pluginActions);
     }
    

@@ -23,39 +23,103 @@
  */
 package org.jenkinsci.plugins.ownership.model.folders;
 
+import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
+import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipItem;
+import com.synopsys.arc.jenkins.plugins.ownership.Messages;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
+import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatter;
+import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
+import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
+import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
+import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
+
+import hudson.Extension;
+import hudson.model.Descriptor;
+import hudson.model.Items;
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
-import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipItem;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import hudson.Extension;
-import hudson.model.Descriptor;
+import hudson.model.User;
+import hudson.util.XStream2;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
 import javax.annotation.CheckForNull;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
+import javax.servlet.ServletException;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Ownership property for {@link AbstractFolder}s.
  * @author Oleg Nenashev
  * @since 0.9
  */
-public class FolderOwnershipProperty 
-        extends AbstractFolderProperty<AbstractFolder<?>> 
-        implements IOwnershipItem<AbstractFolder<?>>{
-    
+public class FolderOwnershipProperty extends AbstractFolderProperty<AbstractFolder<?>>
+    implements IOwnershipItem<AbstractFolder<?>>
+{
     @CheckForNull
     OwnershipDescription ownership;
-
-    public FolderOwnershipProperty(@CheckForNull OwnershipDescription ownership) {
+    
+    /**
+     * Additional matrix with project security
+     */
+    @CheckForNull
+    FolderSpecificSecurity itemSpecificSecurity;
+    
+    @DataBoundConstructor
+    public FolderOwnershipProperty(OwnershipDescription ownership, FolderSpecificSecurity security) {
         this.ownership = ownership;
+        this.itemSpecificSecurity = security;
     }
 
     @Override
+    public OwnershipDescription getOwnership() {
+        return (ownership!=null) ? ownership : OwnershipDescription.DISABLED_DESCR;
+    }
+    
+    /**
+     * Gets current configuration of item-specific security.
+     * The function returns a default configuration if security is not
+     * configured. Use {@link #hasItemSpecificSecurity() hasItemSpecificSecurity}
+     * to check an origin of permissions.
+     * @return ItemSpecific security or {@code null} if it is not configured
+     * @since 0.3
+     */
+    @CheckForNull
+    public FolderSpecificSecurity getItemSpecificSecurity() {
+        return itemSpecificSecurity != null ? itemSpecificSecurity : OwnershipPlugin.getInstance().getDefaultFoldersSecurity();
+    }
+    
+    /**
+     * Checks if job-specific security is configured.
+     * @return true if job-specific security is configured
+     * @since 0.3.1
+     */
+    public boolean hasItemSpecificSecurity() {
+        return itemSpecificSecurity != null;
+    }
+    
+    public String getDisplayName(User usr) {
+        return FolderOwnershipHelper.Instance.getDisplayName(usr);
+    }
+    
+    public Collection<User> getUsers()
+    {
+        //TODO: Sort users
+        IUserFilter filter = new AccessRightsFilter(owner, AbstractFolder.CONFIGURE);
+        Collection<User> res = UserCollectionFilter.filterUsers(User.getAll(), true, filter);
+        return res;
+    }
+    
+    @Override
     public IOwnershipHelper<AbstractFolder<?>> helper() {
-        return FolderOwnershipHelper.getInstance();
+        return FolderOwnershipHelper.Instance;
     }
 
     @Override
@@ -64,35 +128,59 @@ public class FolderOwnershipProperty
     }
 
     @Override
-    public OwnershipDescription getOwnership() {
-        return ownership != null ? ownership : OwnershipDescription.DISABLED_DESCR;
+    public AbstractFolderProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
+        return new FolderOwnershipProperty(ownership, itemSpecificSecurity);
     }
 
-    /**
-     * Sets the new ownership description.
-     * @param description Description to be set. Use {@code null} to drop settings.
-     * @throws IOException Property cannot be saved.
-     */
-    public void setOwnershipDescription(@CheckForNull OwnershipDescription description) throws IOException {
-        ownership = description;
-        owner.save();
-    }    
-
-    @Override
-    public AbstractFolderProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
-        // Retain the current configuration in order to prevent changes by form submissions
-        return new FolderOwnershipProperty(ownership);
+    public OwnershipLayoutFormatter<AbstractFolder<?>> getLayoutFormatter() {
+        return FolderOwnershipHelper.Instance.getLayoutFormatter();
     }
     
     @Extension(optional = true)
     public static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
-
         @Override
-        @SuppressFBWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "TODO: should be fixed, see jenkinsci PR #1880")
         public String getDisplayName() {
-            // It prevents the property from displaying
-            return null;
+            return Messages.JobOwnership_Config_SectionTitle();
         }
         
+        @Override
+        public boolean isApplicable(Class<? extends AbstractFolder> jobType) {
+            return true;
+        }
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder bldr = new StringBuilder();
+        bldr.append(ownership != null ? ownership.toString() : "ownership not set");
+        bldr.append(" ");
+        bldr.append(itemSpecificSecurity != null ? "with specific permissions" : "without specific permissions");
+        return bldr.toString();
+    }
+    
+    public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
+        JSONObject formData = req.getSubmittedForm();
+        JSONObject jsonOwnership = formData.getJSONObject("owners");
+        setOwnershipDescription(OwnershipDescription.parseJSON(jsonOwnership));
+    }
+    
+    public void setOwnershipDescription(@CheckForNull OwnershipDescription descr) throws IOException {
+        ownership = descr;
+        owner.save();
+    }    
+
+    public void setItemSpecificSecurity(@CheckForNull FolderSpecificSecurity security) throws IOException {
+        itemSpecificSecurity = security;
+        owner.save();
+    }
+    
+    static {
+        // TODO: Remove reflection once baseline is updated past 2.85.
+        try {
+            Method m = XStream2.class.getMethod("addCriticalField", Class.class, String.class);
+            m.invoke(Items.XSTREAM2, FolderOwnershipProperty.class, "ownership");
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new ExceptionInInitializerError(e);
+        }
     }
 }
