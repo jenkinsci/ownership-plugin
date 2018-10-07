@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.5</version>
+        <version>3.18</version>
     </parent>
     
     <groupId>com.synopsys.jenkinsci</groupId>
@@ -23,11 +23,11 @@
     </licenses>	
 
     <properties>
-        <jenkins.version>1.651.3</jenkins.version>
-        <java.level>7</java.level>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <workflow.version>1.14</workflow.version>
+        <jenkins.version>2.60.3</jenkins.version>
+        <java.level>8</java.level>
         <findbugs.effort>Max</findbugs.effort>
+        <!-- Uses restricted Security Inspector API -->
+        <useBeta>true</useBeta>
     </properties>
 
     <developers>
@@ -64,13 +64,13 @@
         <dependency>
             <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
             <artifactId>job-restrictions</artifactId>
-            <version>0.1</version>
+            <version>0.8</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
-            <version>1.20</version>
+            <version>1.42</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -88,24 +88,24 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>security-inspector</artifactId>
-            <version>0.4</version>
+            <version>0.5-20181007.200044-1</version>
             <optional>true</optional>
         </dependency>
         <!--Plugins decoupled from the core. Would be great to make these deps optional.-->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.6</version>
+            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-auth</artifactId>
-            <version>1.7</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
-            <version>1.13</version>
+            <version>1.18</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -115,27 +115,27 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>${workflow.version}</version>
+            <version>2.53</version>
         </dependency>
         
         <!-- Test framework -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>${workflow.version}</version>
+            <version>2.15</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>${workflow.version}</version>
+            <version>2.21</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <version>${workflow.version}</version>
+            <version>2.7</version>
             <scope>test</scope>
         </dependency>
         <dependency> <!--Implicitly required by folders-->
