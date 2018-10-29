@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
-            <version>1.6</version>
+            <version>1.12.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>email-ext</artifactId>
-            <version>2.62</version>
+            <version>2.47</version>
             <optional>true</optional>
         </dependency>
         <!--Plugins decoupled from the core. Would be great to make these deps optional.-->
@@ -123,7 +123,11 @@
             <artifactId>workflow-cps</artifactId>
             <version>${workflow.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+            <version>1.6</version>
+        </dependency>
         <!-- Test framework -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
