@@ -32,6 +32,7 @@ import hudson.util.FormValidation;
 import java.io.Serializable;
 import javax.annotation.CheckForNull;
 
+import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -81,6 +82,8 @@ public class UserSelector implements Describable<UserSelector>, Serializable {
           
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+
+    @Symbol("user")
     public static class DescriptorImpl extends Descriptor<UserSelector> {
         
         @Override

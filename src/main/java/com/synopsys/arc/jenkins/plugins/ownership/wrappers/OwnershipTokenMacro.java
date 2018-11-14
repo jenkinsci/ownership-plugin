@@ -32,6 +32,8 @@ import hudson.model.AbstractBuild;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import java.io.IOException;
+
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.tokenmacro.DataBoundTokenMacro;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 
@@ -44,6 +46,7 @@ import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
  * @since 0.4
  */
 @Extension(optional = true)
+@Symbol("ownership")
 public class OwnershipTokenMacro extends DataBoundTokenMacro {
     public static final String MACRO_NAME="OWNERSHIP";
     

@@ -35,6 +35,7 @@ import hudson.model.Descriptor;
 import java.io.IOException;
 import javax.annotation.CheckForNull;
 import net.sf.json.JSONObject;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -85,6 +86,7 @@ public class FolderOwnershipProperty
     }
     
     @Extension(optional = true)
+    @Symbol("ownership")
     public static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
 
         @Override

@@ -31,6 +31,7 @@ import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.ItemGroup;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -70,7 +71,8 @@ public class InheritanceOptions implements Describable<InheritanceOptions> {
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }
-  
+
+    @Symbol("ownershipInheritance")
     public static class DescriptorImpl extends Descriptor<InheritanceOptions> {
         
         @Override

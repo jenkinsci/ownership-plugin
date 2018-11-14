@@ -40,8 +40,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -54,15 +57,17 @@ import org.kohsuke.stapler.StaplerRequest;
 public class OwnerNodeProperty extends NodeProperty<Node> 
     implements IOwnershipItem<NodeProperty> {
 
+    @Nonnull
     private OwnershipDescription ownership;
+    @CheckForNull
     private String nodeName; 
     
     @DataBoundConstructor
-    public OwnerNodeProperty(NodeOwnerWrapper slaveOwnership) {
-        this(null, (slaveOwnership != null) ? slaveOwnership.getDescription() : null);
+    public OwnerNodeProperty(@CheckForNull NodeOwnerWrapper nodeOwnership) {
+        this(null, (nodeOwnership != null) ? nodeOwnership.getDescription() : null);
     }
     
-    public OwnerNodeProperty(Node node, OwnershipDescription ownership) {
+    public OwnerNodeProperty(@CheckForNull Node node, @CheckForNull OwnershipDescription ownership) {
          setNode(node);
          //FIXME: remove hack with owner
          this.nodeName = (node != null) ? node.getNodeName() : null;
@@ -112,7 +117,8 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     }  
       
     @Extension
-    public static class DescriptorImpl extends NodePropertyDescriptor {       
+    @Symbol("ownership")
+    public static class DescriptorImpl extends NodePropertyDescriptor {
         /**
          * Gets Node, which is being configured by StaplerRequest
          * @remarks Workaround for

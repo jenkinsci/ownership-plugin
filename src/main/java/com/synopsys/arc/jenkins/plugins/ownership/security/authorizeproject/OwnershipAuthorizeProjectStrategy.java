@@ -34,6 +34,7 @@ import hudson.model.User;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.authorizeproject.AuthorizeProjectStrategy;
 import org.jenkinsci.plugins.authorizeproject.AuthorizeProjectStrategyDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -69,6 +70,7 @@ public class OwnershipAuthorizeProjectStrategy extends AuthorizeProjectStrategy 
     }
       
     @Extension(optional = true)
+    @Symbol("ownershipBased")
     public static class DescriptorImpl extends AuthorizeProjectStrategyDescriptor {
         
         @Override

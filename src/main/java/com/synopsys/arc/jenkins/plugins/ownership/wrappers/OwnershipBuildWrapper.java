@@ -34,6 +34,8 @@ import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import java.io.IOException;
 import javax.annotation.Nonnull;
+
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -90,6 +92,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
+    @Symbol("injectOwnershipEnvVars")
     public static final class DescriptorImpl extends BuildWrapperDescriptor {
         
         public DescriptorImpl() {
