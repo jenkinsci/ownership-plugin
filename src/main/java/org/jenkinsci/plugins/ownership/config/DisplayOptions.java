@@ -30,6 +30,7 @@ import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.ownership.model.runs.RunOwnershipAction;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -75,7 +76,8 @@ public class DisplayOptions implements Describable<DisplayOptions> {
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }
-  
+
+    @Symbol("ownershipVisualization")
     public static class DescriptorImpl extends Descriptor<DisplayOptions> {
         
         @Override

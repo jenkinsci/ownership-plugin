@@ -38,6 +38,8 @@ import hudson.model.Run;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -50,6 +52,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class OwnersListJobRestriction extends JobRestriction {
     
     private static final JobOwnerHelper helper = new JobOwnerHelper();
+
     private final List<UserSelector> usersList;
     private final boolean acceptsCoOwners;
     transient private Set<String> usersMap = null;
@@ -142,6 +145,7 @@ public class OwnersListJobRestriction extends JobRestriction {
 
 
     @Extension(optional = true)
+    @Symbol("ownership")
     public static class DescriptorImpl extends JobRestrictionDescriptor {
         @Override
         public String getDisplayName() {

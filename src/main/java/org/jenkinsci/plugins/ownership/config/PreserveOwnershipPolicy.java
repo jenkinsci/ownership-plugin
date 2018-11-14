@@ -7,6 +7,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.Extension;
 import hudson.model.Item;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -33,6 +34,7 @@ public class PreserveOwnershipPolicy extends ItemOwnershipPolicy {
     }
 
     @Extension
+    @Symbol("preserveOwnership")
     public static class DescriptorImpl extends ItemOwnershipPolicyDescriptor {
         @Override
         public String getDisplayName() {

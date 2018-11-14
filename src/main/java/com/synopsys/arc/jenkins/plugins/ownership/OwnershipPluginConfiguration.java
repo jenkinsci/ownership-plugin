@@ -25,6 +25,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership;
 
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
 import hudson.Extension;
 import hudson.model.Describable;
@@ -59,14 +60,14 @@ public class OwnershipPluginConfiguration
 
     @Deprecated
     public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy, 
-            @Nonnull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions, 
+            @CheckForNull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions,
             @Nonnull DisplayOptions displayOptions) {
         this(itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, InheritanceOptions.DEFAULT);
     }
     
     @DataBoundConstructor
     public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy, 
-            @Nonnull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions, 
+            @CheckForNull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions,
             @Nonnull DisplayOptions displayOptions, @Nonnull InheritanceOptions inheritanceOptions) {
         this.itemOwnershipPolicy = itemOwnershipPolicy;
         this.mailOptions = mailOptions;
@@ -123,7 +124,8 @@ public class OwnershipPluginConfiguration
     
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
-    
+
+    @Symbol("ownershipConfig")
     public static class DescriptorImpl extends Descriptor<OwnershipPluginConfiguration> {
 
         @Override

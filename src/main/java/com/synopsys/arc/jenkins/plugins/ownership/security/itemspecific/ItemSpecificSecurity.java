@@ -36,6 +36,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -82,6 +83,7 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
     public static final ItemSpecificDescriptor DESCRIPTOR = new ItemSpecificDescriptor();
     
     @Extension
+    @Symbol("itemSpecific")
     public static class ItemSpecificDescriptor extends Descriptor<ItemSpecificSecurity> {
         @Override
         public String getDisplayName() {

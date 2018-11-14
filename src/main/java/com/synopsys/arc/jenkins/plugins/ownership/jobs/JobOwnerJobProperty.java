@@ -35,6 +35,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsF
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -140,6 +141,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     }   
     
     @Extension
+    @Symbol("ownership")
     public static class DescriptorImpl extends JobPropertyDescriptor {
         @Override
         public String getDisplayName() {
