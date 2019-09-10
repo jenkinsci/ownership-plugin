@@ -1,6 +1,13 @@
 Changelog
 -----
 
+| WARNING: Changelogs have been moved to [GitHub Releases](https://github.com/jenkinsci/ownership/releases) |
+| --- |
+
+### New releases
+
+See [GitHub Releases](https://github.com/jenkinsci/ownership/releases).
+
 ### 0.12.1
 
 Release date: Apr 30, 2018

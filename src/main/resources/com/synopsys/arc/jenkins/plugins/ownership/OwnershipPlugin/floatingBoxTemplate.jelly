@@ -43,59 +43,62 @@
     <!-- Layout for ownership with available data -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and ownershipDescription.ownershipEnabled}">
       <div class="ownership-summary-box">   
-        <div class="ownership-header">${itemType} ${%Owners}</div>            
-        <table>
-            <tr>
-                <td>
-                    <div class="ownership-section">${%Primary}</div>
-                </td>
-                <td>
-                    <div class="ownership-user-info">
-                        <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
-                    </div>
-                </td>
-            </tr>
-        
-            <!-- Secondary owners (fka Co-owners) -->    
-            <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
-            <j:if test="${not coownersList.isEmpty()}">
+        <input class="ownership-toggle-box" id="ownership-toogle-1" type="checkbox" />
+        <label for="ownership-toogle-1">${itemType} ${%Owners}</label>           
+        <div>
+            <table>
                 <tr>
-                    <td>        
-                        <div class="ownership-section">${%Secondary}</div>
-                    </td>       
                     <td>
-                        <j:forEach var="coownerId" items="${coownersList}">
-                            <div class="ownership-user-info">                   
-                                <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
-                            </div>
-                        </j:forEach>  
+                        <div class="ownership-section">${%Primary}</div>
+                    </td>
+                    <td>
+                        <div class="ownership-user-info">
+                            <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
+                        </div>
                     </td>
                 </tr>
-            </j:if>
-        </table>
-             
-        <div class="ownership-contact-links"> 
-            <table>
-                <tr>  
-                    <!-- Contact Owners link -->
-                    <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
-                    <j:if test="${ownersMailToLink != null}">   
-                        <td>    
-                            <img src="${imagesURL}/24x24/user.png"/>
-                            <a href="${ownersMailToLink}">${%ownersMailToLink.text(itemType)}</a>
-                        </td>
-                    </j:if>
-
-                    <!-- Contact Admins link -->
-                    <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
-                    <j:if test="${adminsMailToLink != null}">
+            
+                <!-- Secondary owners (fka Co-owners) -->    
+                <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
+                <j:if test="${not coownersList.isEmpty()}">
+                    <tr>
+                        <td>        
+                            <div class="ownership-section">${%Secondary}</div>
+                        </td>       
                         <td>
-                            <img src="${imagesURL}/24x24/setting.png"/>
-                            <a href="${adminsMailToLink}">${%adminsMailToLink.text}</a>
+                            <j:forEach var="coownerId" items="${coownersList}">
+                                <div class="ownership-user-info">                   
+                                    <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
+                                </div>
+                            </j:forEach>  
                         </td>
-                    </j:if>
-                </tr>
+                    </tr>
+                </j:if>
             </table>
+                 
+            <div class="ownership-contact-links"> 
+                <table>
+                    <tr>  
+                        <!-- Contact Owners link -->
+                        <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
+                        <j:if test="${ownersMailToLink != null}">   
+                            <td>    
+                                <img src="${imagesURL}/24x24/user.png"/>
+                                <a href="${ownersMailToLink}">${%ownersMailToLink.text(itemType)}</a>
+                            </td>
+                        </j:if>
+
+                        <!-- Contact Admins link -->
+                        <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
+                        <j:if test="${adminsMailToLink != null}">
+                            <td>
+                                <img src="${imagesURL}/24x24/setting.png"/>
+                                <a href="${adminsMailToLink}">${%adminsMailToLink.text}</a>
+                            </td>
+                        </j:if>
+                    </tr>
+                </table>
+            </div>
         </div>
       </div>
     </j:if>

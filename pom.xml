@@ -12,7 +12,7 @@
     <name>Job and Node ownership plugin</name>
     <packaging>hpi</packaging>
     <description>Provides explicit ownership of jobs and nodes</description>
-    <url>https://wiki.jenkins.io/display/JENKINS/Ownership+Plugin</url>
+    <url>https://github.com/jenkinsci/ownership-plugin</url>
     
     <licenses>
         <license>

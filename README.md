@@ -2,6 +2,9 @@ Ownership Plugin for Jenkins
 ================
 
 [![Join the chat at https://gitter.im/jenkinsci/ownership-plugin](https://badges.gitter.im/jenkinsci/ownership-plugin.svg)](https://gitter.im/jenkinsci/ownership-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/ownership.svg)](https://plugins.jenkins.io/ownership)
+[![GitHub release](https://img.shields.io/github/release/jenkinsci/ownership-plugin.svg?label=changelog)](https://github.com/jenkinsci/ownership-plugin/releases/latest)
+[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/ownership.svg?color=blue)](https://plugins.jenkins.io/ownership)
 
 This plugin provides an ownership engine for [Jenkins](https://jenkins.io/) automation server. 
 
@@ -53,4 +56,5 @@ The plugin also contributes extension points, which can be used by other plugins
 
 # Changelog
 
-See [this page](CHANGELOG.md).
+See [GitHub releases](https://github.com/jenkinsci/ownership-plugin/releases) for recent releases.
+Changelog for 0.12.1 and older versions is available [here](CHANGELOG.md).

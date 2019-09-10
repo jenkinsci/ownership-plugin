@@ -1,5 +1,5 @@
 .ownership-summary-box {
-    width: 400px;
+    width: 75%;
     background-color: #F0F0F0;
     border-color: #BBBBBB;
     border-style: double;
@@ -21,10 +21,39 @@
 }
 
 .ownership-text {
-    
 }
 
 .ownership-contact-links {
     margin-left: 5px;
     border-spacing: 5px;
+}
+
+.ownership-toggle-box {
+  display: none;
+}
+
+.ownership-toggle-box + label {
+    text-align: center;
+    font-weight: bold;
+}
+
+.ownership-toggle-box + label:before {
+  color: #000000;
+  content: "\25BA";
+  display: block;
+  float: left;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.ownership-toggle-box:checked + label:before {
+  content: "\25BC";
+}
+
+.ownership-toggle-box + label + div {
+  display: none;
+}
+
+.ownership-toggle-box:checked + label + div {
+  display: block;
 }
