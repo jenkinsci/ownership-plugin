@@ -90,8 +90,8 @@ public class OwnershipPlugin extends Plugin {
     }
     
     public static OwnershipPlugin getInstance() {
-        Jenkins j = Jenkins.getInstance();
-        OwnershipPlugin plugin = j != null ? j.getPlugin(OwnershipPlugin.class) : null;
+        Jenkins j = Jenkins.get();
+        OwnershipPlugin plugin = j.getPlugin(OwnershipPlugin.class);
         if (plugin == null) { // Fail horribly
             // TODO: throw a graceful error
             throw new IllegalStateException("Cannot get the plugin's instance. Jenkins or the plugin have not been initialized yet");
