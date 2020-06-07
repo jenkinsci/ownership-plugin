@@ -22,18 +22,18 @@
 * THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" 
-         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
   <f:advanced title="${%Ownership Display Options}">
     <f:entry title="" description="">
-        <table width="100%">
+        <o:blockWrapper>
           <f:entry field="hideOwnershipIfNoData">
             <f:checkbox title="${%Hide ownership summaries for missing ownership info}"/>
           </f:entry>
           <f:entry field="hideRunOwnership">
             <f:checkbox title="${%Hide ownership summaries on Run pages}"/>
           </f:entry>
-        </table>   
+        </o:blockWrapper>
     </f:entry> 
   </f:advanced>
 </j:jelly>

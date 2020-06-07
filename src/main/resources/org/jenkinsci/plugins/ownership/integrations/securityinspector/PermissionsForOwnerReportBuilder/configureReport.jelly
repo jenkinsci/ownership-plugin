@@ -22,7 +22,8 @@
 * THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
     <f:entry title="${%Selected ownership:}">
         <j:set var="_userList"  value="${it.possibleUsers}"/>
         <select name="selectedOwner" class="setting-input">
@@ -36,7 +37,7 @@
                     
     <f:block> 
         <f:entry>
-            <table width="100%"> 
+            <o:blockWrapper>
                 <f:section title="${%Filter items to be reported}"> 
                     
                     <f:optionalBlock name="usefolder" title="${%Build report for selected folder}"
@@ -62,7 +63,7 @@
                         </f:entry>
                     </f:optionalBlock>
                 </f:section>
-            </table>
+            </o:blockWrapper>
         </f:entry>
     </f:block>
 </j:jelly>

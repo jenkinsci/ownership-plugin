@@ -25,12 +25,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" 
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:advanced title="${%Ownership Inheritance Options}">
-    <f:entry title="" description="">
-        <table width="100%">
-          <f:entry field="blockInheritanceFromItemGroups">
-            <f:checkbox title="${%Block inheritance from item groups}"/>
-          </f:entry>
-        </table>   
-    </f:entry> 
+    <f:entry field="blockInheritanceFromItemGroups">
+      <f:checkbox title="${%Block inheritance from item groups}"/>
+    </f:entry>
   </f:advanced>
 </j:jelly>

@@ -40,7 +40,7 @@
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
     
     <!--Prepare data-->
     <j:set var="_item" value="${it.getDescribedItem()}"/>   
@@ -62,7 +62,7 @@
     <f:entry title="${%Secondary owners}" help="/plugin/ownership/help/coOwner.html"/>
     <f:entry>
         <f:repeatable name="coOwners" add="${%Add secondary owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">                                    
-            <table width="100%">
+            <o:blockWrapper>
                 <f:entry title="Secondary owner">
                     <f:textbox field="coOwner" value="${_coownerId}"
                                checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"
@@ -77,7 +77,7 @@
                         <f:repeatableDeleteButton value="Remove..."/> 
                     </div>
                 </f:entry>
-            </table>        
+            </o:blockWrapper>
         </f:repeatable>
     </f:entry>              
 </j:jelly>
