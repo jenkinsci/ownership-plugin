@@ -39,6 +39,8 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Implements item-specific property map.
  * This class relies on {@link AuthorizationMatrixProperty} from Jenkins core.
@@ -92,7 +94,10 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
         public ItemSpecificSecurity newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             AuthorizationMatrixProperty prop = null;
             if (formData.containsKey("permissionsMatrix")) {
-                Descriptor<?> d= Jenkins.getActiveInstance().getDescriptor(AuthorizationMatrixProperty.class);
+                Descriptor<?> d = Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
+                if (d == null) {
+                    throw new IllegalStateException("Missing AuthorizationMatrixProperty descriptor");
+                }
                 prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
             }
             return new ItemSpecificSecurity(prop);
