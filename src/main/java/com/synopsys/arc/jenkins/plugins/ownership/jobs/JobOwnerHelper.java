@@ -44,6 +44,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import hudson.security.Permission;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.jobs.JobOwnershipDescriptionSource;
@@ -177,7 +178,7 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
 
     @Override
     public @Nonnull Collection<User> getPossibleOwners(@Nonnull Job<?, ?> item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
+        if (OwnershipGlobalConfiguration.get().isRequiresConfigureRights()) {
             IUserFilter filter = new AccessRightsFilter(item, Job.CONFIGURE);
             return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         } else {

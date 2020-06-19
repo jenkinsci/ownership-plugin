@@ -37,6 +37,7 @@ import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSource;
@@ -85,7 +86,7 @@ public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodePropert
     @Nonnull
     @Override
     public Collection<User> getPossibleOwners(NodeProperty item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
+        if (OwnershipGlobalConfiguration.get().isRequiresConfigureRights()) {
             //FIXME: Fix after fix of bug at Jenkins
             return UserCollectionFilter.filterUsers(User.getAll(), true);
         } else {

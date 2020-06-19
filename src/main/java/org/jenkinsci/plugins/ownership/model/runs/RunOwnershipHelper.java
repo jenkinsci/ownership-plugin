@@ -40,6 +40,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import hudson.security.Permission;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.kohsuke.accmod.Restricted;
@@ -153,7 +154,7 @@ public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {
     @Override
     public boolean isDisplayOwnershipSummaryBox(Run item) {
         return super.isDisplayOwnershipSummaryBox(item) &&
-               !OwnershipPlugin.getInstance().getConfiguration().getDisplayOptions().isHideRunOwnership();
+               !OwnershipGlobalConfiguration.get().getConfiguration().getDisplayOptions().isHideRunOwnership();
     }
 
     @Extension

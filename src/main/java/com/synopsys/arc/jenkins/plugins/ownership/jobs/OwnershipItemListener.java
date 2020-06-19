@@ -30,6 +30,8 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
+
 import java.io.IOException;
 
 /**
@@ -55,7 +57,7 @@ public class OwnershipItemListener extends ItemListener {
     }
     
     private ItemOwnershipPolicy getPolicy() {
-        return OwnershipPlugin.getInstance().getConfiguration().getItemOwnershipPolicy();
+        return OwnershipGlobalConfiguration.get().getConfiguration().getItemOwnershipPolicy();
     }
     
     private void modifyOwnership(Item item, OwnershipDescription ownership) {

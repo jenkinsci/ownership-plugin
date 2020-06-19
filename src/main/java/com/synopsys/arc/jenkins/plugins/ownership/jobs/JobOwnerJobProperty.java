@@ -35,6 +35,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsF
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -96,7 +97,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     public ItemSpecificSecurity getItemSpecificSecurity() {
         return itemSpecificSecurity != null 
                 ? itemSpecificSecurity 
-                : OwnershipPlugin.getInstance().getDefaultJobsSecurity();
+                : OwnershipGlobalConfiguration.get().getDefaultJobsSecurity();
     }
     
     /**
@@ -136,7 +137,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     }
     
     public OwnershipLayoutFormatter<Job<?, ?>> getLayoutFormatter() {
-        return OwnershipPlugin.getInstance().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getDescribedItem());
+        return OwnershipGlobalConfiguration.get().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getDescribedItem());
     }   
     
     @Extension

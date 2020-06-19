@@ -1,0 +1,52 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin plugin="ownership@0.13.0-SNAPSHOT">
+  <requiresConfigureRights>true</requiresConfigureRights>
+  <pluginActions/>
+  <mailResolverClassName>Fast resolver for UI (recommended)</mailResolverClassName>
+  <defaultJobsSecurity>
+    <permissionsMatrix>
+      <inheritanceStrategy class="org.jenkinsci.plugins.matrixauth.inheritance.InheritGlobalStrategy"/>
+      <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:anonymous</permission>
+      <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:anonymous</permission>
+      <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:authenticated</permission>
+      <permission>hudson.model.Item.Build:anonymous</permission>
+    </permissionsMatrix>
+  </defaultJobsSecurity>
+  <configuration>
+    <itemOwnershipPolicy class="com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy"/>
+    <mailOptions>
+      <contactOwnersSubjectTemplate>[Jenkins] - TODO: Describe the issue with ${ITEM_TYPE_NAME} ${ITEM_DISPLAY_NAME}</contactOwnersSubjectTemplate>
+      <contactOwnersBodyTemplate>Dear owners of ${ITEM_TYPE_NAME} ${ITEM_DISPLAY_NAME},
+
+        TODO: Add text
+        URL: ${ITEM_URL}
+
+        Best regards,
+        ${USER_FULL_NAME} </contactOwnersBodyTemplate>
+      <contactOwnersLinkDisabled>false</contactOwnersLinkDisabled>
+      <contactAdminsSubjectTemplate>[Jenkins] - TODO: Describe the issue with ${ITEM_TYPE_NAME} ${ITEM_DISPLAY_NAME}</contactAdminsSubjectTemplate>
+      <contactAdminsBodyTemplate>Dear Jenkins admins,
+
+        TODO: Describe the issue
+        URL: ${ITEM_URL}
+
+        Best regards,
+        ${USER_FULL_NAME}</contactAdminsBodyTemplate>
+      <contactAdminsLinkDisabled>false</contactAdminsLinkDisabled>
+      <emailListSeparator>;</emailListSeparator>
+      <adminsContactEmail>myemail@example.com</adminsContactEmail>
+      <hideOwnerAndCoOwnerEmails>false</hideOwnerAndCoOwnerEmails>
+    </mailOptions>
+    <displayOptions>
+      <hideRunOwnership>false</hideRunOwnership>
+      <hideOwnershipIfNoData>false</hideOwnershipIfNoData>
+    </displayOptions>
+    <inheritanceOptions>
+      <blockInheritanceFromItemGroups>false</blockInheritanceFromItemGroups>
+    </inheritanceOptions>
+    <globalEnvSetupOptions>
+      <injectNodeOwnership>true</injectNodeOwnership>
+      <injectJobOwnership>false</injectJobOwnership>
+    </globalEnvSetupOptions>
+  </configuration>
+</com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin>

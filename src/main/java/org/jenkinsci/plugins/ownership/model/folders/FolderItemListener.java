@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 
 /**
  * Locates changes in {@link AbstractFolder}s and assigns ownership accordingly.
@@ -64,7 +65,7 @@ public class FolderItemListener extends ItemListener {
     }
     
     private ItemOwnershipPolicy getPolicy() {
-        return OwnershipPlugin.getInstance().getConfiguration().getItemOwnershipPolicy();
+        return OwnershipGlobalConfiguration.get().getConfiguration().getItemOwnershipPolicy();
     }
     
     private boolean isFoldersPluginEnabled() {

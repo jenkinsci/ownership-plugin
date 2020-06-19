@@ -26,7 +26,6 @@ package com.synopsys.arc.jenkins.plugins.ownership.wrappers;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
@@ -47,6 +46,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.Future;
+
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
@@ -83,8 +84,8 @@ public class OwnershipBuildWrapperTest {
         projectOwner.setFullName("Test Project Owner");
         
         // Configure ownership plugin
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(
-                true, null, null, new OwnershipPluginConfiguration(new AssignCreatorPolicy()));
+        OwnershipGlobalConfiguration.get().
+                setConfiguration(new OwnershipPluginConfiguration(new AssignCreatorPolicy()));
         
         // Create node with ownership
         node = r.createOnlineSlave();
@@ -118,7 +119,7 @@ public class OwnershipBuildWrapperTest {
         final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
                 new AssignCreatorPolicy(),MailOptions.DEFAULT, 
                 new EnvSetupOptions(true, true));
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, pluginConf);
+        OwnershipGlobalConfiguration.get().setConfiguration(pluginConf);
         testVarsPresense(true);
     }
     
@@ -128,7 +129,7 @@ public class OwnershipBuildWrapperTest {
         final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
                 new AssignCreatorPolicy(),MailOptions.DEFAULT, 
                 new EnvSetupOptions(true, true));
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, pluginConf);
+        OwnershipGlobalConfiguration.get().setConfiguration(pluginConf);
         
         FreeStyleBuild build = testVarsPresense(false);
         r.assertLogContains("NODE_COOWNERS="+NODE_OWNER_ID, build);

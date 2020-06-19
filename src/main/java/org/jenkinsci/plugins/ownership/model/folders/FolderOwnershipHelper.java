@@ -41,6 +41,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import hudson.security.Permission;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.kohsuke.accmod.Restricted;
@@ -142,7 +143,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
     
     @Override
     public Collection<User> getPossibleOwners(AbstractFolder<?> item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
+        if (OwnershipGlobalConfiguration.get().isRequiresConfigureRights()) {
             IUserFilter filter = new AccessRightsFilter(item, AbstractFolder.CONFIGURE);
             return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         } else {

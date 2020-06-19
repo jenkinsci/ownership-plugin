@@ -33,9 +33,11 @@ import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.config.DisplayOptions;
 import org.jenkinsci.plugins.ownership.config.InheritanceOptions;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
 import org.jvnet.hudson.test.JenkinsRule;
+
 /**
  * Manages configuration of {@link OwnershipPlugin}.
  * @author Oleg Nenashev
@@ -111,7 +113,11 @@ public class OwnershipPluginConfigurer {
     public void configure() throws IOException {
         OwnershipPluginConfiguration conf = new OwnershipPluginConfiguration
                 (itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, inheritanceOptions);
-        jenkins.getPlugin(OwnershipPlugin.class).configure
-                (requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, conf);
+
+        OwnershipGlobalConfiguration cfg = OwnershipGlobalConfiguration.get();
+        cfg.setConfiguration(conf);
+        cfg.setDefaultJobsSecurity(defaultJobsSecurity);
+        cfg.setMailResolverClassName(mailResolverClassName);
+        cfg.setRequiresConfigureRights(requiresConfigurePermissions);
     }
 }

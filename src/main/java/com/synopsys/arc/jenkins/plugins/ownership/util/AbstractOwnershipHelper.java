@@ -34,6 +34,7 @@ import javax.annotation.Nonnull;
 
 import hudson.security.Permission;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
 /**
@@ -93,7 +94,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
     public boolean isDisplayOwnershipSummaryBox(@Nonnull TObjectType item) {
         // If there is no data, check global options
         if (!getOwnershipDescription(item).isOwnershipEnabled()) {
-            return !OwnershipPlugin.getInstance().getConfiguration().getDisplayOptions().isHideOwnershipIfNoData();
+            return !OwnershipGlobalConfiguration.get().getConfiguration().getDisplayOptions().isHideOwnershipIfNoData();
         }
         
         return true;

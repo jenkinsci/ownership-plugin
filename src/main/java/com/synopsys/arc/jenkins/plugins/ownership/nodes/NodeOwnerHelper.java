@@ -41,6 +41,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import hudson.security.Permission;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSource;
@@ -103,7 +104,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
 
     @Override
     public Collection<User> getPossibleOwners(Node item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
+        if (OwnershipGlobalConfiguration.get().isRequiresConfigureRights()) {
             IUserFilter filter = new AccessRightsFilter(item, Computer.CONFIGURE);
             return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         } else {

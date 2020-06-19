@@ -42,6 +42,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -108,7 +109,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     }
     
     public OwnershipLayoutFormatter<Node> getLayoutFormatter() {
-        return OwnershipPlugin.getInstance().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getNode());
+        return OwnershipGlobalConfiguration.get().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getNode());
     }  
       
     @Extension

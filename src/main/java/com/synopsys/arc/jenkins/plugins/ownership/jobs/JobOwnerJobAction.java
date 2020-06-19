@@ -41,6 +41,7 @@ import javax.servlet.ServletException;
 
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
@@ -99,7 +100,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     
     @CheckForNull
     private static ItemSpecificSecurity getGlobalItemSpecificSecurity() {
-        return OwnershipPlugin.getInstance().getDefaultJobsSecurity();
+        return OwnershipGlobalConfiguration.get().getDefaultJobsSecurity();
     }
     
     /**
@@ -154,7 +155,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         // Get default security
-        ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.getInstance().getDefaultJobsSecurity();
+        ItemSpecificSecurity defaultJobsSecurity = OwnershipGlobalConfiguration.get().getDefaultJobsSecurity();
         ItemSpecificSecurity val = defaultJobsSecurity != null ? defaultJobsSecurity.clone() : null;
         
         JobOwnerHelper.setProjectSpecificSecurity(getDescribedItem(), val);

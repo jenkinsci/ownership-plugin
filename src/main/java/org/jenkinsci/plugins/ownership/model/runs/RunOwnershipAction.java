@@ -37,6 +37,8 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.security.Permission;
 import javax.annotation.Nonnull;
+
+import org.jenkinsci.plugins.ownership.config.OwnershipGlobalConfiguration;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 
 /**
@@ -74,7 +76,7 @@ public class RunOwnershipAction extends ItemOwnershipAction<Run>
     }
     
     public OwnershipLayoutFormatter<Run> getLayoutFormatter() {
-        return OwnershipPlugin.getInstance().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getDescribedItem());
+        return OwnershipGlobalConfiguration.get().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getDescribedItem());
     }   
     
     @Override
@@ -83,7 +85,7 @@ public class RunOwnershipAction extends ItemOwnershipAction<Run>
         boolean injectJobOwnership = false;
         
         // Handle global options
-        final EnvSetupOptions globalEnvSetupOptions = OwnershipPlugin.getInstance().
+        final EnvSetupOptions globalEnvSetupOptions = OwnershipGlobalConfiguration.get().
                 getConfiguration().getGlobalEnvSetupOptions();
         if (globalEnvSetupOptions != null) {
             injectNodeOwnership |= globalEnvSetupOptions.isInjectNodeOwnership();
