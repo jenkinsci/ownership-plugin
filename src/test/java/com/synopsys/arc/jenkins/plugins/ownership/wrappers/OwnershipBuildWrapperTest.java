@@ -84,7 +84,7 @@ public class OwnershipBuildWrapperTest {
         
         // Configure ownership plugin
         r.jenkins.getPlugin(OwnershipPlugin.class).configure(
-                true, null, null, new OwnershipPluginConfiguration(new AssignCreatorPolicy()));
+                true, null, null, null, new OwnershipPluginConfiguration(new AssignCreatorPolicy()));
         
         // Create node with ownership
         node = r.createOnlineSlave();
@@ -118,7 +118,7 @@ public class OwnershipBuildWrapperTest {
         final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
                 new AssignCreatorPolicy(),MailOptions.DEFAULT, 
                 new EnvSetupOptions(true, true));
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, pluginConf);
+        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, null, pluginConf);
         testVarsPresense(true);
     }
     
@@ -128,7 +128,7 @@ public class OwnershipBuildWrapperTest {
         final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
                 new AssignCreatorPolicy(),MailOptions.DEFAULT, 
                 new EnvSetupOptions(true, true));
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, pluginConf);
+        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, null, pluginConf);
         
         FreeStyleBuild build = testVarsPresense(false);
         r.assertLogContains("NODE_COOWNERS="+NODE_OWNER_ID, build);

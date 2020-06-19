@@ -1,7 +1,7 @@
 <!--
  * The MIT License
  *
- * Copyright 2015 Oleg Nenashev
+ * Copyright 2013 Oleg Nenashev, Synopsys Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,33 +28,30 @@
         <st:include it="${it.describedItem}" page="sidepanel.jelly"/>
         <l:main-panel>
             <h1>
-                <img src="${imagesURL}/48x48/${it.iconFileName}" alt="${it.displayName}"/>
-                ${it.displayName}
+                <img src="${imagesURL}/48x48/fingerprint.gif"/>
+                ${%Manage item-specific access rights}
             </h1>
-            <p>This page allows to configure ownership and specific access rights of the item.</p>
-            
-            <d:taglib uri="local">
-              <!-- table to show a map -->
-              <d:tag name="feature">
-                <t:summary icon="${icon}"
-                           href="${href}" iconOnly="true">
-                  <div class="link"><a href="${href}">${title}</a></div>
-                  <div style="color:gray; text-decoration:none;">
-                    <d:invokeBody />
-                  </div>
-                </t:summary>
-              </d:tag>
-            </d:taglib>
-
-            <table style="padding-left: 2em;" id="management-links">
-              <local:feature icon="user.gif" href="manage-owners" title="${it.manageOwnershipTitle}">
-                ${%Manage primary and secondary owners}
-              </local:feature>
-              <local:feature icon="fingerprint.gif" href="configure-project-specifics" title="${it.configureSpecificAccessTitle}">
-                ${%Configure job-specific access rights}.
-              </local:feature>
-            </table>
+            <f:form method="post" name="config" action="projectSpecificSecuritySubmit">
+                <j:set var="instance" value="${it}"/>
+                 
+                <!--Item-specific security-->
+                <f:optionalBlock name="itemSpecificSecurity" 
+                     title="${%Use item-specific security}"
+                     checked="${it.hasItemSpecificSecurity()}">                   
+                    <j:set var="descriptor" value="${it.itemSpecificDescriptor}"/>
+                    <j:set var="instance" value="${it.itemSpecificSecurity}"/>
+                    <st:include from="${descriptor}" page="${descriptor.configPage}"/> 
+                </f:optionalBlock>
+                
+                <f:block>
+                    <f:submit value="${%Save}"/>
+                </f:block>
+            </f:form>
+            <f:form method="post" name="config" action="restoreDefaultSpecificSecuritySubmit">
+                <div align="right">
+                    <f:submit value="${%Restore default settings...}"/>
+                </div>
+            </f:form>
         </l:main-panel>
     </l:layout>
-         
 </j:jelly>

@@ -27,6 +27,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import hudson.model.User;
+import hudson.security.Permission;
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.CheckForNull;
@@ -98,7 +99,7 @@ public abstract class AbstractOwnershipHelper<TObjectType>
         
         return true;
     }
- 
+    
     /**
      * Gets ownership info of the requested item.
      * @param item Item to be described
@@ -108,7 +109,11 @@ public abstract class AbstractOwnershipHelper<TObjectType>
      */
     @Nonnull
     public abstract OwnershipInfo getOwnershipInfo(@Nonnull TObjectType item);
-
+    
+    public boolean hasItemSpecificPermission(@Nonnull TObjectType item, String sid, Permission p) {
+        return false;
+    }
+    
     /**
      * Gets permission required to manage ownership for the item.
      * {@link Jenkins#ADMINISTER} by default if not overridden.
