@@ -1,0 +1,20 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+  <st:documentation>
+    The wrapper will be a `tr` tag on Jenkins Core less than 2.264, and a `div` tag after that
+  </st:documentation>
+
+  <j:choose>
+    <j:when test="${divBasedFormLayout}">
+      <div class="tr">
+        <d:invokeBody/>
+      </div>
+    </j:when>
+    <j:otherwise>
+      <tr>
+        <d:invokeBody/>
+      </tr>
+    </j:otherwise>
+  </j:choose>
+
+</j:jelly>
