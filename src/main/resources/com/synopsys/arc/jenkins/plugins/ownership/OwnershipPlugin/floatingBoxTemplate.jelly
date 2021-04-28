@@ -34,70 +34,71 @@
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+         xmlns:o="/lib/ownership">
     <!--Stuff-->
     <link rel="stylesheet" href="${rootURL}/plugin/ownership/css/ownership.css" type="text/css" />
     <j:set var="layoutFormatter" value="${it.layoutFormatter}"/>
     <j:set var="ownershipDescription" value="${helper.getOwnershipDescription(item)}"/>
-   
+
     <!-- Layout for ownership with available data -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and ownershipDescription.ownershipEnabled}">
-      <div class="ownership-summary-box">   
+      <div class="ownership-summary-box">
         <input class="ownership-toggle-box" id="ownership-toogle-1" type="checkbox" />
-        <label for="ownership-toogle-1">${itemType} ${%Owners}</label>           
+        <label for="ownership-toogle-1">${itemType} ${%Owners}</label>
         <div>
-            <table>
-                <tr>
-                    <td>
+            <o:blockWrapper>
+                <o:rowWrapper>
+                    <o:cellWrapper>
                         <div class="ownership-section">${%Primary}</div>
-                    </td>
-                    <td>
+                    </o:cellWrapper>
+                    <o:cellWrapper>
                         <div class="ownership-user-info">
                             <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
                         </div>
-                    </td>
-                </tr>
-            
-                <!-- Secondary owners (fka Co-owners) -->    
+                    </o:cellWrapper>
+                </o:rowWrapper>
+
+                <!-- Secondary owners (fka Co-owners) -->
                 <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
                 <j:if test="${not coownersList.isEmpty()}">
-                    <tr>
-                        <td>        
+                    <o:rowWrapper>
+                        <o:cellWrapper>
                             <div class="ownership-section">${%Secondary}</div>
-                        </td>       
-                        <td>
+                        </o:cellWrapper>
+                        <o:cellWrapper>
                             <j:forEach var="coownerId" items="${coownersList}">
-                                <div class="ownership-user-info">                   
+                                <div class="ownership-user-info">
                                     <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
                                 </div>
-                            </j:forEach>  
-                        </td>
-                    </tr>
+                            </j:forEach>
+                        </o:cellWrapper>
+                    </o:rowWrapper>
                 </j:if>
-            </table>
-                 
-            <div class="ownership-contact-links"> 
-                <table>
-                    <tr>  
+            </o:blockWrapper>
+
+            <div class="ownership-contact-links">
+                <o:blockWrapper>
+                    <o:rowWrapper>
                         <!-- Contact Owners link -->
                         <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
-                        <j:if test="${ownersMailToLink != null}">   
-                            <td>    
+                        <j:if test="${ownersMailToLink != null}">
+                            <o:cellWrapper>
                                 <img src="${imagesURL}/24x24/user.png"/>
                                 <a href="${ownersMailToLink}">${%ownersMailToLink.text(itemType)}</a>
-                            </td>
+                            </o:cellWrapper>
                         </j:if>
 
                         <!-- Contact Admins link -->
                         <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
                         <j:if test="${adminsMailToLink != null}">
-                            <td>
+                            <o:cellWrapper>
                                 <img src="${imagesURL}/24x24/setting.png"/>
                                 <a href="${adminsMailToLink}">${%adminsMailToLink.text}</a>
-                            </td>
+                            </o:cellWrapper>
                         </j:if>
-                    </tr>
-                </table>
+                    </o:rowWrapper>
+                </o:blockWrapper>
             </div>
         </div>
       </div>
