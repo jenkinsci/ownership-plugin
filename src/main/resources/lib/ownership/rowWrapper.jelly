@@ -1,0 +1,20 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+  <st:documentation>
+    The wrapper will be a <code>div</code> tag on Jenkins pages with the <code>divBasedFormLayout</code> flag, and a <code>td</code> tag otherwise
+  </st:documentation>
+
+  <j:choose>
+    <j:when test="${divBasedFormLayout}">
+      <div class="tr">
+        <d:invokeBody/>
+      </div>
+    </j:when>
+    <j:otherwise>
+      <tr>
+        <d:invokeBody/>
+      </tr>
+    </j:otherwise>
+  </j:choose>
+
+</j:jelly>
