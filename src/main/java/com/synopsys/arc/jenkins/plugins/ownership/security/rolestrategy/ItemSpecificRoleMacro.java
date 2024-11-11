@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
+import com.michelin.cio.hudson.plugins.rolestrategy.PermissionEntry;
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
@@ -53,6 +54,8 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
         return Messages.Security_RoleStrategy_ItemSpecificMacro_Description();
     }
 
+
+
     @Override
     @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "Part of other plugin API")
     public boolean IsApplicable(RoleType roleType) {
@@ -75,5 +78,11 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
         
         return false;
     }
+
+    @Override
+    public boolean hasPermission(PermissionEntry sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        return hasPermission(sid.getSid(), p, type, item, macro);
+    }
+
     
 }

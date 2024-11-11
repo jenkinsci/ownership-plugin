@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
+import com.michelin.cio.hudson.plugins.rolestrategy.PermissionEntry;
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
@@ -53,5 +54,9 @@ public class NoOwnerRoleMacro extends AbstractOwnershipRoleMacro {
     public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
         OwnershipDescription descr = getOwnership(type, item);
         return !descr.isOwnershipEnabled() || !descr.hasPrimaryOwner();
+    }
+    @Override
+    public boolean hasPermission(PermissionEntry sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        return hasPermission(sid.getSid(), p, type, item, macro);
     }
 }

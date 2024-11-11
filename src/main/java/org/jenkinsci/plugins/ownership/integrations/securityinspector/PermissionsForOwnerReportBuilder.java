@@ -44,7 +44,6 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.jenkinsci.plugins.securityinspector.Messages;
 import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
 import org.jenkinsci.plugins.securityinspector.UserContext;
 import org.jenkinsci.plugins.securityinspector.UserContextCache;
@@ -122,7 +121,6 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
     }
     
     @Nonnull
-    @Restricted(NoExternalUse.class)
     public Set<TopLevelItem> getRequestedJobs() throws HttpResponses.HttpResponseException {
         final UserContext context = UserContextCache.getInstance().get(getSessionId());
         if (context == null) {

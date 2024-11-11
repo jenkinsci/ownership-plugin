@@ -107,7 +107,7 @@ public class OwnershipPlugin extends Plugin {
     }
 
     @Override
-    protected void load() throws IOException {
+    public void load() throws IOException {
         super.load();
         
         // Migration to 1.5.0: Check ItemOwnershipPolicy

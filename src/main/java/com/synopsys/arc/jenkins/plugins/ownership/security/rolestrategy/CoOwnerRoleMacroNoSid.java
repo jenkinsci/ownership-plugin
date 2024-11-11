@@ -23,6 +23,7 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
+import com.michelin.cio.hudson.plugins.rolestrategy.PermissionEntry;
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import static com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro.NO_SID_SUFFIX;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
@@ -57,5 +58,10 @@ public class CoOwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro{
     public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
         User user = User.current();
         return hasPermission(user, type, item, macro, true);
+    }
+
+    @Override
+    public boolean hasPermission(PermissionEntry sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        return hasPermission(sid.getSid(), p, type, item, macro);
     }
 }
