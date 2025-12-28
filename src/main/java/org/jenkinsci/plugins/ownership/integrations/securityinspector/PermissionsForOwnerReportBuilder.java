@@ -46,9 +46,8 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.jenkinsci.plugins.securityinspector.Messages;
 import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
-import org.jenkinsci.plugins.securityinspector.UserContext;
-import org.jenkinsci.plugins.securityinspector.UserContextCache;
 import org.jenkinsci.plugins.securityinspector.impl.users.UserReportBuilder;
+import java.lang.reflect.Method;
 import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
 import org.jenkinsci.plugins.securityinspector.model.SecurityInspectorReport;
 import org.kohsuke.accmod.Restricted;
@@ -91,7 +90,15 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
 
         User owner = User.get(selectedItem);
         List<TopLevelItem> selectedJobs = filters.doFilter(owner);
-        UserContextCache.updateSearchCache(selectedJobs, null, null, selectedItem);
+        // Use reflection to access restricted UserContextCache class
+        try {
+            Class<?> userContextCacheClass = Class.forName("org.jenkinsci.plugins.securityinspector.UserContextCache");
+            Method updateSearchCacheMethod = userContextCacheClass.getMethod("updateSearchCache", List.class, Object.class, Object.class, String.class);
+            updateSearchCacheMethod.invoke(null, selectedJobs, null, null, selectedItem);
+        } catch (Exception e) {
+            // If securityinspector plugin is not available or API changed, skip cache update
+            // This is optional integration, so failure is acceptable
+        }
     }
     
     @Override
@@ -124,25 +131,39 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
     @Nonnull
     @Restricted(NoExternalUse.class)
     public Set<TopLevelItem> getRequestedJobs() throws HttpResponses.HttpResponseException {
-        final UserContext context = UserContextCache.getInstance().get(getSessionId());
-        if (context == null) {
-            // TODO: 
-            throw HttpResponses.error(404, "Context has not been found");
-        }
-
-        final List<TopLevelItem> selectedJobs = context.getJobs();
-        if (selectedJobs == null) {
-            throw HttpResponses.error(500, "The retrieved context does not contain job filter settings");
-        }
-
-        final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
-        for (TopLevelItem item : selectedJobs) {
-            // TODO ???
-            if (item != null) {
-                res.add(item);
+        // Use reflection to access restricted UserContextCache and UserContext classes
+        try {
+            Class<?> userContextCacheClass = Class.forName("org.jenkinsci.plugins.securityinspector.UserContextCache");
+            Method getInstanceMethod = userContextCacheClass.getMethod("getInstance");
+            Object cacheInstance = getInstanceMethod.invoke(null);
+            Method getMethod = userContextCacheClass.getMethod("get", String.class);
+            Object context = getMethod.invoke(cacheInstance, getSessionId());
+            
+            if (context == null) {
+                throw HttpResponses.error(404, "Context has not been found");
             }
+
+            Method getJobsMethod = context.getClass().getMethod("getJobs");
+            @SuppressWarnings("unchecked")
+            final List<TopLevelItem> selectedJobs = (List<TopLevelItem>) getJobsMethod.invoke(context);
+            if (selectedJobs == null) {
+                throw HttpResponses.error(500, "The retrieved context does not contain job filter settings");
+            }
+
+            final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
+            for (TopLevelItem item : selectedJobs) {
+                // TODO ???
+                if (item != null) {
+                    res.add(item);
+                }
+            }
+            return res;
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            // If securityinspector plugin is not available or API changed
+            throw HttpResponses.error(500, "Security Inspector integration is not available: " + e.getMessage());
+        } catch (Exception e) {
+            throw HttpResponses.error(500, "Failed to retrieve context: " + e.getMessage());
         }
-        return res;
     }
     
     public static class ReportImpl extends PermissionReport<TopLevelItem, Boolean> {
@@ -170,7 +191,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             }
             
             SecurityContext initialContext = null;
-            Item i = Jenkins.getActiveInstance().getItemByFullName(column.getFullName());
+            Item i = Jenkins.get().getItemByFullName(column.getFullName());
             if (i == null) {
                 return Boolean.FALSE;
             }

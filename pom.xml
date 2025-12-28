@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.5</version>
+        <version>4.78</version>
     </parent>
     
     <groupId>com.synopsys.jenkinsci</groupId>
@@ -23,10 +23,10 @@
     </licenses>	
 
     <properties>
-        <jenkins.version>1.651.3</jenkins.version>
-        <java.level>7</java.level>
+        <jenkins.version>2.377</jenkins.version>
+        <java.level>11</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <workflow.version>1.14</workflow.version>
+        <!-- <workflow.version>1254.v3f64639b_11dd</workflow.version> -->
         <findbugs.effort>Max</findbugs.effort>
     </properties>
 
@@ -47,7 +47,19 @@
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
       <tag>HEAD</tag>
     </scm>
-    
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-2.361.x</artifactId>
+                <version>2025.v816d28f1e04f</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -58,19 +70,19 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
-            <version>1.6</version>
+            <version>293.v283932a_0a_b_49</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
             <artifactId>job-restrictions</artifactId>
-            <version>0.1</version>
+            <version>0.8</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
-            <version>1.20</version>
+            <version>1184.v85d16b_d851b_3</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -95,53 +107,44 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-auth</artifactId>
-            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
-            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.3-2.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>${workflow.version}</version>
         </dependency>
         
         <!-- Test framework -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>${workflow.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>${workflow.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <version>${workflow.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency> <!--Implicitly required by folders-->
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
-            <version>2.1.13</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

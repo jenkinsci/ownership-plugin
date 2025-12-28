@@ -24,8 +24,8 @@
 package org.jenkinsci.plugins.ownership.model.runs;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlDivision;
+import org.htmlunit.html.HtmlPage;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import hudson.model.FreeStyleBuild;
