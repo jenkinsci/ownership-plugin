@@ -70,7 +70,7 @@ public class HTMLFormatter {
             String userStr = useLongFormat 
                 ? usr.getDisplayName()
                 : UserStringFormatter.formatShort(usr.getId());
-            // URL-кодирование для части URL, HTML-экранирование для текста ссылки
+            // URL-encoding for the URL part, HTML-escaping for the link text
             try {
                 String encodedUserId = java.net.URLEncoder.encode(userId, "UTF-8");
                 return "<a href=\""+Jenkins.get().getRootUrl()+"user/"+encodedUserId+"\">"+Functions.escape(userStr)+"</a>";
