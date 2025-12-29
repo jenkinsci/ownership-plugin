@@ -76,7 +76,7 @@ public class OwnershipPlugin extends Plugin {
     @Deprecated
     private transient boolean assignOnCreate;
     private final List<OwnershipAction> pluginActions = new ArrayList<>();
-    public String mailResolverClassName;
+    private String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
     private OwnershipPluginConfiguration configuration;
     

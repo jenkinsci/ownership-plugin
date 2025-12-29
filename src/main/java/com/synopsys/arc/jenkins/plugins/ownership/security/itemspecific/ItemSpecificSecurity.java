@@ -93,7 +93,9 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
             AuthorizationMatrixProperty prop = null;
             if (formData.containsKey("permissionsMatrix")) {
                 Descriptor<?> d= Jenkins.getInstance().getDescriptor(AuthorizationMatrixProperty.class);
-                prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                if (d != null) {
+                    prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                }
             }
             return new ItemSpecificSecurity(prop);
         }

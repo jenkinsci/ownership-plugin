@@ -35,6 +35,8 @@ import hudson.security.PermissionGroup;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
@@ -57,6 +59,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 @Extension(optional = true)
 public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
+    private static final Logger LOGGER = Logger.getLogger(PermissionsForOwnerReportBuilder.class.getName());
     @Override
     public String getIcon() {
         return "fingerprint.png";
@@ -95,9 +98,14 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             Class<?> userContextCacheClass = Class.forName("org.jenkinsci.plugins.securityinspector.UserContextCache");
             Method updateSearchCacheMethod = userContextCacheClass.getMethod("updateSearchCache", List.class, Object.class, Object.class, String.class);
             updateSearchCacheMethod.invoke(null, selectedJobs, null, null, selectedItem);
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
             // If securityinspector plugin is not available or API changed, skip cache update
             // This is optional integration, so failure is acceptable
+            LOGGER.log(Level.FINE, "Security Inspector integration not available or API changed", e);
+        } catch (ReflectiveOperationException e) {
+            // Reflection-related exceptions (IllegalAccessException, InvocationTargetException, etc.)
+            // This is optional integration, so failure is acceptable
+            LOGGER.log(Level.FINE, "Failed to update Security Inspector cache", e);
         }
     }
     
