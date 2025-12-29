@@ -70,7 +70,14 @@ public class HTMLFormatter {
             String userStr = useLongFormat 
                 ? usr.getDisplayName()
                 : UserStringFormatter.formatShort(usr.getId());
-            return "<a href=\""+Jenkins.getActiveInstance().getRootUrl()+"user/"+Functions.escape(userId)+"\">"+Functions.escape(userStr)+"</a>";
+            // URL-кодирование для части URL, HTML-экранирование для текста ссылки
+            try {
+                String encodedUserId = java.net.URLEncoder.encode(userId, "UTF-8");
+                return "<a href=\""+Jenkins.get().getRootUrl()+"user/"+encodedUserId+"\">"+Functions.escape(userStr)+"</a>";
+            } catch (java.io.UnsupportedEncodingException e) {
+                // Fallback to original behavior if encoding fails
+                return "<a href=\""+Jenkins.get().getRootUrl()+"user/"+Functions.escape(userId)+"\">"+Functions.escape(userStr)+"</a>";
+            }
         } else { // just return name w/o hyperlink
             return userId + " (unregistered)";
         }

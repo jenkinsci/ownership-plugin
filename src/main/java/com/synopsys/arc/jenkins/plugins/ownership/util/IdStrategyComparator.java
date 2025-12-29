@@ -13,7 +13,7 @@ public class IdStrategyComparator implements Comparator<String> {
     private final IdStrategy userIdStrategy;
 
     public IdStrategyComparator() {
-        securityRealm = Jenkins.getActiveInstance().getSecurityRealm();
+        securityRealm = Jenkins.getInstance().getSecurityRealm();
         groupIdStrategy = securityRealm.getGroupIdStrategy();
         userIdStrategy = securityRealm.getUserIdStrategy();
     }

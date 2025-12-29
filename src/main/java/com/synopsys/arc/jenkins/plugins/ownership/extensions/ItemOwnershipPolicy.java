@@ -82,7 +82,7 @@ public abstract class ItemOwnershipPolicy
        
     @Override
     public ItemOwnershipPolicyDescriptor getDescriptor() {
-        return (ItemOwnershipPolicyDescriptor) Jenkins.getActiveInstance()
+        return (ItemOwnershipPolicyDescriptor) Jenkins.getInstance()
                 .getDescriptorOrDie(getClass());
     }
     
@@ -92,7 +92,7 @@ public abstract class ItemOwnershipPolicy
      */    
     public static DescriptorExtensionList<ItemOwnershipPolicy,ItemOwnershipPolicyDescriptor> all() {
         //TODO: rework to Extension list Lookup
-        return Jenkins.getActiveInstance().getDescriptorList(ItemOwnershipPolicy.class);
+        return Jenkins.getInstance().getDescriptorList(ItemOwnershipPolicy.class);
     }
     
     /**

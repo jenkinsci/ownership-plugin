@@ -117,8 +117,8 @@ public class OwnershipGlobalVariable extends GlobalVariable {
             throw new IllegalStateException("Cannot get Ownership info outside the node() block");
         }
         final Node node = "master".equals(nodeName) 
-                ? Jenkins.getActiveInstance()
-                : Jenkins.getActiveInstance().getNode(nodeName);
+                ? Jenkins.getInstance()
+                : Jenkins.getInstance().getNode(nodeName);
         if (node == null) {
             throw new IllegalStateException("Cannot retrieve node by the name specified in env.NODE_NAME");
         }     
