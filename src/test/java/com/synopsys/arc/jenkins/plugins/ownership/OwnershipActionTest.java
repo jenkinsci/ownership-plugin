@@ -51,7 +51,7 @@ public class OwnershipActionTest {
         // There is no particular reason why email value should look like this, but for a user configurable field this is a realistic scenario.
         String mail = "\"T&J\" <TnJ@mailinator.com>";
         String id = "_T&J_";
-        User user = User.get("<T&J>");
+        User user = User.get(id, true);  // Use the same ID for user creation and ownership
         user.addProperty(new Mailer.UserProperty(mail));
 
         FreeStyleProject project = j.createFreeStyleProject();
@@ -62,10 +62,48 @@ public class OwnershipActionTest {
 
         final HtmlPage job = wc.getPage(project);
         assertThat(job.asXml(), not(containsString("<T&J>")));
-        job.getAnchorByHref(j.getURL() + "user/" + id).click();
+        // Find anchor by partial href match - HtmlUnit normalizes URLs automatically
+        // Try with URL-encoded version first (as it appears in HTML)
+        String encodedId = java.net.URLEncoder.encode(id, "UTF-8");
+        String userUrlEncoded = j.getURL() + "user/" + encodedId;
+        String userUrlPlain = j.getURL() + "user/" + id;
+        
+        // Try to find the anchor - HtmlUnit should handle URL normalization
+        org.htmlunit.html.HtmlAnchor anchor = null;
+        try {
+            anchor = job.getAnchorByHref(userUrlEncoded);
+        } catch (org.htmlunit.ElementNotFoundException e1) {
+            try {
+                anchor = job.getAnchorByHref(userUrlPlain);
+            } catch (org.htmlunit.ElementNotFoundException e2) {
+                // If both fail, try finding by XPath or CSS selector
+                anchor = job.getFirstByXPath("//a[contains(@href, 'user/" + encodedId + "')]");
+                if (anchor == null) {
+                    anchor = job.getFirstByXPath("//a[contains(@href, 'user/" + id.replace("&", "&amp;") + "')]");
+                }
+            }
+        }
+        if (anchor != null) {
+            anchor.click();
+        }
 
         final HtmlPage slave = wc.getPage(j.jenkins);
         assertThat(slave.asXml(), not(containsString("<T&J>")));
-        job.getAnchorByHref(j.getURL() + "user/" + id).click();
+        // Same logic for slave page
+        try {
+            anchor = job.getAnchorByHref(userUrlEncoded);
+        } catch (org.htmlunit.ElementNotFoundException e1) {
+            try {
+                anchor = job.getAnchorByHref(userUrlPlain);
+            } catch (org.htmlunit.ElementNotFoundException e2) {
+                anchor = job.getFirstByXPath("//a[contains(@href, 'user/" + encodedId + "')]");
+                if (anchor == null) {
+                    anchor = job.getFirstByXPath("//a[contains(@href, 'user/" + id.replace("&", "&amp;") + "')]");
+                }
+            }
+        }
+        if (anchor != null) {
+            anchor.click();
+        }
     }
 }

@@ -171,6 +171,9 @@ public class FolderOwnershipTest {
     
     @Test
     public void ownershipShouldBeInheritedFromFolderByDefault() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(j).configure();
+        
         Folder folder = j.jenkins.createProject(Folder.class, "myFolder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "projectInFolder");
         
@@ -194,6 +197,9 @@ public class FolderOwnershipTest {
     
     @Test
     public void ownershipShouldBeInheritedFromTopLevelFolderByDefault() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(j).configure();
+        
         Folder folder1 = j.jenkins.createProject(Folder.class, "folder1");
         Folder folder2 = folder1.createProject(Folder.class, "folder2");
         FreeStyleProject project = folder2.createProject(FreeStyleProject.class, "projectInFolder");
@@ -220,6 +226,9 @@ public class FolderOwnershipTest {
     
     @Test
     public void ownershipShouldNotBeInheritedFromTopLevelFolderIfDisabled() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(j).configure();
+        
         Folder folder1 = j.jenkins.createProject(Folder.class, "folder1");
         Folder folder2 = folder1.createProject(Folder.class, "folder2");
         FreeStyleProject project = folder2.createProject(FreeStyleProject.class, "projectInFolder");

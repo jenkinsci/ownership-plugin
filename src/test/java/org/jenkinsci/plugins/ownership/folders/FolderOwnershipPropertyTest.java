@@ -91,6 +91,9 @@ public class FolderOwnershipPropertyTest {
     @Test
     @Issue("JENKINS-49744")
     public void changeOwnerViaPost() throws Exception {
+        // Initialize plugin before using it
+        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(r).configure();
+        
         FolderOwnershipHelper.setOwnership(p,
                 new OwnershipDescription(true, "admin", null));
 
