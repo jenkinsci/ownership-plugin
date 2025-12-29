@@ -28,7 +28,7 @@
         <st:include it="${it.describedItem}" page="sidepanel.jelly"/>
         <l:main-panel>
             <h1>
-                <l:icon class="icon-user icon-xlg" alt="${it.displayName}"/>
+                <l:icon src="symbol-user" class="icon-xlg" tooltip="${it.displayName}"/>
                 ${it.displayName}
             </h1>
             <p>This page allows to configure ownership and specific access rights of the item.</p>
@@ -47,10 +47,10 @@
             </d:taglib>
 
             <table style="padding-left: 2em;" id="management-links">
-              <local:feature icon="icon-user icon-md" href="manage-owners" title="${it.manageOwnershipTitle}">
+              <local:feature icon="symbol-user icon-md" href="manage-owners" title="${it.manageOwnershipTitle}">
                 ${%Manage primary and secondary owners}
               </local:feature>
-              <local:feature icon="icon-fingerprint icon-md" href="configure-project-specifics" title="${it.configureSpecificAccessTitle}">
+              <local:feature icon="symbol-fingerprint icon-md" href="configure-project-specifics" title="${it.configureSpecificAccessTitle}">
                 ${%Configure job-specific access rights}.
               </local:feature>               
             </table>

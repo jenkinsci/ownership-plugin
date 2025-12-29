@@ -29,7 +29,7 @@
         <l:main-panel>
             <f:form method="post" name="config" action="ownersSubmit">
                 <h1>
-                    <l:icon class="icon-user icon-xlg" />
+                    <l:icon src="symbol-user" class="icon-xlg" />
                     ${%Manage Owners}
                 </h1>
                 <p style="color:red"><b>Warning! You may lose access rights to this page if you change ownership</b></p>

@@ -28,7 +28,7 @@
         <st:include it="${app}" page="sidepanel.jelly"/>
         <l:main-panel>
             <h1>
-                <l:icon class="icon-fingerprint icon-xlg" alt="${%Configure node-specific access rights}" />
+                <l:icon src="symbol-fingerprint" class="icon-xlg" tooltip="${%Configure node-specific access rights}" />
                 ${%Configure node-specific access rights}
             </h1>
             <p style="color:red">
