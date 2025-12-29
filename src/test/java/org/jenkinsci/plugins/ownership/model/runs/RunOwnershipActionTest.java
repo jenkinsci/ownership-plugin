@@ -57,6 +57,9 @@ public class RunOwnershipActionTest {
     @Test
     @Issue("JENKINS-28881")
     public void shouldInheritOwnershipInfoFromFolders() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule).configure();
+        
         Folder folder = jenkinsRule.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "projectInFolder");
         
@@ -77,6 +80,9 @@ public class RunOwnershipActionTest {
     
     @Test
     public void shouldDisplayStubSummaryBoxIfNoOwnership() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule).configure();
+        
         FreeStyleProject project = jenkinsRule.createFreeStyleProject();
         FreeStyleBuild build = jenkinsRule.buildAndAssertSuccess(project);
         
@@ -94,6 +100,8 @@ public class RunOwnershipActionTest {
     
     @Test
     public void shouldDisplayRunOwnershipByDefault() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule).configure();
         
         jenkinsRule.jenkins.setSecurityRealm(jenkinsRule.createDummySecurityRealm());
         User user = User.get("testUser");

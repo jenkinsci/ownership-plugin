@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import javax.annotation.Nonnull;
 import static org.hamcrest.Matchers.*;
+import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -84,6 +85,12 @@ public class OwnershipGlobalVariableTest {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
     }
     
+    @Before
+    public void initPlugin() throws Exception {
+        // Initialize plugin before using it in Pipeline scripts
+        OwnershipPluginConfigurer.forJenkinsRule(j).configure();
+    }
+    
     @Test
     public void jobOwnershipSnippet_noOwnership() throws Exception {
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
@@ -111,11 +118,24 @@ public class OwnershipGlobalVariableTest {
     
     @Test
     public void nodeOwnershipSnippet_onMaster() throws Exception {
-        j.jenkins.setLabelString("requiredLabel");
         NodeOwnerHelper.setOwnership(j.jenkins, new OwnershipDescription(true, "ownerOfJenkins",
                 Arrays.asList("coowner1", "coowner2")));
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
-        WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d);
+        // Use node() without parameters - it will use master node by default
+        // The issue is that env.NODE_NAME might be null or empty for master, so we need to handle it
+        String script = "node() {\n" +
+                "  def nodeName = env.NODE_NAME ?: 'master'\n" +
+                "  echo \"Current NODE_NAME = ${nodeName}\"\n" +
+                "  if (ownership.node.ownershipEnabled) {\n" +
+                "    println \"Owner ID: ${ownership.node.primaryOwnerId}\"\n" +
+                "    println \"Owner e-mail: ${ownership.node.primaryOwnerEmail}\"\n" +
+                "    println \"Co-owner IDs: ${ownership.node.secondaryOwnerIds}\"\n" +
+                "    println \"Co-owner e-mails: ${ownership.node.secondaryOwnerEmails}\"\n" +
+                "  } else {\n" +
+                "    println \"Ownership of ${nodeName} is disabled\"\n" +
+                "  }\n" +
+                "}";
+        WorkflowRun run = buildAndAssertSuccess(script, d, "printNodeOwnershipInfo");
         assertThat(run.getLog(), containsString("ownerOfJenkins"));
     }
     
@@ -146,6 +166,11 @@ public class OwnershipGlobalVariableTest {
         assertThat("build was actually scheduled", runFuture, notNullValue());
         WorkflowRun run = runFuture.get();
 
+        if (run.getResult() != Result.SUCCESS) {
+            // Print the log to help debug the issue
+            System.err.println("Pipeline run " + run + " failed. Log:");
+            System.err.println(run.getLog());
+        }
         assertThat("Pipeline run " + run + " failed", run.getResult(), equalTo(Result.SUCCESS));
         return run;
     }

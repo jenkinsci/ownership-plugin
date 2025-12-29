@@ -38,7 +38,6 @@ import org.jenkinsci.plugins.ownership.config.PreserveOwnershipPolicy;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.remoting.RoleChecker;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -96,8 +95,6 @@ public class FolderOwnershipTest {
     }
     
     @Test
-    @Ignore("The issue fix requires the new CloudBees Folders Release. "
-            + "It has been decided to go forward in order to integrate other changes before the release.")
     @Issue("JENKINS-32359")
     public void ownershipFromLoadedFolderShouldSurviveRoundtrip() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "myFolder");

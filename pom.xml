@@ -4,6 +4,7 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>4.78</version>
+        <relativePath />
     </parent>
     
     <groupId>com.synopsys.jenkinsci</groupId>
@@ -24,7 +25,7 @@
 
     <properties>
         <jenkins.version>2.377</jenkins.version>
-        <java.level>11</java.level>
+        <java.level>17</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- <workflow.version>1254.v3f64639b_11dd</workflow.version> -->
         <findbugs.effort>Max</findbugs.effort>
@@ -42,8 +43,8 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+        <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
       <tag>HEAD</tag>
     </scm>
@@ -82,13 +83,13 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
-            <version>1184.v85d16b_d851b_3</version>
+            <!-- Version managed by BOM bom-2.361.x -->
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>6.1.0</version>
+            <!-- Version managed by BOM bom-2.361.x -->
             <optional>true</optional>
         </dependency>
         <dependency>
