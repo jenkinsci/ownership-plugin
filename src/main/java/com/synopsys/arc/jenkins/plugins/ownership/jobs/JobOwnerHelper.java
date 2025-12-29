@@ -38,6 +38,7 @@ import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.User;
+import hudson.security.Permission;
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
@@ -140,6 +141,18 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
         
         // Fallback: we have not found the Ownership using known approaches
         return OwnershipInfo.DISABLED_INFO;
+    }
+
+    @Override
+    public boolean hasItemSpecificPermission(@Nonnull Job<?, ?> job, String sid, Permission p) {
+        JobOwnerJobProperty prop = getOwnerProperty(job);
+        if (prop != null) {
+            ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
+            if (sec != null) {
+                return sec.getPermissionsMatrix().hasPermission(sid, p);
+            }
+        }
+        return false;
     }
 
     /**

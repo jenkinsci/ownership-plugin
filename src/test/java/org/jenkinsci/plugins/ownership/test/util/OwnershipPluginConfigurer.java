@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.DropOwnershipPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import java.io.IOException;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
@@ -48,6 +49,7 @@ public class OwnershipPluginConfigurer {
     private boolean requiresConfigurePermissions;
     private String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
+    private FolderSpecificSecurity defaultFoldersSecurity;
     private ItemOwnershipPolicy itemOwnershipPolicy;
     private MailOptions mailOptions;
     private DisplayOptions displayOptions;
@@ -82,6 +84,11 @@ public class OwnershipPluginConfigurer {
         this.defaultJobsSecurity = defaultJobsSecurity;
         return this;
     }
+
+    public OwnershipPluginConfigurer withDefaultFoldersSecurity(FolderSpecificSecurity defaultFoldersSecurity) {
+        this.defaultFoldersSecurity = defaultFoldersSecurity;
+        return this;
+    }
     
     public OwnershipPluginConfigurer withItemOwnershipPolicy(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy) {
         this.itemOwnershipPolicy = itemOwnershipPolicy;
@@ -112,6 +119,6 @@ public class OwnershipPluginConfigurer {
         OwnershipPluginConfiguration conf = new OwnershipPluginConfiguration
                 (itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, inheritanceOptions);
         jenkins.getPlugin(OwnershipPlugin.class).configure
-                (requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, conf);
+                (requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, defaultFoldersSecurity, conf);
     }
 }
