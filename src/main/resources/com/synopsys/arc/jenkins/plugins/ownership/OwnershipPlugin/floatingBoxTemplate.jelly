@@ -83,7 +83,7 @@
                         <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
                         <j:if test="${ownersMailToLink != null}">   
                             <td>    
-                                <img src="${imagesURL}/24x24/user.png"/>
+                                <l:icon class="icon-user icon-md"/>
                                 <a href="${ownersMailToLink}">${%ownersMailToLink.text(itemType)}</a>
                             </td>
                         </j:if>
@@ -92,7 +92,7 @@
                         <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
                         <j:if test="${adminsMailToLink != null}">
                             <td>
-                                <img src="${imagesURL}/24x24/setting.png"/>
+                                <l:icon class="icon-setting icon-md"/>
                                 <a href="${adminsMailToLink}">${%adminsMailToLink.text}</a>
                             </td>
                         </j:if>
