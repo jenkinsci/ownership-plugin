@@ -109,7 +109,7 @@ class OwnerFilter {
     @Restricted(NoExternalUse.class)
     public List<TopLevelItem> doFilter(User owner) {
         
-        final Jenkins jenkins = Jenkins.getInstance();
+        final Jenkins jenkins = Jenkins.get();
         final List<Item> allItems;
         
         if (report4folder != null) {

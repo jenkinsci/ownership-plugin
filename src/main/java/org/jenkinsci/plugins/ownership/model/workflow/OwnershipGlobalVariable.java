@@ -114,16 +114,16 @@ public class OwnershipGlobalVariable extends GlobalVariable {
     @Restricted(NoExternalUse.class)
     public static OwnershipDescription getNodeOwnershipDescription(@CheckForNull String nodeName) {
         if (nodeName == null || nodeName.isEmpty()) {
-            // Master node may have null or empty name, use Jenkins.getInstance() as fallback
-            return NodeOwnerHelper.Instance.getOwnershipDescription(Jenkins.getInstance());
+            // Master node may have null or empty name, use Jenkins.get() as fallback
+            return NodeOwnerHelper.Instance.getOwnershipDescription(Jenkins.get());
         }
         final Node node = "master".equals(nodeName) 
-                ? Jenkins.getInstance()
-                : Jenkins.getInstance().getNode(nodeName);
+                ? Jenkins.get()
+                : Jenkins.get().getNode(nodeName);
         if (node == null) {
             // If node is not found by name, try to use master node as fallback
             // This handles cases where env.NODE_NAME is set but node doesn't exist
-            return NodeOwnerHelper.Instance.getOwnershipDescription(Jenkins.getInstance());
+            return NodeOwnerHelper.Instance.getOwnershipDescription(Jenkins.get());
         }     
         return NodeOwnerHelper.Instance.getOwnershipDescription(node);
     }

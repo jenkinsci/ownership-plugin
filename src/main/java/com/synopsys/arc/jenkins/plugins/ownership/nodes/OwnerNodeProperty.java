@@ -82,7 +82,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     @CheckForNull
     public Node getNode() {
         if (node == null) {
-            setNode(Jenkins.getInstance().getNode(nodeName));
+            setNode(Jenkins.get().getNode(nodeName));
         }
         return node;
     }

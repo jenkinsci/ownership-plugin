@@ -416,7 +416,7 @@ public class OwnershipDescription implements Serializable {
         }
         // We don't know what object this OwnershipDescription belongs to, so we require Overall/Administer permissions.
         // CLI commands always use this check.
-        throwIfMissingPermission(Jenkins.getInstance(), Jenkins.ADMINISTER);
+        throwIfMissingPermission(Jenkins.get(), Jenkins.ADMINISTER);
     }
 
     private void throwIfMissingPermission(@Nonnull AccessControlled context, Permission permission) throws ObjectStreamException {

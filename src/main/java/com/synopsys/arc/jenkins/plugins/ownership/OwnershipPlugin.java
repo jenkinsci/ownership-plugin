@@ -90,7 +90,7 @@ public class OwnershipPlugin extends Plugin {
     }
     
     public static OwnershipPlugin getInstance() {
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = Jenkins.get();
         OwnershipPlugin plugin = j != null ? j.getPlugin(OwnershipPlugin.class) : null;
         if (plugin == null) { // Fail horribly
             // TODO: throw a graceful error
@@ -103,7 +103,7 @@ public class OwnershipPlugin extends Plugin {
     public void start() throws Exception {
 	load();
         reinitActionsList();
-	Jenkins.getInstance().getActions().addAll(pluginActions);
+	Jenkins.get().getActions().addAll(pluginActions);
     }
 
     @Override
@@ -172,13 +172,13 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Jenkins.getInstance().getActions().addAll(pluginActions);
+        Jenkins.get().getActions().addAll(pluginActions);
     }
 
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
-	Jenkins.getInstance().getActions().removeAll(pluginActions);
+	Jenkins.get().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         
         // Configurations
@@ -197,7 +197,7 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Jenkins.getInstance().getActions().addAll(pluginActions);
+        Jenkins.get().getActions().addAll(pluginActions);
     }
    
     private void reinitActionsList() {
