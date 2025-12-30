@@ -111,7 +111,16 @@ public class OwnershipPluginConfigurer {
     public void configure() throws IOException {
         OwnershipPluginConfiguration conf = new OwnershipPluginConfiguration
                 (itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, inheritanceOptions);
-        jenkins.getPlugin(OwnershipPlugin.class).configure
-                (requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, conf);
+        
+        // Get plugin - if it's null, that's a test setup problem and should fail immediately
+        OwnershipPlugin plugin = jenkins.getPlugin(OwnershipPlugin.class);
+        if (plugin == null) {
+            throw new IllegalStateException(
+                "OwnershipPlugin is not loaded! This indicates a test setup problem. " +
+                "The plugin should be automatically loaded by JenkinsRule. " +
+                "Make sure the test is using JenkinsRule correctly and the plugin is in the test classpath.");
+        }
+        
+        plugin.configure(requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, conf);
     }
 }

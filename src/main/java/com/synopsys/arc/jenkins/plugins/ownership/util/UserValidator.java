@@ -27,6 +27,7 @@ package com.synopsys.arc.jenkins.plugins.ownership.util;
  * @deprecated Old non-used stuff, which will be deleted in further versions
  * @author Oleg Nenashev
  */
+@Deprecated
 public class UserValidator {
     
 }

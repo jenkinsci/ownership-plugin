@@ -47,9 +47,9 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     
     private @Nonnull EnvSetupOptions envSetupOptions;
     @Deprecated
-    private transient final boolean injectNodeOwnership = false;
+    private static final transient boolean injectNodeOwnership = false;
     @Deprecated
-    private transient final boolean injectJobOwnership = false;
+    private static final transient boolean injectJobOwnership = false;
 
     @DataBoundConstructor
     public OwnershipBuildWrapper(@Nonnull EnvSetupOptions envSetupOptions) {

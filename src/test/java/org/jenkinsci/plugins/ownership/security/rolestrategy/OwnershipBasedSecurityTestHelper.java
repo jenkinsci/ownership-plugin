@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.ownership.security.rolestrategy;
 
+import com.michelin.cio.hudson.plugins.rolestrategy.AuthorizationType;
+import com.michelin.cio.hudson.plugins.rolestrategy.PermissionEntry;
 import com.michelin.cio.hudson.plugins.rolestrategy.Role;
 import com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy;
 import com.michelin.cio.hudson.plugins.rolestrategy.RoleMap;
@@ -34,7 +36,6 @@ import hudson.model.Run;
 import hudson.security.Permission;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -53,14 +54,12 @@ public class OwnershipBasedSecurityTestHelper {
     
     public static void setup(@Nonnull Jenkins jenkins) throws AssertionError, IOException {
         
-        RoleBasedAuthorizationStrategy strategy = new RoleBasedAuthorizationStrategy();
-        
         Map<String,RoleMap> grantedRoles = new HashMap<String, RoleMap>();
         grantedRoles.put(RoleType.Project.getStringType(), getProjectRoleMap());
         grantedRoles.put(RoleType.Slave.getStringType(), getComputerRoleMap());
         grantedRoles.put(RoleType.Global.getStringType(), getGlobalAdminAndAnonymousRoles());
         
-        setGrantedRoles(strategy, grantedRoles);
+        RoleBasedAuthorizationStrategy strategy = new RoleBasedAuthorizationStrategy(grantedRoles);
         jenkins.setAuthorizationStrategy(strategy);
         jenkins.save();
     }
@@ -76,7 +75,7 @@ public class OwnershipBasedSecurityTestHelper {
         anonymousPermissions.add(Item.DISCOVER);
         Role anonymousRole = createRole("anonymous", ".*", anonymousPermissions);
         
-        final SortedMap<Role,Set<String>> grantedRoles = new TreeMap<Role, Set<String>>();
+        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<Role, Set<PermissionEntry>>();
         grantedRoles.put(adminRole, singleSid("admin"));
         grantedRoles.put(anonymousRole, singleSid("anonymous"));
         
@@ -124,16 +123,26 @@ public class OwnershipBasedSecurityTestHelper {
     }
     
     private static RoleMap createRoleMapForSid(String sid, Role ... roles) {
-        final SortedMap<Role,Set<String>> grantedRoles = new TreeMap<Role, Set<String>>();
+        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<Role, Set<PermissionEntry>>();
         for (Role role : roles) {
             grantedRoles.put(role, singleSid(sid));
         }
         return createRoleMap(grantedRoles);
     }
     
-    private static Set<String> singleSid(String sid) {
-        final Set<String> sids = new TreeSet<String>();
-        sids.add(sid);
+    private static Set<PermissionEntry> singleSid(String sid) {
+        if (sid == null) {
+            throw new IllegalArgumentException("SID cannot be null");
+        }
+        final Set<PermissionEntry> sids = new TreeSet<PermissionEntry>();
+        // Special SIDs like "authenticated" and "anonymous" should use EITHER type
+        // Regular user/group SIDs use user() or group()
+        if ("authenticated".equals(sid) || "anonymous".equals(sid)) {
+            sids.add(new PermissionEntry(AuthorizationType.EITHER, sid));
+        } else {
+            // For regular users, use user() method
+            sids.add(PermissionEntry.user(sid));
+        }
         return sids;
     }
     
@@ -178,7 +187,7 @@ public class OwnershipBasedSecurityTestHelper {
         throw new IllegalStateException("Cannot locate a constructor for " + itemClass);
     }
     
-    private static RoleMap createRoleMap(SortedMap<Role,Set<String>> grantedRoles) {
+    private static RoleMap createRoleMap(SortedMap<Role,Set<PermissionEntry>> grantedRoles) {
         try {
             Constructor<RoleMap> constructor = locateConstructor(RoleMap.class, SortedMap.class);
             try {
@@ -192,26 +201,4 @@ public class OwnershipBasedSecurityTestHelper {
         }
     }
     
-    private static void setGrantedRoles(@Nonnull RoleBasedAuthorizationStrategy strategy, 
-            @Nonnull Map<String,RoleMap> grantedRoles) throws AssertionError {
-        final Field field;
-        try {
-            field = RoleBasedAuthorizationStrategy.class.getDeclaredField("grantedRoles");
-            
-            try {
-                field.setAccessible(true);
-                @SuppressWarnings("unchecked")
-                Map<String,RoleMap> value = (Map<String,RoleMap>)field.get(strategy);
-                value.putAll(grantedRoles);
-            } finally {
-                field.setAccessible(false);
-            }
-        } catch (NoSuchFieldException ex) {
-            throw new AssertionError("Cannot modify roles", ex);
-        } catch (SecurityException ex) {
-            throw new AssertionError("Cannot modify roles", ex);
-        } catch (IllegalAccessException ex) {
-            throw new AssertionError("Cannot modify roles", ex);
-        }
-    }
 }

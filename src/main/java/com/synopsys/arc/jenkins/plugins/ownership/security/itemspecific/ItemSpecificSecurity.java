@@ -92,8 +92,10 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
         public ItemSpecificSecurity newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             AuthorizationMatrixProperty prop = null;
             if (formData.containsKey("permissionsMatrix")) {
-                Descriptor<?> d= Jenkins.getActiveInstance().getDescriptor(AuthorizationMatrixProperty.class);
-                prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                Descriptor<?> d= Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
+                if (d != null) {
+                    prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                }
             }
             return new ItemSpecificSecurity(prop);
         }

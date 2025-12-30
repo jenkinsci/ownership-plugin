@@ -26,6 +26,7 @@ package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
+import com.michelin.cio.hudson.plugins.rolestrategy.PermissionEntry;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleMacroExtension;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
@@ -37,6 +38,7 @@ import hudson.model.Item;
 import hudson.model.Node;
 import hudson.model.User;
 import hudson.security.AccessControlled;
+import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 
 import javax.annotation.CheckForNull;
@@ -103,5 +105,43 @@ public abstract class AbstractOwnershipRoleMacro extends RoleMacroExtension {
     public static boolean hasPermission(@CheckForNull User user, RoleType type, AccessControlled item,
                                         Macro macro, boolean acceptSecondaryOwners) {
         return user != null && getOwnership(type, item).isOwner(user, acceptSecondaryOwners);
+    }
+    
+    /**
+     * New API method with PermissionEntry.
+     * Extracts SID from PermissionEntry and delegates to the old method.
+     */
+    @Override
+    public boolean hasPermission(PermissionEntry entry, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        // Extract SID from PermissionEntry
+        // Check for null entry first
+        if (entry == null) {
+            return false;
+        }
+        
+        String sid = entry.getSid();
+        // Check for null or empty SID - deny access in such cases
+        if (sid == null || sid.trim().isEmpty()) {
+            return false;
+        }
+        
+        return hasPermission(sid, p, type, item, macro);
+    }
+    
+    /**
+     * Legacy method signature - kept for backward compatibility.
+     * Subclasses should override this method.
+     */
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        // Check for null or empty SID - deny access in such cases
+        if (sid == null) {
+            return false;
+        }
+        if (sid.trim().isEmpty()) {
+            return false;
+        }
+        
+        User user = User.getById(sid, false);
+        return hasPermission(user, type, item, macro, false);
     }
 }

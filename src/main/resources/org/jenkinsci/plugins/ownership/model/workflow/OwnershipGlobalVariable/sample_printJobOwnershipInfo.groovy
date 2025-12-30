@@ -1,4 +1,3 @@
-stage 'Print Job Ownership Info'
 if (ownership.job.ownershipEnabled) {
   println "Owner ID: ${ownership.job.primaryOwnerId}"
   println "Owner e-mail: ${ownership.job.primaryOwnerEmail}"

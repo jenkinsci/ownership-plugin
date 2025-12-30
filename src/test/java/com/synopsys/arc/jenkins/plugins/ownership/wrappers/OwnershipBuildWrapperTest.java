@@ -83,8 +83,9 @@ public class OwnershipBuildWrapperTest {
         projectOwner.setFullName("Test Project Owner");
         
         // Configure ownership plugin
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(
-                true, null, null, new OwnershipPluginConfiguration(new AssignCreatorPolicy()));
+        OwnershipPluginConfigurer.forJenkinsRule(r)
+                .withItemOwnershipPolicy(new AssignCreatorPolicy())
+                .configure();
         
         // Create node with ownership
         node = r.createOnlineSlave();
@@ -115,20 +116,22 @@ public class OwnershipBuildWrapperTest {
     @Issue("JENKINS-23947")
     public @Test void testVarsPresenseOnGlobalOptions() throws Exception {
         initJenkinsInstance();
-        final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
-                new AssignCreatorPolicy(),MailOptions.DEFAULT, 
-                new EnvSetupOptions(true, true));
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, pluginConf);
+        OwnershipPluginConfigurer.forJenkinsRule(r)
+                .withItemOwnershipPolicy(new AssignCreatorPolicy())
+                .withMailOptions(MailOptions.DEFAULT)
+                .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
+                .configure();
         testVarsPresense(true);
     }
     
     @Issue("JENKINS-27715")
     public @Test void testCoOwnersVarsInjection() throws Exception {
         initJenkinsInstance();
-        final OwnershipPluginConfiguration pluginConf = new OwnershipPluginConfiguration(
-                new AssignCreatorPolicy(),MailOptions.DEFAULT, 
-                new EnvSetupOptions(true, true));
-        r.jenkins.getPlugin(OwnershipPlugin.class).configure(true, null, null, pluginConf);
+        OwnershipPluginConfigurer.forJenkinsRule(r)
+                .withItemOwnershipPolicy(new AssignCreatorPolicy())
+                .withMailOptions(MailOptions.DEFAULT)
+                .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
+                .configure();
         
         FreeStyleBuild build = testVarsPresense(false);
         r.assertLogContains("NODE_COOWNERS="+NODE_OWNER_ID, build);

@@ -69,11 +69,7 @@ public class OwnershipMailHelper {
     private static <TObjectType> String getMailToURL (TObjectType item, 
             IOwnershipHelper<TObjectType> helper, Mode mode) {
     
-        final Jenkins instance = Jenkins.getInstance();
-        if (instance == null) {
-            // Cannot construct e-mail if Jenkins has not been initialized
-            return null;
-        }
+        final Jenkins instance = Jenkins.get();
         final OwnershipPlugin plugin = instance.getPlugin(OwnershipPlugin.class);
         if (plugin == null) {
             // Plugin is not initialized

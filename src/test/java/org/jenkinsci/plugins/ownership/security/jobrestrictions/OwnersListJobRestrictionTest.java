@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
+import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,6 +67,9 @@ public class OwnersListJobRestrictionTest {
                
     @Before
     public void setUp() throws Exception {
+        // Initialize plugin before using it
+        OwnershipPluginConfigurer.forJenkinsRule(j).configure();
+        
         testLabel = new LabelAtom("testLabel");
         slave = j.createOnlineSlave(testLabel);
         jobRestrictionProperty = new JobRestrictionProperty(

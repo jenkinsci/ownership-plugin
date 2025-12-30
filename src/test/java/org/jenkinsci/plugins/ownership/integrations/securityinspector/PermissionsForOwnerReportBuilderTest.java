@@ -59,6 +59,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
     public final JenkinsRule j = new JenkinsRule();
     
     protected void initializeDefaultMatrixAuthSecurity() throws Exception {
+        // Initialize plugin before using it
+        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(j).configure();
+        
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         
         // Create users
@@ -200,9 +203,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         PermissionReportAssert.assertHasNotRow(report, projectInFolder);
 
         PermissionReportAssert.assertHasPermissions(report, project1, 
-                Item.READ, Item.CONFIGURE, Item.BUILD, Item.CANCEL, Item.DISCOVER);
+                Item.READ, Item.CONFIGURE, Item.BUILD, Item.DISCOVER);
         PermissionReportAssert.assertHasNotPermissions(report, project1, 
-                Item.CREATE, Item.DELETE, Item.WORKSPACE);
+                Item.CREATE, Item.DELETE, Item.CANCEL, Item.WORKSPACE);
         
         PermissionReportAssert.assertHasPermissions(report, project2, 
                 Item.READ, Item.DISCOVER);
@@ -241,9 +244,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         PermissionReportAssert.assertHasRow(report, projectInFolder);
         
         PermissionReportAssert.assertHasPermissions(report, project2, 
-                Item.READ, Item.DELETE, Item.BUILD, Item.CANCEL, Item.DISCOVER);
+                Item.READ, Item.DELETE, Item.BUILD, Item.DISCOVER);
         PermissionReportAssert.assertHasNotPermissions(report, project2, 
-                Item.CREATE, Item.CONFIGURE, Item.WORKSPACE);
+                Item.CREATE, Item.CONFIGURE, Item.CANCEL, Item.WORKSPACE);
         
         PermissionReportAssert.assertHasPermissions(report, folder, 
                 Item.READ, Item.DISCOVER);

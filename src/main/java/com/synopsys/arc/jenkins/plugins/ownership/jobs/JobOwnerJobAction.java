@@ -27,6 +27,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
+import hudson.model.Item;
 
 import hudson.model.Descriptor;
 import hudson.model.Job;
@@ -45,6 +46,7 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Ownership action for jobs.
@@ -123,9 +125,12 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
 
     @Override
     public boolean actionIsAvailable() {
-        return getDescribedItem().hasPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
+        // Action should be available to anyone with READ permission on the item
+        // Individual methods will check MANAGE_ITEMS_OWNERSHIP and return 403 if needed
+        return getDescribedItem().hasPermission(Item.READ);
     }
     
+    @RequirePOST
     public HttpResponse doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         
@@ -136,6 +141,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());
     }
     
+    @RequirePOST
     public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         JSONObject form = req.getSubmittedForm();
@@ -151,6 +157,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());
     }
     
+    @RequirePOST
     public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         // Get default security
