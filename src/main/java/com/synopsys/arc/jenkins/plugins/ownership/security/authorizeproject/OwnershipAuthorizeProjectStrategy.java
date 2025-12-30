@@ -32,8 +32,8 @@ import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.User;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.jenkinsci.plugins.authorizeproject.AuthorizeProjectStrategy;
 import org.jenkinsci.plugins.authorizeproject.AuthorizeProjectStrategyDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -55,16 +55,16 @@ public class OwnershipAuthorizeProjectStrategy extends AuthorizeProjectStrategy 
     public Authentication authenticate(Job<?, ?> job, Queue.Item item) {    
         OwnershipDescription d = JobOwnerHelper.Instance.getOwnershipDescription(job);
         if (!d.hasPrimaryOwner()) { // fallback to anonymous
-            return Jenkins.ANONYMOUS;
+            return Jenkins.ANONYMOUS2;
         }    
         User owner = User.getById(d.getPrimaryOwnerId(), false);
         if (owner == null) { // fallback to anonymous
-            return Jenkins.ANONYMOUS;
+            return Jenkins.ANONYMOUS2;
         }
         try {
-            return owner.impersonate();
+            return owner.impersonate2();
         } catch (UsernameNotFoundException ex) { // fallback to anonymous
-            return Jenkins.ANONYMOUS;
+            return Jenkins.ANONYMOUS2;
         }
     }
       

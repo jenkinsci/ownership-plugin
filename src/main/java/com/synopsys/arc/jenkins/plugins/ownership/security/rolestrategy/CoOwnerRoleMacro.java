@@ -51,7 +51,15 @@ public class CoOwnerRoleMacro extends AbstractOwnershipRoleMacro {
     }
 
     @Override
-    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        // Check for null or empty SID - deny access in such cases
+        if (sid == null) {
+            return false;
+        }
+        if (sid.trim().isEmpty()) {
+            return false;
+        }
+        
         User user = User.getById(sid, false);
         return hasPermission(user, type, item, macro, true);
     }

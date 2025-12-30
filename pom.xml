@@ -16,6 +16,13 @@
     <description>Provides explicit ownership of jobs and nodes</description>
     <url>https://github.com/jenkinsci/ownership-plugin</url>
     
+    <properties>
+        <jenkins.version>2.479.3</jenkins.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- <workflow.version>1254.v3f64639b_11dd</workflow.version> -->
+        <findbugs.effort>Max</findbugs.effort>
+    </properties>
+    
     <licenses>
         <license>
             <name>MIT License</name>
@@ -24,12 +31,6 @@
         </license>
     </licenses>	
 
-    <properties>
-        <jenkins.version>2.479.3</jenkins.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- <workflow.version>1254.v3f64639b_11dd</workflow.version> -->
-        <findbugs.effort>Max</findbugs.effort>
-    </properties>
 
     <developers>
       <developer>
@@ -65,7 +66,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>role-strategy</artifactId>
-            <version>2.6.1</version>
+            <!-- <version>2.6.1</version> -->
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -76,7 +77,7 @@
         <dependency>
             <groupId>com.synopsys.arc.jenkinsci.plugins</groupId>
             <artifactId>job-restrictions</artifactId>
-            <version>0.8</version>
+            <!-- <version>0.8</version> -->
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -92,7 +93,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>authorize-project</artifactId>
-            <version>1.1.0</version>
+            <!-- <version>1.1.0</version> -->
             <optional>true</optional>
         </dependency>
         <dependency>
