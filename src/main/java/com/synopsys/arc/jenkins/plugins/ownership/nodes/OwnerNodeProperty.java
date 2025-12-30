@@ -36,6 +36,7 @@ import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 import hudson.slaves.SlaveComputer;
 import hudson.util.XStream2;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -74,9 +75,12 @@ public class OwnerNodeProperty extends NodeProperty<Node>
         return ownership != null ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
     
-    public void setOwnershipDescription(OwnershipDescription descr) {
+    public void setOwnershipDescription(OwnershipDescription descr) throws IOException {
         ownership = descr;
-        getDescriptor().save();
+        Node node = getNode();
+        if (node != null) {
+            node.save();
+        }
     }
     
     @CheckForNull

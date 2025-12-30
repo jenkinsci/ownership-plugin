@@ -28,7 +28,7 @@
         <st:include it="${it.describedItem}" page="sidepanel.jelly"/>
         <l:main-panel>
             <h1>
-                <l:icon src="symbol-fingerprint" class="icon-xlg" />
+                <l:icon class="icon-fingerprint icon-xlg"/>
                 ${%Manage item-specific access rights}
             </h1>
             <f:form method="post" name="config" action="projectSpecificSecuritySubmit">
