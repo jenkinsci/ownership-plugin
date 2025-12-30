@@ -70,10 +70,6 @@ public class OwnershipMailHelper {
             IOwnershipHelper<TObjectType> helper, Mode mode) {
     
         final Jenkins instance = Jenkins.get();
-        if (instance == null) {
-            // Cannot construct e-mail if Jenkins has not been initialized
-            return null;
-        }
         final OwnershipPlugin plugin = instance.getPlugin(OwnershipPlugin.class);
         if (plugin == null) {
             // Plugin is not initialized
