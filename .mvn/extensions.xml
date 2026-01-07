@@ -3,6 +3,6 @@
     <extension>
         <groupId>io.jenkins.tools.incrementals</groupId>
         <artifactId>incrementals-maven-plugin</artifactId>
-        <version>1.4</version>
+        <version>1.13</version>
     </extension>
 </extensions>
