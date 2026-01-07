@@ -68,7 +68,7 @@ public class FolderItemListener extends ItemListener {
     }
     
     private boolean isFoldersPluginEnabled() {
-        final Plugin plugin = Jenkins.getActiveInstance().getPlugin("cloudbees-folder");
+        final Plugin plugin = Jenkins.get().getPlugin("cloudbees-folder");
         return plugin != null && plugin.getWrapper().isActive();
     }
     

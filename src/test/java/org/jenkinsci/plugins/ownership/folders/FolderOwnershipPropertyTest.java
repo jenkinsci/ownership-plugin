@@ -25,9 +25,9 @@
 package org.jenkinsci.plugins.ownership.folders;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.WebRequest;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.HttpMethod;
+import org.htmlunit.WebRequest;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.cli.CLICommandInvoker;
@@ -53,6 +53,7 @@ import java.nio.charset.StandardCharsets;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 // TODO: DRY, merge with JobOwnerJobHelper once helper#setOwnership() is a non-static method
@@ -80,6 +81,9 @@ public class FolderOwnershipPropertyTest {
 
     @Before
     public void initFolder() throws Exception {
+        // Initialize plugin before using it
+        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(r).configure();
+        
         // Unique project name
         p = r.createProject(Folder.class, "test" + r.jenkins.getItems().size());
         ownershipHelper = OwnershipHelperLocator.locate(p);
@@ -100,8 +104,14 @@ public class FolderOwnershipPropertyTest {
         req.setAdditionalHeader("Content-Type", "application/xml");
         req.setRequestBody(getItemXml("admin"));
         wc.getPage(req);
+        // Get folder fresh from Jenkins to ensure we have the latest state
+        p = r.jenkins.getItemByFullName(p.getFullName(), Folder.class);
+        // Use direct property access like JobOwnerJobPropertyTest does
+        FolderOwnershipProperty prop1 = FolderOwnershipHelper.getOwnerProperty(p);
+        assertThat("Property should exist", prop1, notNullValue());
+        assertThat("Ownership should be enabled", prop1.getOwnership().isOwnershipEnabled(), is(true));
         assertThat("Users should be able to configure Folder when ownership is unchanged",
-                ownershipHelper.getOwner(p), is(equalTo("admin")));
+                prop1.getOwnership().getPrimaryOwnerId(), is(equalTo("admin")));
 
         try {
             wc.login("non-admin", "non-admin");
@@ -110,13 +120,25 @@ public class FolderOwnershipPropertyTest {
         } catch (FailingHttpStatusCodeException e) {
             // fine
         }
-        assertThat(ownershipHelper.getOwner(p), is(equalTo("admin")));
+        // Get folder fresh from Jenkins to ensure we have the latest state
+        p = r.jenkins.getItemByFullName(p.getFullName(), Folder.class);
+        // Use direct property access like JobOwnerJobPropertyTest does
+        FolderOwnershipProperty prop2 = FolderOwnershipHelper.getOwnerProperty(p);
+        assertThat("Property should exist", prop2, notNullValue());
+        assertThat("Ownership should be enabled", prop2.getOwnership().isOwnershipEnabled(), is(true));
+        assertThat(prop2.getOwnership().getPrimaryOwnerId(), is(equalTo("admin")));
 
         wc.login("admin", "admin");
         req.setRequestBody(getItemXml("non-admin"));
         wc.getPage(req);
+        // Get folder fresh from Jenkins to ensure we have the latest state
+        p = r.jenkins.getItemByFullName(p.getFullName(), Folder.class);
+        // Use direct property access like JobOwnerJobPropertyTest does
+        FolderOwnershipProperty prop3 = FolderOwnershipHelper.getOwnerProperty(p);
+        assertThat("Property should exist", prop3, notNullValue());
+        assertThat("Ownership should be enabled", prop3.getOwnership().isOwnershipEnabled(), is(true));
         assertThat("Users with Manage Ownership/Jobs permissions should be able to change ownership",
-                ownershipHelper.getOwner(p), is(equalTo("non-admin")));
+                prop3.getOwnership().getPrimaryOwnerId(), is(equalTo("non-admin")));
     }
 
     @Test

@@ -35,6 +35,8 @@ import hudson.security.PermissionGroup;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
@@ -46,18 +48,20 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.jenkinsci.plugins.securityinspector.Messages;
 import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
-import org.jenkinsci.plugins.securityinspector.UserContext;
 import org.jenkinsci.plugins.securityinspector.UserContextCache;
+import org.jenkinsci.plugins.securityinspector.UserContext;
 import org.jenkinsci.plugins.securityinspector.impl.users.UserReportBuilder;
 import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
 import org.jenkinsci.plugins.securityinspector.model.SecurityInspectorReport;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
 
 @Extension(optional = true)
 public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
+    private static final Logger LOGGER = Logger.getLogger(PermissionsForOwnerReportBuilder.class.getName());
     @Override
     public String getIcon() {
         return "fingerprint.png";
@@ -79,6 +83,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
     }
 
     @Override
+    @SuppressRestrictedWarnings({UserContextCache.class})
     public void processParameters(StaplerRequest req) throws Descriptor.FormException, ServletException {
         final String regex = req.getParameter("_.includeRegex");
         try {
@@ -123,26 +128,32 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
     
     @Nonnull
     @Restricted(NoExternalUse.class)
+    @SuppressRestrictedWarnings({UserContextCache.class, UserContext.class})
     public Set<TopLevelItem> getRequestedJobs() throws HttpResponses.HttpResponseException {
-        final UserContext context = UserContextCache.getInstance().get(getSessionId());
-        if (context == null) {
-            // TODO: 
-            throw HttpResponses.error(404, "Context has not been found");
-        }
-
-        final List<TopLevelItem> selectedJobs = context.getJobs();
-        if (selectedJobs == null) {
-            throw HttpResponses.error(500, "The retrieved context does not contain job filter settings");
-        }
-
-        final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
-        for (TopLevelItem item : selectedJobs) {
-            // TODO ???
-            if (item != null) {
-                res.add(item);
+        try {
+            UserContextCache cacheInstance = UserContextCache.getInstance();
+            UserContext context = cacheInstance.get(getSessionId());
+            
+            if (context == null) {
+                throw HttpResponses.error(404, "Context has not been found");
             }
+
+            final List<TopLevelItem> selectedJobs = context.getJobs();
+            if (selectedJobs == null) {
+                throw HttpResponses.error(500, "The retrieved context does not contain job filter settings");
+            }
+
+            final Set<TopLevelItem> res = new HashSet<>(selectedJobs.size());
+            for (TopLevelItem item : selectedJobs) {
+                // TODO ???
+                if (item != null) {
+                    res.add(item);
+                }
+            }
+            return res;
+        } catch (Exception e) {
+            throw HttpResponses.error(500, "Failed to retrieve context: " + e.getMessage());
         }
-        return res;
     }
     
     public static class ReportImpl extends PermissionReport<TopLevelItem, Boolean> {
@@ -170,7 +181,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             }
             
             SecurityContext initialContext = null;
-            Item i = Jenkins.getActiveInstance().getItemByFullName(column.getFullName());
+            Item i = Jenkins.get().getItemByFullName(column.getFullName());
             if (i == null) {
                 return Boolean.FALSE;
             }

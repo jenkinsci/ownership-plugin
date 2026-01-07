@@ -1,4 +1,3 @@
-stage 'Print Node Ownership Info'
 node('requiredLabel') {
   echo "Current NODE_NAME = ${env.NODE_NAME}"
   if (ownership.node.ownershipEnabled) {

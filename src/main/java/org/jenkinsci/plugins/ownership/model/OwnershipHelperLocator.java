@@ -53,7 +53,7 @@ public abstract class OwnershipHelperLocator <T extends Object> implements Exten
      */
     @Nonnull
     public static ExtensionList<OwnershipHelperLocator> all() {
-        return Jenkins.getActiveInstance().getExtensionList(OwnershipHelperLocator.class);
+        return Jenkins.get().getExtensionList(OwnershipHelperLocator.class);
     }
     
     /**

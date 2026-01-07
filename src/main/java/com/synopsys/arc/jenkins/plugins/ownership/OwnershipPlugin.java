@@ -76,7 +76,7 @@ public class OwnershipPlugin extends Plugin {
     @Deprecated
     private transient boolean assignOnCreate;
     private final List<OwnershipAction> pluginActions = new ArrayList<>();
-    public String mailResolverClassName;
+    private String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
     private OwnershipPluginConfiguration configuration;
     
@@ -90,8 +90,8 @@ public class OwnershipPlugin extends Plugin {
     }
     
     public static OwnershipPlugin getInstance() {
-        Jenkins j = Jenkins.getInstance();
-        OwnershipPlugin plugin = j != null ? j.getPlugin(OwnershipPlugin.class) : null;
+        Jenkins j = Jenkins.get();
+        OwnershipPlugin plugin = j.getPlugin(OwnershipPlugin.class);
         if (plugin == null) { // Fail horribly
             // TODO: throw a graceful error
             throw new IllegalStateException("Cannot get the plugin's instance. Jenkins or the plugin have not been initialized yet");
@@ -103,11 +103,11 @@ public class OwnershipPlugin extends Plugin {
     public void start() throws Exception {
 	load();
         reinitActionsList();
-	Jenkins.getActiveInstance().getActions().addAll(pluginActions);
+	Jenkins.get().getActions().addAll(pluginActions);
     }
 
     @Override
-    protected void load() throws IOException {
+    public void load() throws IOException {
         super.load();
         
         // Migration to 1.5.0: Check ItemOwnershipPolicy
@@ -172,13 +172,13 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
+        Jenkins.get().getActions().addAll(pluginActions);
     }
 
     @Override 
     public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
-	Jenkins.getActiveInstance().getActions().removeAll(pluginActions);
+	Jenkins.get().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
         
         // Configurations
@@ -197,7 +197,7 @@ public class OwnershipPlugin extends Plugin {
         
         reinitActionsList();
 	save();
-        Jenkins.getActiveInstance().getActions().addAll(pluginActions);
+        Jenkins.get().getActions().addAll(pluginActions);
     }
    
     private void reinitActionsList() {

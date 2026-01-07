@@ -28,6 +28,8 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.security.AuthorizationMatrixProperty;
 import hudson.security.Permission;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -36,6 +38,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -71,7 +74,18 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
         ItemSpecificSecurity newItem;
         try {
             newItem = (ItemSpecificSecurity)super.clone();
-            newItem.permissionsMatrix = new AuthorizationMatrixProperty(this.permissionsMatrix.getGrantedPermissions());
+            // Use getGrantedPermissionEntries() instead of deprecated getGrantedPermissions()
+            Map<Permission, Set<PermissionEntry>> permissionEntries = this.permissionsMatrix.getGrantedPermissionEntries();
+            // Convert PermissionEntry to String (SID) for the constructor
+            Map<Permission, Set<String>> permissions = new TreeMap<>();
+            for (Map.Entry<Permission, Set<PermissionEntry>> entry : permissionEntries.entrySet()) {
+                Set<String> sids = new HashSet<>();
+                for (PermissionEntry permEntry : entry.getValue()) {
+                    sids.add(permEntry.getSid());
+                }
+                permissions.put(entry.getKey(), sids);
+            }
+            newItem.permissionsMatrix = new AuthorizationMatrixProperty(permissions);
             return newItem;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ItemSpecificSecurity.class.getName()).log(Level.SEVERE, null, ex);
@@ -92,8 +106,10 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
         public ItemSpecificSecurity newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             AuthorizationMatrixProperty prop = null;
             if (formData.containsKey("permissionsMatrix")) {
-                Descriptor<?> d= Jenkins.getActiveInstance().getDescriptor(AuthorizationMatrixProperty.class);
-                prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                Descriptor<?> d= Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
+                if (d != null) {
+                    prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                }
             }
             return new ItemSpecificSecurity(prop);
         }
