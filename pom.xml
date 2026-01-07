@@ -10,13 +10,14 @@
     
     <groupId>com.synopsys.jenkinsci</groupId>
     <artifactId>ownership</artifactId>
-    <version>0.13.1-SNAPSHOT</version>
+    <version>${changelist}</version>
     <name>Job and Node ownership plugin</name>
     <packaging>hpi</packaging>
     <description>Provides explicit ownership of jobs and nodes</description>
     <url>https://github.com/jenkinsci/ownership-plugin</url>
     
     <properties>
+        <changelist>999999-SNAPSHOT</changelist>
         <jenkins.version>2.479.3</jenkins.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- <workflow.version>1254.v3f64639b_11dd</workflow.version> -->
