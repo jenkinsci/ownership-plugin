@@ -43,22 +43,29 @@ import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  *
  * @author Ksenia Nenasheva <ks.nenasheva@gmail.com>
  */
-public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerReportBuilder {
+@WithJenkins
+class PermissionsForOwnerReportBuilderTest {
     
-    @Rule
-    public final JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
     
-    protected void initializeDefaultMatrixAuthSecurity() throws Exception {
+    private void initializeDefaultMatrixAuthSecurity() throws Exception {
         // Initialize plugin before using it
         org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(j).configure();
         
@@ -133,9 +140,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
             projectInFolder.addProperty(prop);
         }
     }
-    
+
     @Test
-    public void shouldReportAdminProperly() throws Exception {
+    void shouldReportAdminProperly() throws Exception {
         
         initializeDefaultMatrixAuthSecurity();
         User usr = j.jenkins.getUser("admin");
@@ -152,7 +159,7 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
-        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
+        TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
         
         PermissionReportAssert.assertHasRow(report, project1);
         PermissionReportAssert.assertHasRow(report, project2);
@@ -175,9 +182,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
                 Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
                 Item.DISCOVER, Item.READ, Item.WORKSPACE);
     }
-    
+
     @Test
-    public void shouldReportUser1Properly() throws Exception {
+    void shouldReportUser1Properly() throws Exception {
         
         initializeDefaultMatrixAuthSecurity();
         
@@ -195,7 +202,7 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
-        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
+        TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
        
         PermissionReportAssert.assertHasRow(report, project1);
         PermissionReportAssert.assertHasRow(report, project2);
@@ -217,9 +224,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         PermissionReportAssert.assertHasNotPermissions(report, folder, 
                 Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
     }
-    
+
     @Test
-    public void shouldReportUser2Properly() throws Exception {
+    void shouldReportUser2Properly() throws Exception {
         
         initializeDefaultMatrixAuthSecurity();
         User usr = User.get("user2");
@@ -236,7 +243,7 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
-        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
+        TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
         
         PermissionReportAssert.assertHasNotRow(report, project1);
         PermissionReportAssert.assertHasRow(report, project2);
@@ -258,9 +265,9 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         PermissionReportAssert.assertHasNotPermissions(report, projectInFolder, 
                 Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
     }
-    
+
     @Test
-    public void shouldReportUser3Properly() throws Exception {
+    void shouldReportUser3Properly() throws Exception {
         
         initializeDefaultMatrixAuthSecurity();
         User usr = User.get("user3");
@@ -277,16 +284,16 @@ public class PermissionsForOwnerReportBuilderTest extends PermissionsForOwnerRep
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
-        TopLevelItem projectInFolder = (TopLevelItem) j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
+        TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
         
         PermissionReportAssert.assertHasNotRow(report, project1);
         PermissionReportAssert.assertHasNotRow(report, project2);
         PermissionReportAssert.assertHasNotRow(report, folder);
         PermissionReportAssert.assertHasNotRow(report, projectInFolder);
     }
-    
+
     @Test
-    public void shouldDownloadReport4User1() throws Exception {
+    void shouldDownloadReport4User1() throws Exception {
         
         initializeDefaultMatrixAuthSecurity();
         

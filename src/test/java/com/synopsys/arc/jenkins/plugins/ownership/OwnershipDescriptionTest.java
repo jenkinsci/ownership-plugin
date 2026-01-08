@@ -7,21 +7,23 @@ import java.util.Arrays;
 import java.util.Collections;
 import jenkins.model.IdStrategy;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 
-public class OwnershipDescriptionTest {
+@WithJenkins
+class OwnershipDescriptionTest {
     private static final IdStrategy CASE_SENSITIVE = new IdStrategy.CaseSensitive();
 
-    @Rule
-    public final JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        j = rule;
         applyIdStrategy(CASE_SENSITIVE);
     }
 
@@ -42,13 +44,13 @@ public class OwnershipDescriptionTest {
     }
 
     @Test
-    public void isOwnerShouldRespectCaseSensitiveIdStrategy() throws Exception {
+    void isOwnerShouldRespectCaseSensitiveIdStrategy() {
         User user = User.get("owner");
 
-        OwnershipDescription description = new OwnershipDescription(true, "owner", Collections.<String>emptyList());
+        OwnershipDescription description = new OwnershipDescription(true, "owner", Collections.emptyList());
         assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(true));
 
-        description = new OwnershipDescription(true, "OWNER", Collections.<String>emptyList());
+        description = new OwnershipDescription(true, "OWNER", Collections.emptyList());
         assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(false));
 
         description = new OwnershipDescription(true, "another.owner", Arrays.asList("owner"));
@@ -59,14 +61,14 @@ public class OwnershipDescriptionTest {
     }
 
     @Test
-    public void isOwnerShouldRespectCaseInsensitiveIdStrategy() throws Exception {
+    void isOwnerShouldRespectCaseInsensitiveIdStrategy() throws Exception {
         applyIdStrategy(IdStrategy.CASE_INSENSITIVE);
         User user = User.get("owner");
 
-        OwnershipDescription description = new OwnershipDescription(true, "owner", Collections.<String>emptyList());
+        OwnershipDescription description = new OwnershipDescription(true, "owner", Collections.emptyList());
         assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(true));
 
-        description = new OwnershipDescription(true, "OWNER", Collections.<String>emptyList());
+        description = new OwnershipDescription(true, "OWNER", Collections.emptyList());
         assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(true));
 
         description = new OwnershipDescription(true, "another.owner", Arrays.asList("owner"));

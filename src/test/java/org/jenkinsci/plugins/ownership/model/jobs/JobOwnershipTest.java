@@ -8,55 +8,62 @@ import hudson.model.User;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.ownership.config.PreserveOwnershipPolicy;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author cpuydebois
  */
-public class JobOwnershipTest {
+@WithJenkins
+class JobOwnershipTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private static final String JOB_CONFIG_XML = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <project>
+              <actions/>
+              <description/>
+              <keepDependencies>false</keepDependencies>
+              <properties>
+                <com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty plugin="ownership@0.9.1">
+                  <ownership>
+                    <ownershipEnabled>true</ownershipEnabled>
+                    <primaryOwnerId>the.owner</primaryOwnerId>
+                    <coownersIds class="sorted-set">
+                      <string>secondary.owner</string>
+                    </coownersIds>
+                  </ownership>
+                </com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty>
+              </properties>
+              <scm class="hudson.scm.NullSCM"/>
+              <canRoam>true</canRoam>
+              <disabled>false</disabled>
+              <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+              <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+              <triggers/>
+              <concurrentBuild>false</concurrentBuild>
+              <builders/>
+              <publishers/>
+              <buildWrappers/>
+            </project>""";
 
-    private static final String JOB_CONFIG_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<project>\n" +
-            "  <actions/>\n" +
-            "  <description/>\n" +
-            "  <keepDependencies>false</keepDependencies>\n" +
-            "  <properties>\n" +
-            "    <com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty plugin=\"ownership@0.9.1\">\n" +
-            "      <ownership>\n" +
-            "        <ownershipEnabled>true</ownershipEnabled>\n" +
-            "        <primaryOwnerId>the.owner</primaryOwnerId>\n" +
-            "        <coownersIds class=\"sorted-set\">\n" +
-            "          <string>secondary.owner</string>\n" +
-            "        </coownersIds>\n" +
-            "      </ownership>\n" +
-            "    </com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty>\n" +
-            "  </properties>\n" +
-            "  <scm class=\"hudson.scm.NullSCM\"/>\n" +
-            "  <canRoam>true</canRoam>\n" +
-            "  <disabled>false</disabled>\n" +
-            "  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>\n" +
-            "  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>\n" +
-            "  <triggers/>\n" +
-            "  <concurrentBuild>false</concurrentBuild>\n" +
-            "  <builders/>\n" +
-            "  <publishers/>\n" +
-            "  <buildWrappers/>\n" +
-            "</project>";
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     @Test
-    public void shouldSupportDropOwnershipPolicy() throws Exception {
+    void shouldSupportDropOwnershipPolicy() throws Exception {
         InputStream jobConfigIS = null;
         try {
             // Configure the policy
@@ -82,7 +89,7 @@ public class JobOwnershipTest {
     }
 
     @Test
-    public void shouldSupportPreserveJobOwnershipPolicy() throws Exception {
+    void shouldSupportPreserveJobOwnershipPolicy() throws Exception {
         InputStream jobConfigIS = null;
         try {
             // Configure the policy
