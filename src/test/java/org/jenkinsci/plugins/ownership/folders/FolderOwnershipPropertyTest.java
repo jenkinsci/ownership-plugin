@@ -37,14 +37,14 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -54,20 +54,20 @@ import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 // TODO: DRY, merge with JobOwnerJobHelper once helper#setOwnership() is a non-static method
 @For(FolderOwnershipProperty.class)
-public class FolderOwnershipPropertyTest {
+@WithJenkins
+class FolderOwnershipPropertyTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
-
+    private JenkinsRule r;
     private Folder p;
     private AbstractOwnershipHelper<Folder> ownershipHelper;
 
-    @Before
-    public void setupSecurity() {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        r = rule;
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
         MockAuthorizationStrategy mas = new MockAuthorizationStrategy();
         mas.grant(Jenkins.ADMINISTER) // Implies MANAGE_ITEMS_OWNERSHIP.
@@ -77,10 +77,7 @@ public class FolderOwnershipPropertyTest {
                 .everywhere()
                 .to("non-admin");
         r.jenkins.setAuthorizationStrategy(mas);
-    }
 
-    @Before
-    public void initFolder() throws Exception {
         // Initialize plugin before using it
         org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(r).configure();
         
@@ -94,7 +91,7 @@ public class FolderOwnershipPropertyTest {
 
     @Test
     @Issue("JENKINS-49744")
-    public void changeOwnerViaPost() throws Exception {
+    void changeOwnerViaPost() throws Exception {
         FolderOwnershipHelper.setOwnership(p,
                 new OwnershipDescription(true, "admin", null));
 
@@ -143,7 +140,7 @@ public class FolderOwnershipPropertyTest {
 
     @Test
     @Issue("JENKINS-49744")
-    public void changeOwnerViaCLI() throws Exception {
+    void changeOwnerViaCLI() throws Exception {
         FolderOwnershipHelper.setOwnership(p,
                 new OwnershipDescription(true, "admin", null));
 
@@ -170,27 +167,28 @@ public class FolderOwnershipPropertyTest {
     }
 
     private static final String FOLDER_XML_TEMPLATE =
-            "<?xml version='1.0' encoding='UTF-8'?>" +
-            "<com.cloudbees.hudson.plugins.folder.Folder plugin=\"cloudbees-folder@6.1.0\">" +
-            "  <properties>" +
-            "    <org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty plugin=\"ownership@0.10.1\">" +
-            "        <ownership>" +
-            "           <ownershipEnabled>true</ownershipEnabled>" +
-            "           <primaryOwnerId>%s</primaryOwnerId>" +
-            "           <coownersIds class=\"sorted-set\"/>" +
-            "       </ownership>" +
-            "   </org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty>" +
-            "  </properties>" +
-            "  <views>\n" +
-            "    <hudson.model.AllView>\n" +
-            "      <owner class=\"com.cloudbees.hudson.plugins.folder.Folder\" reference=\"../../..\"/>\n" +
-            "      <name>All</name>\n" +
-            "      <filterExecutors>false</filterExecutors>\n" +
-            "      <filterQueue>false</filterQueue>\n" +
-            "      <properties class=\"hudson.model.View$PropertyList\"/>\n" +
-            "    </hudson.model.AllView>\n" +
-            "  </views>\n" +
-            "  <viewsTabBar class=\"hudson.views.DefaultViewsTabBar\"/>" +
-            "</com.cloudbees.hudson.plugins.folder.Folder>";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?>
+                    <com.cloudbees.hudson.plugins.folder.Folder plugin="cloudbees-folder@6.1.0">
+                      <properties>
+                        <org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty plugin="ownership@0.10.1">
+                            <ownership>
+                               <ownershipEnabled>true</ownershipEnabled>
+                               <primaryOwnerId>%s</primaryOwnerId>
+                               <coownersIds class="sorted-set"/>
+                           </ownership>
+                       </org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty>
+                      </properties>
+                      <views>
+                        <hudson.model.AllView>
+                          <owner class="com.cloudbees.hudson.plugins.folder.Folder" reference="../../.."/>
+                          <name>All</name>
+                          <filterExecutors>false</filterExecutors>
+                          <filterQueue>false</filterQueue>
+                          <properties class="hudson.model.View$PropertyList"/>
+                        </hudson.model.AllView>
+                      </views>
+                      <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+                    </com.cloudbees.hudson.plugins.folder.Folder>""";
 
 }

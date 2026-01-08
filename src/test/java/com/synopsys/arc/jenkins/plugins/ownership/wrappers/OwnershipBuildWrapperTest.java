@@ -26,8 +26,6 @@ package com.synopsys.arc.jenkins.plugins.ownership.wrappers;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
@@ -42,6 +40,7 @@ import hudson.model.TaskListener;
 import hudson.model.User;
 import hudson.scm.NullSCM;
 import hudson.scm.SCMRevisionState;
+import hudson.tasks.BatchFile;
 import hudson.tasks.Shell;
 import java.io.File;
 import java.io.IOException;
@@ -51,31 +50,36 @@ import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Rule;
-import org.junit.Test;
+
+import static hudson.Functions.isWindows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Tests for {@link OwnershipBuildWrapper}.
  * @author Oleg Nenashev
  */
-public class OwnershipBuildWrapperTest {
-    
-    public @Rule JenkinsRule r = new JenkinsRule();
+@WithJenkins
+class OwnershipBuildWrapperTest {
+
+    private JenkinsRule r;
     private Slave node;
     private FreeStyleProject project;
     private User nodeOwner;
     private User projectOwner;
-    
-    private final static String NODE_OWNER_ID = "test_node_owner";
-    private final static String PROJECT_OWNER_ID = "test_project_owner";
-    
-    // @Before does not work due to classloader issues (?)
-    // See https://groups.google.com/forum/#!topic/jenkinsci-dev/3pHRVFai7T4
-    public void initJenkinsInstance() throws Exception {
+
+    private static final String NODE_OWNER_ID = "test_node_owner";
+    private static final String PROJECT_OWNER_ID = "test_project_owner";
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        r = rule;
         // Create test user
         nodeOwner = User.get(NODE_OWNER_ID);
         nodeOwner.setFullName("Test Node Owner");
@@ -89,76 +93,75 @@ public class OwnershipBuildWrapperTest {
         
         // Create node with ownership
         node = r.createOnlineSlave();
-        NodeOwnerHelper.setOwnership(node, new OwnershipDescription(true, NODE_OWNER_ID, Collections.<String>emptyList()));
+        NodeOwnerHelper.setOwnership(node, new OwnershipDescription(true, NODE_OWNER_ID, Collections.emptyList()));
         
         // Create project
         project = r.createFreeStyleProject();
-        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.<String>emptyList()));
-        project.getBuildersList().add(new Shell("env"));
+        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.emptyList()));
+        project.getBuildersList().add(isWindows() ? new BatchFile("set") : new Shell("env"));
     }
     
-    public @Test void testVarsPresenseOnSuccess() throws Exception {
-        initJenkinsInstance();
+    @Test
+    void testVarsPresenceOnSuccess() throws Exception {
         final OwnershipBuildWrapper wrapper = new OwnershipBuildWrapper(true, true);
         project.getBuildWrappersList().add(wrapper);
-        testVarsPresense(false);
+        testVarsPresence(false);
     }
     
     @Issue("JENKINS-23926")
-    public @Test void testVarsPresenseOnSCMFailure() throws Exception {
-        initJenkinsInstance();
+    @Test
+    void testVarsPresenceOnSCMFailure() throws Exception {
         final OwnershipBuildWrapper wrapper = new OwnershipBuildWrapper(true, true);
         project.getBuildWrappersList().add(wrapper);
 
-        testVarsPresense(true);
+        testVarsPresence(true);
     }
     
     @Issue("JENKINS-23947")
-    public @Test void testVarsPresenseOnGlobalOptions() throws Exception {
-        initJenkinsInstance();
+    @Test
+    void testVarsPresenceOnGlobalOptions() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withItemOwnershipPolicy(new AssignCreatorPolicy())
                 .withMailOptions(MailOptions.DEFAULT)
                 .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
                 .configure();
-        testVarsPresense(true);
+        testVarsPresence(true);
     }
     
     @Issue("JENKINS-27715")
-    public @Test void testCoOwnersVarsInjection() throws Exception {
-        initJenkinsInstance();
+    @Test
+    void testCoOwnersVarsInjection() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withItemOwnershipPolicy(new AssignCreatorPolicy())
                 .withMailOptions(MailOptions.DEFAULT)
                 .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
                 .configure();
         
-        FreeStyleBuild build = testVarsPresense(false);
-        r.assertLogContains("NODE_COOWNERS="+NODE_OWNER_ID, build);
-        r.assertLogContains("JOB_COOWNERS="+PROJECT_OWNER_ID, build);
+        FreeStyleBuild build = testVarsPresence(false);
+        r.assertLogContains("NODE_COOWNERS=" + NODE_OWNER_ID, build);
+        r.assertLogContains("JOB_COOWNERS=" + PROJECT_OWNER_ID, build);
     }
-    
+
     @Test
     @Issue("JENKINS-28881")
-    public void shouldInjectInheritedOwnershipInfo() throws Exception {
-        initJenkinsInstance();
+    void shouldInjectInheritedOwnershipInfo() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
                 .configure();
         
         // Init folder with a nested job
         Folder folder = r.jenkins.createProject(Folder.class, "folder");
-        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.<String>emptyList()));
+        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.emptyList()));
         FreeStyleProject prj = folder.createProject(FreeStyleProject.class, "projectInsideFolder");
-        prj.getBuildersList().add(new Shell("env"));
+        prj.getBuildersList().add(isWindows() ? new BatchFile("set") : new Shell("env"));
         
         // Run test. We expect Ownership info to be inherited for the project
-        FreeStyleBuild build = testVarsPresense(false);
-        r.assertLogContains("NODE_COOWNERS="+NODE_OWNER_ID, build);
-        r.assertLogContains("JOB_COOWNERS="+PROJECT_OWNER_ID, build);
+        FreeStyleBuild build = testVarsPresence(false);
+        r.assertLogContains("NODE_COOWNERS=" + NODE_OWNER_ID, build);
+        r.assertLogContains("JOB_COOWNERS=" + PROJECT_OWNER_ID, build);
     }
     
-    private FreeStyleBuild testVarsPresense(boolean failSCM) throws Exception {              
+    private FreeStyleBuild testVarsPresence(boolean failSCM) throws Exception {
         project.setAssignedNode(node);
         if (failSCM) {
             project.setScm(new AlwaysFailNullSCM());
@@ -172,8 +175,8 @@ public class OwnershipBuildWrapperTest {
         // Check the build environment
         final EnvVars env = build.getEnvironment(TaskListener.NULL);
         if (!failSCM) {
-            r.assertLogContains("NODE_OWNER="+NODE_OWNER_ID, build);
-            r.assertLogContains("JOB_OWNER="+PROJECT_OWNER_ID, build);
+            r.assertLogContains("NODE_OWNER=" + NODE_OWNER_ID, build);
+            r.assertLogContains("JOB_OWNER=" + PROJECT_OWNER_ID, build);
         }
         assertTrue(env.containsKey("NODE_OWNER"));
         assertTrue(env.containsKey("JOB_OWNER"));  

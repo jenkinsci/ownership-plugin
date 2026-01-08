@@ -37,28 +37,29 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import jenkins.model.Jenkins;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class JobOwnerJobPropertyTest {
+@WithJenkins
+class JobOwnerJobPropertyTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
 
-    @Before
-    public void setupSecurity() {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        r = rule;
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
         MockAuthorizationStrategy mas = new MockAuthorizationStrategy();
         mas.grant(Jenkins.ADMINISTER) // Implies MANAGE_ITEMS_OWNERSHIP.
@@ -72,7 +73,7 @@ public class JobOwnerJobPropertyTest {
 
     @Test
     @Issue("SECURITY-498")
-    public void changeOwnerViaPost() throws Exception {
+    void changeOwnerViaPost() throws Exception {
         FreeStyleProject p = r.createFreeStyleProject();
         p.getProperty(JobOwnerJobProperty.class).setOwnershipDescription(new OwnershipDescription(true, "admin", null));
 
@@ -103,7 +104,7 @@ public class JobOwnerJobPropertyTest {
 
     @Test
     @Issue("SECURITY-498")
-    public void changeOwnerViaCLI() throws Exception {
+    void changeOwnerViaCLI() throws Exception {
         FreeStyleProject p = r.createFreeStyleProject();
         p.getProperty(JobOwnerJobProperty.class).setOwnershipDescription(new OwnershipDescription(true, "admin", null));
 

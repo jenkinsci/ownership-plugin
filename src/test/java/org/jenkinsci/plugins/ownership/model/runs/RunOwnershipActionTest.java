@@ -35,28 +35,34 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.jenkinsci.plugins.ownership.config.DisplayOptions;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Tests for {@link RunOwnershipAction}.
  * @author Oleg Nenashev
  */
-public class RunOwnershipActionTest {
+@WithJenkins
+class RunOwnershipActionTest {
     
-    @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
-    
+    private JenkinsRule jenkinsRule;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        jenkinsRule = rule;
+    }
+
     @Test
     @Issue("JENKINS-28881")
-    public void shouldInheritOwnershipInfoFromFolders() throws Exception {
+    void shouldInheritOwnershipInfoFromFolders() throws Exception {
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule).configure();
         
@@ -75,11 +81,11 @@ public class RunOwnershipActionTest {
         assertThat("Folder ownership helper should return the inherited value after the reload",
                 ownershipInfo.getDescription(), equalTo(original));
         assertThat("OwnershipInfo should return the right reference", 
-                ownershipInfo.getSource().getItem(), equalTo((Object)jenkinsRule.jenkins.getItemByFullName("folder")));
+                ownershipInfo.getSource().getItem(), equalTo(jenkinsRule.jenkins.getItemByFullName("folder")));
     }
-    
+
     @Test
-    public void shouldDisplayStubSummaryBoxIfNoOwnership() throws Exception {
+    void shouldDisplayStubSummaryBoxIfNoOwnership() throws Exception {
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule).configure();
         
@@ -92,14 +98,14 @@ public class RunOwnershipActionTest {
         // Check the Ownership summary box for the Run
         JenkinsRule.WebClient webClient = jenkinsRule.createWebClient();
         HtmlPage res = webClient.goTo(build.getUrl());
-        HtmlDivision summaryBox = res.<HtmlDivision>getFirstByXPath("//div[@class='ownership-summary-box']");
+        HtmlDivision summaryBox = res.getFirstByXPath("//div[@class='ownership-summary-box']");
         assertThat("On the page there should an ownership box", summaryBox, notNullValue());
         assertThat("Ownership box should contain no info about the owner", summaryBox.getTextContent(), 
                 stringContainsInOrder(Arrays.asList("Ownership is not configured for this Run")));
     }
-    
+
     @Test
-    public void shouldDisplayRunOwnershipByDefault() throws Exception {
+    void shouldDisplayRunOwnershipByDefault() throws Exception {
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule).configure();
         
@@ -107,7 +113,7 @@ public class RunOwnershipActionTest {
         User user = User.get("testUser");
         
         FreeStyleProject project = jenkinsRule.createFreeStyleProject();
-        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, user.getId(), Collections.<String>emptyList()));
+        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, user.getId(), Collections.emptyList()));
         FreeStyleBuild build = jenkinsRule.buildAndAssertSuccess(project);
         
         assertThat("Run Ownership Box should be enabled in configs", 
@@ -116,17 +122,17 @@ public class RunOwnershipActionTest {
         // Check the Ownership summary box for the Run
         JenkinsRule.WebClient webClient = jenkinsRule.createWebClient();
         HtmlPage res = webClient.goTo(build.getUrl());
-        HtmlDivision summaryBox = res.<HtmlDivision>getFirstByXPath("//div[@class='ownership-summary-box']");
+        HtmlDivision summaryBox = res.getFirstByXPath("//div[@class='ownership-summary-box']");
         assertThat("On the page there should an ownership box", summaryBox, notNullValue());
-        HtmlDivision ownerInfo = summaryBox.<HtmlDivision>getFirstByXPath("//div[@class='ownership-user-info']");
+        HtmlDivision ownerInfo = summaryBox.getFirstByXPath("//div[@class='ownership-user-info']");
         assertThat("Ownership Summary Box should contain the owner info", summaryBox, notNullValue());
         assertThat("Owner info should mention user " + user, ownerInfo.getTextContent(), 
                 stringContainsInOrder(Arrays.asList(user.getId())));
     }
-    
+
     @Test
     @Issue("JENKINS-28714")
-    public void shouldHideRunOwnershipIfRequested() throws Exception {
+    void shouldHideRunOwnershipIfRequested() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule)
                 .withDisplayOptions(new DisplayOptions(true, false))
                 .configure();
@@ -143,10 +149,10 @@ public class RunOwnershipActionTest {
         assertThat("On the page there should not be ownership box", 
                 res.getFirstByXPath("//div[@class='ownership-summary-box']"), nullValue());
     }
-    
+
     @Test
     @Issue("JENKINS-28712")
-    public void shouldHideBoxesForNonConfiguredOwnershipIfConfigured() throws Exception {
+    void shouldHideBoxesForNonConfiguredOwnershipIfConfigured() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(jenkinsRule)
                 .withDisplayOptions(new DisplayOptions(false, true))
                 .configure();

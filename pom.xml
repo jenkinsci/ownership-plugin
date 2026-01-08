@@ -22,6 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- <workflow.version>1254.v3f64639b_11dd</workflow.version> -->
         <findbugs.effort>Max</findbugs.effort>
+        <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
     </properties>
     
     <licenses>

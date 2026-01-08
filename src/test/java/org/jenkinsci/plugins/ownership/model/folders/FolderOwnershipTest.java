@@ -38,31 +38,37 @@ import org.jenkinsci.plugins.ownership.config.PreserveOwnershipPolicy;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.remoting.RoleChecker;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Stores tests of {@link AbstractFolder} ownership.
  * @author Oleg Nenashev
  */
-public class FolderOwnershipTest {
-    
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-    
-    public FolderOwnershipHelper ownershipHelper = FolderOwnershipHelper.getInstance();
-    
+@WithJenkins
+class FolderOwnershipTest {
+
+    private final FolderOwnershipHelper ownershipHelper = FolderOwnershipHelper.getInstance();
+
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
     @Test
-    public void ownershipInfoShouldBeEmptyByDefault() throws Exception {
+    void ownershipInfoShouldBeEmptyByDefault() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "myFolder");
         assertThat("Property should be injected by default", 
                 FolderOwnershipHelper.getOwnerProperty(folder), notNullValue());
@@ -73,9 +79,9 @@ public class FolderOwnershipTest {
                 ownershipHelper.getOwnershipDescription(folder), 
                 equalTo(OwnershipDescription.DISABLED_DESCR));
     }
-    
+
     @Test
-    public void ownershipInfoShouldSurviveRoundtrip() throws Exception {
+    void ownershipInfoShouldSurviveRoundtrip() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "myFolder");
         
         // Set ownership via API
@@ -93,10 +99,10 @@ public class FolderOwnershipTest {
                 ownershipHelper.getOwnershipDescription(j.jenkins.getItemByFullName("myFolder", Folder.class)), 
                 equalTo(original));
     }
-    
+
     @Test
     @Issue("JENKINS-32359")
-    public void ownershipFromLoadedFolderShouldSurviveRoundtrip() throws Exception {
+    void ownershipFromLoadedFolderShouldSurviveRoundtrip() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "myFolder");
         
         // Drop the Ownership property injected by ItemListener.
@@ -121,9 +127,9 @@ public class FolderOwnershipTest {
                 ownershipHelper.getOwnershipDescription(j.jenkins.getItemByFullName("myFolder", Folder.class)), 
                 equalTo(original));
     }
-    
+
     @Test
-    public void shouldSupportAssignCreatorPolicy() throws Exception {
+    void shouldSupportAssignCreatorPolicy() throws Exception {
         
         // Init security
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
@@ -165,9 +171,9 @@ public class FolderOwnershipTest {
         assertThat("testUser should be retained after the restart", 
                 ownerPropertyReloaded.getOwnership().getPrimaryOwnerId(), equalTo("testUser"));
     }
-    
+
     @Test
-    public void ownershipShouldBeInheritedFromFolderByDefault() throws Exception {
+    void ownershipShouldBeInheritedFromFolderByDefault() throws Exception {
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
         
@@ -191,9 +197,9 @@ public class FolderOwnershipTest {
                         j.jenkins.getItemByFullName("myFolder/projectInFolder", FreeStyleProject.class)), 
                 equalTo(original));
     }
-    
+
     @Test
-    public void ownershipShouldBeInheritedFromTopLevelFolderByDefault() throws Exception {
+    void ownershipShouldBeInheritedFromTopLevelFolderByDefault() throws Exception {
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
         
@@ -218,11 +224,11 @@ public class FolderOwnershipTest {
         assertThat("Folder ownership helper should return the inherited value after the reload",
                 ownershipInfo.getDescription(), equalTo(original));
         assertThat("OwnershipInfo should return the right reference", 
-                (Object)ownershipInfo.getSource().getItem(), equalTo((Object)j.jenkins.getItemByFullName("folder1")));
+                (Object)ownershipInfo.getSource().getItem(), equalTo(j.jenkins.getItemByFullName("folder1")));
     }
-    
+
     @Test
-    public void ownershipShouldNotBeInheritedFromTopLevelFolderIfDisabled() throws Exception {
+    void ownershipShouldNotBeInheritedFromTopLevelFolderIfDisabled() throws Exception {
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
         
@@ -253,45 +259,46 @@ public class FolderOwnershipTest {
                 projectOwnershipInfo.getDescription(), equalTo(OwnershipDescription.DISABLED_DESCR));
     }
 
-    private static final String FOLDER_CONFIG_XML = "<?xml version='1.0' encoding='UTF-8'?>\n"+
-            "<com.cloudbees.hudson.plugins.folder.Folder plugin=\"cloudbees-folder@5.17\">\n"+
-            "  <actions/>\n"+
-            "  <description></description>\n"+
-            "  <properties>\n"+
-            "    <org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty plugin=\"ownership@0.9.1\">\n"+
-            "      <ownership>\n"+
-            "        <ownershipEnabled>true</ownershipEnabled>\n"+
-            "        <primaryOwnerId>the.owner</primaryOwnerId>\n"+
-            "        <coownersIds class=\"sorted-set\"/>\n"+
-            "      </ownership>\n"+
-            "    </org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty>\n"+
-            "    <org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig plugin=\"pipeline-model-definition@1.0.1\">\n"+
-            "      <dockerLabel></dockerLabel>\n"+
-            "      <registry plugin=\"docker-commons@1.6\"/>\n"+
-            "    </org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig>\n"+
-            "  </properties>\n"+
-            "  <folderViews class=\"com.cloudbees.hudson.plugins.folder.views.DefaultFolderViewHolder\">\n"+
-            "    <views>\n"+
-            "      <hudson.model.AllView>\n"+
-            "        <owner class=\"com.cloudbees.hudson.plugins.folder.Folder\" reference=\"../../../..\"/>\n"+
-            "        <name>All</name>\n"+
-            "        <filterExecutors>false</filterExecutors>\n"+
-            "        <filterQueue>false</filterQueue>\n"+
-            "        <properties class=\"hudson.model.View$PropertyList\"/>\n"+
-            "      </hudson.model.AllView>\n"+
-            "    </views>\n"+
-            "    <tabBar class=\"hudson.views.DefaultViewsTabBar\"/>\n"+
-            "  </folderViews>\n"+
-            "  <healthMetrics>\n"+
-            "    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>\n"+
-            "      <nonRecursive>false</nonRecursive>\n"+
-            "    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>\n"+
-            "  </healthMetrics>\n"+
-            "  <icon class=\"com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon\"/>\n"+
-            "</com.cloudbees.hudson.plugins.folder.Folder>";
+    private static final String FOLDER_CONFIG_XML = """
+            <?xml version='1.0' encoding='UTF-8'?>
+            <com.cloudbees.hudson.plugins.folder.Folder plugin="cloudbees-folder@5.17">
+              <actions/>
+              <description></description>
+              <properties>
+                <org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty plugin="ownership@0.9.1">
+                  <ownership>
+                    <ownershipEnabled>true</ownershipEnabled>
+                    <primaryOwnerId>the.owner</primaryOwnerId>
+                    <coownersIds class="sorted-set"/>
+                  </ownership>
+                </org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig plugin="pipeline-model-definition@1.0.1">
+                  <dockerLabel></dockerLabel>
+                  <registry plugin="docker-commons@1.6"/>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig>
+              </properties>
+              <folderViews class="com.cloudbees.hudson.plugins.folder.views.DefaultFolderViewHolder">
+                <views>
+                  <hudson.model.AllView>
+                    <owner class="com.cloudbees.hudson.plugins.folder.Folder" reference="../../../.."/>
+                    <name>All</name>
+                    <filterExecutors>false</filterExecutors>
+                    <filterQueue>false</filterQueue>
+                    <properties class="hudson.model.View$PropertyList"/>
+                  </hudson.model.AllView>
+                </views>
+                <tabBar class="hudson.views.DefaultViewsTabBar"/>
+              </folderViews>
+              <healthMetrics>
+                <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+                  <nonRecursive>false</nonRecursive>
+                </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+              </healthMetrics>
+              <icon class="com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon"/>
+            </com.cloudbees.hudson.plugins.folder.Folder>""";
 
     @Test
-    public void folderShouldSupportPreserveOwnershipPolicy() throws Exception {
+    void folderShouldSupportPreserveOwnershipPolicy() throws Exception {
         InputStream folderConfigIS = null;
         try {
             // Configure the policy

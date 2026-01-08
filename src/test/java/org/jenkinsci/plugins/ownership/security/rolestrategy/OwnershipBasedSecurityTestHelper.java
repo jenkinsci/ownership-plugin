@@ -36,6 +36,7 @@ import hudson.model.Run;
 import hudson.security.Permission;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class OwnershipBasedSecurityTestHelper {
     
     public static void setup(@Nonnull Jenkins jenkins) throws AssertionError, IOException {
         
-        Map<String,RoleMap> grantedRoles = new HashMap<String, RoleMap>();
+        Map<String,RoleMap> grantedRoles = new HashMap<>();
         grantedRoles.put(RoleType.Project.getStringType(), getProjectRoleMap());
         grantedRoles.put(RoleType.Slave.getStringType(), getComputerRoleMap());
         grantedRoles.put(RoleType.Global.getStringType(), getGlobalAdminAndAnonymousRoles());
@@ -65,17 +66,17 @@ public class OwnershipBasedSecurityTestHelper {
     }
     
     private static RoleMap getGlobalAdminAndAnonymousRoles() {
-        Set<Permission> adminPermissions = new HashSet<Permission>();
+        Set<Permission> adminPermissions = new HashSet<>();
         adminPermissions.add(Jenkins.ADMINISTER);
         Role adminRole = createRole("administrator", ".*", adminPermissions);
         
-        Set<Permission> anonymousPermissions = new HashSet<Permission>();
+        Set<Permission> anonymousPermissions = new HashSet<>();
         anonymousPermissions.add(Jenkins.READ);
         anonymousPermissions.add(Item.READ);
         anonymousPermissions.add(Item.DISCOVER);
         Role anonymousRole = createRole("anonymous", ".*", anonymousPermissions);
         
-        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<Role, Set<PermissionEntry>>();
+        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<>();
         grantedRoles.put(adminRole, singleSid("admin"));
         grantedRoles.put(anonymousRole, singleSid("anonymous"));
         
@@ -83,13 +84,13 @@ public class OwnershipBasedSecurityTestHelper {
     }
     
     private static RoleMap getProjectRoleMap() {
-        Set<Permission> ownerPermissions = new HashSet<Permission>();
+        Set<Permission> ownerPermissions = new HashSet<>();
         ownerPermissions.add(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         ownerPermissions.addAll(Item.PERMISSIONS.getPermissions());
         ownerPermissions.addAll(Run.PERMISSIONS.getPermissions());
         Role ownerRole = createRole("@OwnerNoSid", ".*", ownerPermissions);
         
-        Set<Permission> coownerPermissions = new HashSet<Permission>();
+        Set<Permission> coownerPermissions = new HashSet<>();
         coownerPermissions.addAll(Item.PERMISSIONS.getPermissions());
         coownerPermissions.addAll(Run.PERMISSIONS.getPermissions());
         coownerPermissions.remove(Item.DELETE);
@@ -100,13 +101,12 @@ public class OwnershipBasedSecurityTestHelper {
     }
     
     private static RoleMap getComputerRoleMap() {
-        Set<Permission> ownerPermissions = new HashSet<Permission>();
+        Set<Permission> ownerPermissions = new HashSet<>();
         ownerPermissions.add(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
         ownerPermissions.addAll(Computer.PERMISSIONS.getPermissions());
         Role ownerRole = createRole("@OwnerNoSid", ".*", ownerPermissions);
-        
-        Set<Permission> coownerPermissions = new HashSet<Permission>();
-        coownerPermissions.addAll(Computer.PERMISSIONS.getPermissions());
+
+        Set<Permission> coownerPermissions = new HashSet<>(Computer.PERMISSIONS.getPermissions());
         coownerPermissions.remove(Computer.DELETE);
         coownerPermissions.remove(Computer.CONFIGURE);
         Role coOwnerRole = createRole("@CoOwnerNoSid", ".*", coownerPermissions);
@@ -115,15 +115,12 @@ public class OwnershipBasedSecurityTestHelper {
     }
     
     private static Role createRole(String name, String pattern, Permission ... permissions) {
-        Set<Permission> permSet = new HashSet<Permission>();
-        for (Permission p : permissions) {
-            permSet.add(p);
-        }
+        Set<Permission> permSet = new HashSet<>(Arrays.asList(permissions));
         return createRole(name, pattern, permSet);
     }
     
     private static RoleMap createRoleMapForSid(String sid, Role ... roles) {
-        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<Role, Set<PermissionEntry>>();
+        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<>();
         for (Role role : roles) {
             grantedRoles.put(role, singleSid(sid));
         }
@@ -134,7 +131,7 @@ public class OwnershipBasedSecurityTestHelper {
         if (sid == null) {
             throw new IllegalArgumentException("SID cannot be null");
         }
-        final Set<PermissionEntry> sids = new TreeSet<PermissionEntry>();
+        final Set<PermissionEntry> sids = new TreeSet<>();
         // Special SIDs like "authenticated" and "anonymous" should use EITHER type
         // Regular user/group SIDs use user() or group()
         if ("authenticated".equals(sid) || "anonymous".equals(sid)) {
