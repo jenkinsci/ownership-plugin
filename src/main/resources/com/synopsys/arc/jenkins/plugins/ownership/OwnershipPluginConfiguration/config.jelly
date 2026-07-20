@@ -22,16 +22,17 @@
  * THE SOFTWARE.
  -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
-     <j:invokeStatic var="itemOwnershipPolicies" 
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+     <j:invokeStatic var="itemOwnershipPolicies"
                     className="com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy"
                     method="allDescriptors"/>
     <f:entry>
         <f:property field="mailOptions"/>
     </f:entry>
     <f:entry title="${%itemOwnershipPolicy.title}">
+        <p class="jenkins-leading-paragraph jenkins-!-margin-bottom-2">${%itemOwnershipPolicy.title}</p>
         <f:hetero-radio field="itemOwnershipPolicy" descriptors="${itemOwnershipPolicies}"/>
-    </f:entry> 
+    </f:entry>
     <f:entry>
         <f:optionalProperty field="globalEnvSetupOptions" title="${%globalEnvSetupOptions.title}"/>
     </f:entry>

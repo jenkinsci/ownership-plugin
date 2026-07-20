@@ -27,92 +27,77 @@
 -        helper - Helper, which provides info about item
 -        item - Item, which is being described by floating box. Action helper should provide appropriate action helper
 -        itemType - name of the item type for visualization (e.g., Job or Node)
--        styleClass - class of the div box   
 -
 -    @author Oleg Nenashev
--    @since 0.0.3   
+-    @since 0.0.3
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <!--Stuff-->
-    <link rel="stylesheet" href="${rootURL}/plugin/ownership/css/ownership.css" type="text/css" />
     <j:set var="layoutFormatter" value="${it.layoutFormatter}"/>
     <j:set var="ownershipDescription" value="${helper.getOwnershipDescription(item)}"/>
-   
+
     <!-- Layout for ownership with available data -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and ownershipDescription.ownershipEnabled}">
-      <div class="ownership-summary-box">   
-        <input class="ownership-toggle-box" id="ownership-toogle-1" type="checkbox" />
-        <label for="ownership-toogle-1">${itemType} ${%Owners}</label>           
-        <div>
-            <table>
-                <tr>
-                    <td>
-                        <div class="ownership-section">${%Primary}</div>
-                    </td>
-                    <td>
-                        <div class="ownership-user-info">
-                            <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
-                        </div>
-                    </td>
-                </tr>
-            
-                <!-- Secondary owners (fka Co-owners) -->    
-                <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
-                <j:if test="${not coownersList.isEmpty()}">
-                    <tr>
-                        <td>        
-                            <div class="ownership-section">${%Secondary}</div>
-                        </td>       
-                        <td>
-                            <j:forEach var="coownerId" items="${coownersList}">
-                                <div class="ownership-user-info">                   
-                                    <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
-                                </div>
-                            </j:forEach>  
-                        </td>
-                    </tr>
-                </j:if>
-            </table>
-                 
-            <div class="ownership-contact-links"> 
-                <table>
-                    <tr>  
-                        <!-- Contact Owners link -->
-                        <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
-                        <j:if test="${ownersMailToLink != null}">   
-                            <td>    
-                                <l:icon src="symbol-user" class="icon-md" />
-                                <a href="${ownersMailToLink}">${%ownersMailToLink.text(itemType)}</a>
-                            </td>
-                        </j:if>
-
-                        <!-- Contact Admins link -->
-                        <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
-                        <j:if test="${adminsMailToLink != null}">
-                            <td>
-                                <l:icon src="symbol-setting" class="icon-md" />
-                                <a href="${adminsMailToLink}">${%adminsMailToLink.text}</a>
-                            </td>
-                        </j:if>
-                    </tr>
-                </table>
+      <div data-testid="ownership-summary" class="jenkins-!-margin-bottom-3">
+        <l:card title="${itemType} ${%Owners}" id="ownership-summary">
+            <div class="jenkins-!-margin-bottom-2">
+                <div class="jenkins-!-margin-bottom-1">
+                    <strong>${%Primary}</strong>
+                </div>
+                <div data-testid="ownership-user-info" class="jenkins-!-margin-left-2">
+                    <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
+                </div>
             </div>
-        </div>
+
+            <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
+            <j:if test="${not coownersList.isEmpty()}">
+                <div class="jenkins-!-margin-bottom-2">
+                    <div class="jenkins-!-margin-bottom-1">
+                        <strong>${%Secondary}</strong>
+                    </div>
+                    <j:forEach var="coownerId" items="${coownersList}">
+                        <div data-testid="ownership-user-info" class="jenkins-!-margin-left-2 jenkins-!-margin-bottom-1">
+                            <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
+                        </div>
+                    </j:forEach>
+                </div>
+            </j:if>
+
+            <div class="jenkins-buttons-row jenkins-!-margin-top-2">
+                <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
+                <j:if test="${ownersMailToLink != null}">
+                    <a class="jenkins-button jenkins-button--tertiary" href="${ownersMailToLink}">
+                        <l:icon src="symbol-user" class="icon-sm"/>
+                        ${%ownersMailToLink.text(itemType)}
+                    </a>
+                </j:if>
+
+                <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
+                <j:if test="${adminsMailToLink != null}">
+                    <a class="jenkins-button jenkins-button--tertiary" href="${adminsMailToLink}">
+                        <l:icon src="symbol-setting" class="icon-sm"/>
+                        ${%adminsMailToLink.text}
+                    </a>
+                </j:if>
+            </div>
+        </l:card>
       </div>
     </j:if>
-    
+
     <!-- Layout for ownership with missing data -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and !ownershipDescription.ownershipEnabled}">
-      <div class="ownership-summary-box">   
-        <div class="ownership-header">${itemType} ${%Ownership}</div>
-        <p>
-          ${%noOwnership.info.text(itemType)}
-        </p>
-        <p>
-          <b>${%noOwnership.info.hint}</b> ${%noOwnership.disableDisplayHint.text} <code>${%noOwnership.disableDisplayHint.configPath}</code>
-        </p>
+      <div data-testid="ownership-summary" class="jenkins-!-margin-bottom-3">
+        <l:card title="${itemType} ${%Ownership}" id="ownership-summary">
+          <p class="jenkins-leading-paragraph">
+            ${%noOwnership.info.text(itemType)}
+          </p>
+          <p class="jenkins-!-margin-top-2">
+            <strong>${%noOwnership.info.hint}</strong>
+            ${%noOwnership.disableDisplayHint.text}
+            <code>${%noOwnership.disableDisplayHint.configPath}</code>
+          </p>
+        </l:card>
       </div>
     </j:if>
 </j:jelly>

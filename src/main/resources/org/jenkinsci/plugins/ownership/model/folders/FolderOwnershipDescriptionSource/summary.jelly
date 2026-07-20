@@ -25,9 +25,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <j:set var="folder" value="${it.getItem()}"/>
-  <!-- TODO: l:icon does not work for Folders-->
-  <img src="${folder.iconColor.getImageOf('16x16')}" width="16" height="16" 
-       alt="${folder.iconColor.description}" tooltip="${folder.iconColor.description}"/>
-
-  <a href="${h.getRelativeLinkTo(folder)}" class="model-link"><l:breakable value="${folder.fullDisplayName}"/></a>
+  <!-- Folder status icons are still image-based in core; symbol icons are not available here. -->
+  <img src="${folder.iconColor.getImageOf('16x16')}" width="16" height="16"
+       alt="${folder.iconColor.description}" tooltip="${folder.iconColor.description}"
+       class="jenkins-!-margin-right-1"/>
+  <a href="${h.getRelativeLinkTo(folder)}" class="model-link jenkins-!-margin-left-1">
+    <l:breakable value="${folder.fullDisplayName}"/>
+  </a>
 </j:jelly>

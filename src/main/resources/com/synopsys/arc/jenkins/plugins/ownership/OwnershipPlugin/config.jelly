@@ -22,39 +22,52 @@
  * THE SOFTWARE.
  -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:section title="${%ownership_section.title}" description="${%Configuration of the ownership plugin}">
-    <f:entry title="${%requireConfigRights.title}" field="requiresConfigureRights">
-        <f:checkbox checked="${it.requiresConfigureRights}"/>
-        <f:description>${%requireConfigRights.description}</f:description>
-    </f:entry>
-
-    <!-- Newest parts of the configuration -->
-    <j:set var="instance" value="${it.configuration}" /> 
-    <j:set var="descriptor" value="${instance.descriptor}" />
-    <st:include from="${descriptor}" page="${descriptor.configPage}" optional="false" />
-    
-    <f:optionalBlock name="enableResolverRestrictions" 
-                     title="${%enableResolverRestrictions.title}" 
-                     checked="${it.hasMailResolverRestriction()}">
-        <f:entry title="${%Use the following resolver:}">
-            <select  name="mailResolverClassName">
-                <j:forEach var="resolver" items="${it.possibleMailResolvers}">
-                    <f:option value="${resolver}" selected="${ resolver.equals(it.mailResolverClassName) }">
-                        ${resolver}
-                    </f:option>
-                </j:forEach>
-            </select>
-            <f:description>${%enableResolverRestrictions.description}</f:description>
+    <div data-testid="ownership-global-config">
+      <l:card title="${%General settings}">
+        <f:entry title="${%requireConfigRights.title}" field="requiresConfigureRights">
+            <f:checkbox checked="${it.requiresConfigureRights}"/>
+            <f:description>${%requireConfigRights.description}</f:description>
         </f:entry>
-    </f:optionalBlock>
-    <!--Manual implementation of the optionalProperty-->
-    <f:optionalBlock name="defaultJobsSecurity" 
-                     title="${%defaultJobsSecurity.title}"
-                     checked="${it.defaultJobsSecurity != null}">
-        <j:set var="descriptor" value="${it.itemSpecificDescriptor}"/>
-        <j:set var="instance" value="${it.defaultJobsSecurity}"/>
-        <st:include from="${descriptor}" page="${descriptor.configPage}"/>
-    </f:optionalBlock> 
+
+        <j:set var="instance" value="${it.configuration}" />
+        <j:set var="descriptor" value="${instance.descriptor}" />
+        <st:include from="${descriptor}" page="${descriptor.configPage}" optional="false" />
+      </l:card>
+
+      <div class="jenkins-!-margin-top-3">
+        <l:card title="${%enableResolverRestrictions.title}">
+          <f:optionalBlock name="enableResolverRestrictions"
+                           title="${%enableResolverRestrictions.title}"
+                           checked="${it.hasMailResolverRestriction()}">
+              <f:entry title="${%Use the following resolver:}">
+                  <div class="jenkins-select">
+                    <select name="mailResolverClassName" class="jenkins-select__input">
+                        <j:forEach var="resolver" items="${it.possibleMailResolvers}">
+                            <f:option value="${resolver}" selected="${ resolver.equals(it.mailResolverClassName) }">
+                                ${resolver}
+                            </f:option>
+                        </j:forEach>
+                    </select>
+                  </div>
+                  <f:description>${%enableResolverRestrictions.description}</f:description>
+              </f:entry>
+          </f:optionalBlock>
+        </l:card>
+      </div>
+
+      <div class="jenkins-!-margin-top-3">
+        <l:card title="${%defaultJobsSecurity.title}">
+          <f:optionalBlock name="defaultJobsSecurity"
+                           title="${%defaultJobsSecurity.title}"
+                           checked="${it.defaultJobsSecurity != null}">
+              <j:set var="descriptor" value="${it.itemSpecificDescriptor}"/>
+              <j:set var="instance" value="${it.defaultJobsSecurity}"/>
+              <st:include from="${descriptor}" page="${descriptor.configPage}"/>
+          </f:optionalBlock>
+        </l:card>
+      </div>
+    </div>
   </f:section>
 </j:jelly>

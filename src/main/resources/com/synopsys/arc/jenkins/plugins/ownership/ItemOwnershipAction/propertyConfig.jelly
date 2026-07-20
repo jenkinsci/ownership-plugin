@@ -23,7 +23,7 @@
 -->
 <!--
 - Template for ownership property Setup
-- 
+-
 - Features:
 -   - Optional ownership enable
 -   - Setting of primary owner
@@ -35,49 +35,46 @@
 -
 - @remarks Use <function> to parse parameters
 - @author Oleg Nenashev
-- @since 0.0.3   
--   
+- @since 0.0.3
+-
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
-    
-    <!--Prepare data-->
-    <j:set var="_item" value="${it.getDescribedItem()}"/>   
-    <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>   
-    
-    <j:set var="_item" value="${it.getDescribedItem()}"/>          
-    <f:entry title="${%Primary Owner}" help="/plugin/ownership/help/primaryOwner.html">
-        <!--Already instantiated ownership-->
-        <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>   
-        <select name="${blockName}.primaryOwner" class="setting-input">
-            <j:forEach var="user" items="${_userList}">
-                <f:option value="${user.getId()}" selected="${ it.helper().getOwnershipDescription(_item).isPrimaryOwner(user) == true }">
-                    ${it.helper().getDisplayName(user)}
-                </f:option>
-            </j:forEach>
-        </select> 
 
+    <j:set var="_item" value="${it.getDescribedItem()}"/>
+    <j:set var="_userList" value="${it.helper().getPossibleOwners(it.getDescribedItem())}"/>
+
+    <f:entry title="${%Primary Owner}" help="/plugin/ownership/help/primaryOwner.html">
+        <div class="jenkins-select">
+            <select name="${blockName}.primaryOwner" class="jenkins-select__input">
+                <j:forEach var="user" items="${_userList}">
+                    <f:option value="${user.getId()}" selected="${ it.helper().getOwnershipDescription(_item).isPrimaryOwner(user) == true }">
+                        ${it.helper().getDisplayName(user)}
+                    </f:option>
+                </j:forEach>
+            </select>
+        </div>
     </f:entry>
     <f:entry title="${%Secondary owners}" help="/plugin/ownership/help/coOwner.html"/>
     <f:entry>
-        <f:repeatable name="coOwners" add="${%Add secondary owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">                                    
+        <f:repeatable name="coOwners" add="${%Add secondary owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">
             <o:blockWrapper>
                 <f:entry title="Secondary owner">
                     <f:textbox field="coOwner" value="${_coownerId}"
                                checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"
                     />
                     <f:description>
-                        ID of the user, who have specific access rights to the item. 
+                        ID of the user, who have specific access rights to the item.
                         Unregistered users are accepted as well.
-                    </f:description>  
+                    </f:description>
                 </f:entry>
                 <f:entry title="">
-                    <div align="right">
-                        <f:repeatableDeleteButton value="Remove..."/> 
+                    <div class="jenkins-buttons-row jenkins-buttons-row--invert">
+                        <f:repeatableDeleteButton value="Remove..."/>
                     </div>
                 </f:entry>
             </o:blockWrapper>
         </f:repeatable>
-    </f:entry>              
+    </f:entry>
 </j:jelly>

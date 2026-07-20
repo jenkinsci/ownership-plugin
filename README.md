@@ -28,11 +28,19 @@ This plugin provides an ownership engine for [Jenkins](https://jenkins.io/) auto
 
 # Examples
 
-Below you can find several Ownership Plugin UI examples.
+Below you can find several Ownership Plugin UI examples (Jenkins Design Library).
 
-Ownership Info Summary box:
+Ownership Info Summary card:
 
-![Ownership Summary box](doc/images/summaryBox.png)
+![Ownership Summary card](doc/images/summaryBox.png)
+
+Ownership hub page:
+
+![Ownership hub](doc/images/ownershipHub.png)
+
+Manage owners page:
+
+![Manage owners](doc/images/manageOwners.png)
 
 Ownership Column:
 

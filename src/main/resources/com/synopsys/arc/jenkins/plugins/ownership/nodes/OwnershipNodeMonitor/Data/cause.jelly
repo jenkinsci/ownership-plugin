@@ -23,5 +23,5 @@
  -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <p class="error">${it.causeDescription}</p>
+  <div class="jenkins-alert jenkins-alert-danger">${it.causeDescription}</div>
 </j:jelly>

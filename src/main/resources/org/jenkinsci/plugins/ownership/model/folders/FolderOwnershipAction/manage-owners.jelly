@@ -23,29 +23,28 @@
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <l:layout permission="${it.ownerPermission}" xmlns:local="local" norefresh="true">
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
+    <l:layout permission="${it.ownerPermission}" norefresh="true">
         <st:include it="${it.describedItem}" page="sidepanel.jelly"/>
         <l:main-panel>
-            <f:form method="post" name="config" action="ownersSubmit">
-                <h1>
-                    <l:icon class="icon-user icon-xlg"/>
-                    ${%Manage Owners}
-                </h1>
-                <p style="color:red"><b>Warning! You may lose access rights to this page if you change ownership</b></p>
-                <st:include page="ownershipSource.jelly" optional="false" it="${instance}"/>
-                <f:section title="${%Edit owners}">
-                    <f:rowSet name="owners">
-                        <f:block>
-                            <j:set var="blockName" value="ownership"/>
-                            <st:include page="propertyConfig.jelly" optional="false" it="${instance}"/>
-                        </f:block>
-                    </f:rowSet>
-                </f:section>
-                <f:block>
-                    <f:submit value="${%Save}"/>
-                </f:block>
-            </f:form>
+            <div data-testid="ownership-manage-owners">
+                <f:form method="post" name="config" action="ownersSubmit">
+                    <o:pageHeader title="${%Manage Owners}" icon="symbol-user"/>
+                    <o:warningAlert message="Warning! You may lose access rights to this page if you change ownership"/>
+                    <st:include page="ownershipSource.jelly" optional="false" it="${instance}"/>
+                    <l:card title="${%Edit owners}">
+                        <f:rowSet name="owners">
+                            <f:block>
+                                <j:set var="blockName" value="ownership"/>
+                                <st:include page="propertyConfig.jelly" optional="false" it="${instance}"/>
+                            </f:block>
+                        </f:rowSet>
+                    </l:card>
+                    <div class="jenkins-buttons-row jenkins-!-margin-top-3">
+                        <f:submit value="${%Save}"/>
+                    </div>
+                </f:form>
+            </div>
         </l:main-panel>
     </l:layout>
 </j:jelly>
