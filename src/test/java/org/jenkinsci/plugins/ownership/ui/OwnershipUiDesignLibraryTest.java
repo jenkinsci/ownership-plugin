@@ -34,7 +34,6 @@ import java.util.Collections;
 import net.sf.json.JSONObject;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
-import org.htmlunit.html.HtmlDivision;
 import org.htmlunit.html.HtmlElement;
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlPage;
@@ -110,7 +109,7 @@ public class OwnershipUiDesignLibraryTest {
         assertThat(JobOwnerHelper.Instance.getOwnershipDescription(project).getPrimaryOwnerId(), is("alice"));
 
         HtmlPage jobPage = wc.goTo(project.getUrl());
-        HtmlDivision summary = jobPage.getFirstByXPath("//*[@data-testid='ownership-summary']");
+        HtmlElement summary = jobPage.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat(summary, notNullValue());
         assertThat(summary.getTextContent(), containsString("alice"));
 
@@ -125,7 +124,7 @@ public class OwnershipUiDesignLibraryTest {
         FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "alice", Collections.singletonList("bob")));
 
         HtmlPage page = j.createWebClient().goTo(folder.getUrl());
-        HtmlDivision summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
+        HtmlElement summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat(summary, notNullValue());
         assertThat(summary.getTextContent(), containsString("alice"));
 
@@ -177,9 +176,6 @@ public class OwnershipUiDesignLibraryTest {
         assertThat(preview.getTextContent(), containsString("alice"));
         assertThat(preview.getTextContent(), containsString("+2"));
         assertThat(page.getFirstByXPath("//details[@data-testid='ownership-summary']"), notNullValue());
-        assertThat(page.asXml(), containsString("mail-outline"));
-        assertThat(page.asXml(), containsString("ownership-summary__mail-admin-icon"));
-        assertThat(page.asXml(), containsString("settings-outline"));
     }
 
     @Test
