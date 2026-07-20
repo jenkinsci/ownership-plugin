@@ -1,0 +1,13 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout">
+  <st:documentation>
+    A Design Library card linking to a child ownership page.
+    <st:attribute name="title" use="required">Card title</st:attribute>
+    <st:attribute name="href" use="required">Expand / navigation target</st:attribute>
+  </st:documentation>
+  <l:card title="${title}" expandable="${href}">
+    <p class="jenkins-leading-paragraph">
+      <d:invokeBody/>
+    </p>
+  </l:card>
+</j:jelly>

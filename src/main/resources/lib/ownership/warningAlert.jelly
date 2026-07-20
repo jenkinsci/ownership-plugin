@@ -1,0 +1,13 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+  <st:documentation>
+    Design Library warning alert.
+    <st:attribute name="message">Alert text (used if body is empty)</st:attribute>
+  </st:documentation>
+  <div class="jenkins-alert jenkins-alert-warning">
+    <j:choose>
+      <j:when test="${attrs.message != null}">${message}</j:when>
+      <j:otherwise><d:invokeBody/></j:otherwise>
+    </j:choose>
+  </div>
+</j:jelly>

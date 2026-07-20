@@ -1,0 +1,9 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+  <st:documentation>
+    Container for ownership hub feature cards (Design Library layout).
+  </st:documentation>
+  <div data-testid="ownership-hub" class="jenkins-!-margin-top-3" style="display:flex; gap:1rem; flex-wrap:wrap;">
+    <d:invokeBody/>
+  </div>
+</j:jelly>

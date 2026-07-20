@@ -38,14 +38,14 @@ import java.io.UnsupportedEncodingException;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 
+import jakarta.servlet.ServletException;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
@@ -131,7 +131,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     }
     
     @RequirePOST
-    public HttpResponse doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
+    public HttpResponse doOwnersSubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         
         JSONObject jsonOwnership = req.getSubmittedForm().getJSONObject("owners");
@@ -142,7 +142,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     }
     
     @RequirePOST
-    public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
+    public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         JSONObject form = req.getSubmittedForm();
         
@@ -158,7 +158,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     }
     
     @RequirePOST
-    public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, Descriptor.FormException {
+    public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         // Get default security
         ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.getInstance().getDefaultJobsSecurity();

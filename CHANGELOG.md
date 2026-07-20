@@ -8,6 +8,13 @@ Changelog
 
 See [GitHub Releases](https://github.com/jenkinsci/ownership/releases).
 
+### Unreleased
+
+* Migrate ownership plugin UI to Jenkins Design Library components (`l:card`, `l:app-bar`, `jenkins-alert`, modern selects/buttons).
+* Replace the custom ownership summary box (`.ownership-summary-box` / `ownership.css`) with Design Library cards.
+  External CSS overrides targeting those legacy classes will no longer apply.
+* Add HtmlUnit UI integration and ownership flow tests covering hub pages, manage-owners, summary cards, and global config.
+
 ### 0.12.1
 
 Release date: Apr 30, 2018

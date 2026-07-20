@@ -28,10 +28,10 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.security.AuthorizationMatrixProperty;
 import hudson.security.Permission;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
@@ -40,11 +40,11 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * Implements item-specific property map.
- * This class relies on {@link AuthorizationMatrixProperty} from Jenkins core.
+ * This class relies on {@link AuthorizationMatrixProperty} from the matrix-auth plugin.
  * @author Oleg Nenashev
  * @since 0.3
  */
@@ -56,7 +56,7 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
     public ItemSpecificSecurity(@CheckForNull AuthorizationMatrixProperty permissionsMatrix) {
         this.permissionsMatrix = permissionsMatrix != null 
                 ? permissionsMatrix
-                : new AuthorizationMatrixProperty(new TreeMap<Permission, Set<String>>());
+                : new AuthorizationMatrixProperty(new HashMap<Permission, Set<String>>());
     }
 
     @Override
@@ -77,7 +77,8 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
             // Use getGrantedPermissionEntries() instead of deprecated getGrantedPermissions()
             Map<Permission, Set<PermissionEntry>> permissionEntries = this.permissionsMatrix.getGrantedPermissionEntries();
             // Convert PermissionEntry to String (SID) for the constructor
-            Map<Permission, Set<String>> permissions = new TreeMap<>();
+            // HashMap: Permission is not Comparable, so TreeMap throws ClassCastException
+            Map<Permission, Set<String>> permissions = new HashMap<>();
             for (Map.Entry<Permission, Set<PermissionEntry>> entry : permissionEntries.entrySet()) {
                 Set<String> sids = new HashSet<>();
                 for (PermissionEntry permEntry : entry.getValue()) {
@@ -103,12 +104,12 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
         }
 
         @Override
-        public ItemSpecificSecurity newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+        public ItemSpecificSecurity newInstance(StaplerRequest2 req, JSONObject formData) throws FormException {
             AuthorizationMatrixProperty prop = null;
             if (formData.containsKey("permissionsMatrix")) {
-                Descriptor<?> d= Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
+                Descriptor<?> d = Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
                 if (d != null) {
-                    prop = (AuthorizationMatrixProperty)d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                    prop = (AuthorizationMatrixProperty) d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
                 }
             }
             return new ItemSpecificSecurity(prop);
