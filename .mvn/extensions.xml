@@ -2,7 +2,7 @@
 <extensions>
     <extension>
         <groupId>io.jenkins.tools.incrementals</groupId>
-        <artifactId>incrementals-maven-plugin</artifactId>
+        <artifactId>git-changelist-maven-extension</artifactId>
         <version>1.13</version>
     </extension>
 </extensions>
