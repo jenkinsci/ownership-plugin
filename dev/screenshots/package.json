@@ -1,0 +1,16 @@
+{
+  "name": "ownership-screenshot-capture",
+  "private": true,
+  "description": "Capture ownership-plugin documentation screenshots against a live Jenkins",
+  "type": "module",
+  "scripts": {
+    "capture": "node capture.mjs",
+    "capture:ui": "SHOT_FILTER=ui node capture.mjs",
+    "capture:config": "SHOT_FILTER=config node capture.mjs",
+    "capture:security": "SHOT_FILTER=security node capture.mjs"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "playwright": "^1.49.0"
+  }
+}

@@ -1,0 +1,212 @@
+# Screenshot capture manifest for ownership-plugin docs.
+# Paths are relative to JENKINS_URL (e.g. http://localhost:8080/jenkins).
+#
+# Tags: ui | config | security | mailto
+# Filter with SHOT_FILTER=ui (substring match on tags or file name).
+
+viewport: { width: 1440, height: 900 }
+
+shots:
+  # --- README / Ownership UI ---
+  - file: summaryBox.png
+    tags: [ui]
+    path: /job/demo-folder/job/owned-job/
+    ready: body
+    actions:
+      - wait: 500
+      - click: details.jenkins-card summary
+      - wait: 300
+    clip: details.jenkins-card, .jenkins-card, [data-testid="ownership-summary"]
+
+  - file: ownershipHub.png
+    tags: [ui]
+    path: /job/demo-folder/job/owned-job/ownership/
+    ready: body
+    clip:
+      - "#main-panel"
+
+  - file: manageOwners.png
+    tags: [ui]
+    path: /job/demo-folder/job/owned-job/ownership/manage-owners
+    ready: form[name="config"], body
+    clip:
+      - "#main-panel"
+
+  - file: configureSpecifics.png
+    tags: [ui]
+    path: /job/demo-folder/job/specific-rights-job/ownership/configure-project-specifics
+    ready: form[name="config"], body
+    clip:
+      - "#main-panel"
+
+  - file: ownerColumn.png
+    tags: [ui]
+    path: /view/All%20(with%20Ownership)/
+    ready: table#projectstatus, body
+    clip:
+      - table#projectstatus
+      - "#main-panel"
+
+  # --- Global configuration (tight clips: section / advanced-body / card) ---
+  - file: configuration/topLevel.png
+    tags: [config]
+    path: /manage/configure
+    ready: form[name="config"]
+    actions:
+      - scroll: text=Configuration of the ownership plugin
+      - wait: 300
+    clip:
+      - "[data-testid=\"ownership-global-config\"]"
+      - section=Configuration of the ownership plugin
+
+  - file: configuration/emailOptions.png
+    tags: [config]
+    path: /manage/configure
+    ready: form[name="config"]
+    actions:
+      - scroll: text=Advanced e-mail options
+      - click: text=Advanced e-mail options
+      - wait: 500
+    clip:
+      - advanced-body=Advanced e-mail options
+
+  - file: configuration/displayOptions.png
+    tags: [config]
+    path: /manage/configure
+    ready: form[name="config"]
+    actions:
+      - scroll: text=Ownership Display Options
+      - click: text=Ownership Display Options
+      - wait: 500
+    clip:
+      - advanced-body=Ownership Display Options
+
+  - file: configuration/inheritanceOptions.png
+    tags: [config]
+    path: /manage/configure
+    ready: form[name="config"]
+    actions:
+      - scroll: text=Ownership Inheritance Options
+      - click: text=Ownership Inheritance Options
+      - wait: 500
+    clip:
+      - advanced-body=Ownership Inheritance Options
+
+  # --- AbstractProject ---
+  - file: abstractProject/buildWrapper.png
+    tags: [ui]
+    path: /job/demo-folder/job/env-job/configure
+    ready: form[name="config"]
+    actions:
+      - click: a[href="#build-environment"], button:has-text("Build Environment"), text=Build Environment
+      - wait: 500
+      - scroll: text=Inject ownership variables into environment
+      - wait: 300
+    clip:
+      - text=Inject ownership variables into environment
+
+  - file: abstractProject/example_buildStep.png
+    tags: [ui]
+    path: /job/demo-folder/job/env-job/configure
+    ready: form[name="config"]
+    actions:
+      - click: a[href="#build"], button:has-text("Build Steps"), text=Build Steps
+      - wait: 500
+      - scroll: text=Execute shell
+      - wait: 300
+    clip:
+      - text=Execute shell
+
+  - file: abstractProject/example_tokenMacro.png
+    tags: [ui]
+    path: /job/demo-folder/job/env-job/configure
+    ready: form[name="config"]
+    actions:
+      - click: a[href="#build"], button:has-text("Build Steps"), text=Build Steps
+      - wait: 500
+      - scroll: text=OWNERSHIP
+      - wait: 300
+    clip:
+      - text=OWNERSHIP
+
+  # --- Mailto surrogate (no OS mail client) ---
+  - file: generatedEmailTemplate.png
+    tags: [mailto, ui]
+    type: mailto-surrogate
+    jobPath: /job/demo-folder/job/owned-job/
+    to: alice@example.com
+    cc: bob@example.com;charlie@example.com
+    subject: "[Jenkins] - TODO: Describe the issue with job demo-folder » owned-job"
+    body: |
+      Dear owners of job demo-folder » owned-job,
+
+      TODO: Add text
+
+      URL: {{JOB_URL}}
+
+      Best regards,
+      Admin
+
+  # --- Security integrations (requires 02-ownership-security-testdata.groovy) ---
+  - file: ownershipBasedSecurity/roleStrategy_globalRoles.png
+    tags: [security]
+    path: /manage/role-strategy/
+    ready: body
+    actions:
+      - wait: 500
+      - scroll: text=Global roles
+    clip:
+      - text=Global roles
+      - "#main-panel"
+
+  - file: ownershipBasedSecurity/roleStrategy_itemNodeRoles.png
+    tags: [security]
+    path: /manage/role-strategy/
+    ready: body
+    actions:
+      - wait: 500
+      - scroll: text=Item roles
+      - scroll: text=Agent roles
+    clip:
+      - text=Item roles
+      - "#main-panel"
+
+  - file: ownershipBasedSecurity/roleStrategy_roleAssignments.png
+    tags: [security]
+    path: /manage/role-strategy/assign-roles
+    ready: body
+    clip:
+      - "#main-panel"
+
+  - file: ownershipBasedSecurity/jobrestrictions_masterNode.png
+    tags: [security]
+    path: /computer/(built-in)/configure
+    ready: form[name="config"], body
+    actions:
+      - scroll: text=Restrict jobs that are allowed to run on this node
+      - wait: 300
+    clip:
+      - text=Restrict jobs that are allowed to run on this node
+      - text=Restrict jobs
+
+  - file: ownershipBasedSecurity/jobrestrictions_commonNode.png
+    tags: [security]
+    path: /computer/demo-agent/configure
+    ready: form[name="config"], body
+    actions:
+      - scroll: text=Restrict jobs that are allowed to run on this node
+      - wait: 300
+    clip:
+      - text=Restrict jobs that are allowed to run on this node
+      - text=Restrict jobs
+
+  - file: ownershipBasedSecurity/authorizeProject_globalConfig.png
+    tags: [security]
+    path: /manage/configureSecurity/
+    ready: form[name="config"], body
+    actions:
+      - scroll: text=Access Control for Builds
+      - wait: 400
+    clip:
+      - section=Access Control for Builds
+      - text=Access Control for Builds

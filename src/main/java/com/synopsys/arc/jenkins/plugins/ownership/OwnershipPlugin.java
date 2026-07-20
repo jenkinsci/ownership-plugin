@@ -46,11 +46,11 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * Contains global actions and configurations.
@@ -176,7 +176,7 @@ public class OwnershipPlugin extends Plugin {
     }
 
     @Override 
-    public void configure(StaplerRequest req, JSONObject formData)
+    public void configure(StaplerRequest2 req, JSONObject formData)
 	    throws IOException, ServletException, Descriptor.FormException {
 	Jenkins.get().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");

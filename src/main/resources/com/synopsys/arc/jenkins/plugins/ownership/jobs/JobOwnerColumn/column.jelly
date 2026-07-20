@@ -22,14 +22,13 @@
  * THE SOFTWARE.
  -->
  <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+<j:jelly xmlns:j="jelly:core">
   <j:set var="job" value="${job}"/>
   <td>
         <j:if test="${job.hasPermission(job.READ)}">
             <j:choose>
                 <j:when test="${it.isOwnerExists(job)}">
-                    <l:icon src="symbol-user" class="icon-sm"/>
-                    <a href="${rootURL}/user/${it.getJobOwner(job)}/" class="jenkins-!-margin-left-1">
+                    <a href="${rootURL}/user/${it.getJobOwner(job)}/">
                         ${it.getJobOwner(job)}
                     </a>
                 </j:when>

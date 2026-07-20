@@ -57,16 +57,23 @@
         </div>
     </f:entry>
     <f:entry title="${%Secondary owners}" help="/plugin/ownership/help/coOwner.html"/>
+    <j:set var="coOwnerDatalistId" value="ownership-coowners-${h.generateId()}"/>
+    <datalist id="${coOwnerDatalistId}">
+        <j:forEach var="user" items="${_userList}">
+            <option value="${user.getId()}">${it.helper().getDisplayName(user)}</option>
+        </j:forEach>
+    </datalist>
     <f:entry>
         <f:repeatable name="coOwners" add="${%Add secondary owner}" var="_coownerId" items="${it.helper().getOwnershipDescription(_item).getCoownersIds()}">
             <o:blockWrapper>
-                <f:entry title="Secondary owner">
-                    <f:textbox field="coOwner" value="${_coownerId}"
-                               checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"
+                <f:entry title="${%Secondary owner}">
+                    <!-- Combobox: pick from known users or type any ID (including unregistered). -->
+                    <f:textbox name="coOwner" value="${_coownerId}" list="${coOwnerDatalistId}"
+                               placeholder="${%coOwner.placeholder}"
+                               checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+encodeURIComponent(this.value)"
                     />
                     <f:description>
-                        ID of the user, who have specific access rights to the item.
-                        Unregistered users are accepted as well.
+                        ${%coOwner.description}
                     </f:description>
                 </f:entry>
                 <f:entry title="">

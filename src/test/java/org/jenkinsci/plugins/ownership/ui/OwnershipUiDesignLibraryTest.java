@@ -157,11 +157,29 @@ public class OwnershipUiDesignLibraryTest {
         FreeStyleBuild build = j.buildAndAssertSuccess(project);
 
         HtmlPage page = j.createWebClient().goTo(build.getUrl());
-        HtmlDivision summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
+        HtmlElement summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat(summary, notNullValue());
-        assertThat(summary.getFirstByXPath(".//div[contains(@class,'jenkins-card')]"), notNullValue());
+        assertThat(summary.getAttribute("data-default-collapsed"), is("true"));
+        assertThat(page.getFirstByXPath("//*[@data-testid='ownership-summary-preview']"), notNullValue());
         assertThat(page.getFirstByXPath("//*[@data-testid='ownership-user-info']"), notNullValue());
         assertThat(summary.getTextContent(), containsString("alice"));
+    }
+
+    @Test
+    public void jobSummaryCollapsedPreviewShowsPrimaryAndCoownerCount() throws Exception {
+        FreeStyleProject project = j.createFreeStyleProject("preview-job");
+        JobOwnerHelper.setOwnership(project,
+                new OwnershipDescription(true, "alice", java.util.Arrays.asList("bob", "charlie")));
+
+        HtmlPage page = j.createWebClient().goTo(project.getUrl());
+        HtmlElement preview = page.getFirstByXPath("//*[@data-testid='ownership-summary-preview']");
+        assertThat(preview, notNullValue());
+        assertThat(preview.getTextContent(), containsString("alice"));
+        assertThat(preview.getTextContent(), containsString("+2"));
+        assertThat(page.getFirstByXPath("//details[@data-testid='ownership-summary']"), notNullValue());
+        assertThat(page.asXml(), containsString("mail-outline"));
+        assertThat(page.asXml(), containsString("ownership-summary__mail-admin-icon"));
+        assertThat(page.asXml(), containsString("settings-outline"));
     }
 
     @Test

@@ -25,7 +25,7 @@
 -    Template for Ownership floatingBox.
 -    Parameters:
 -        helper - Helper, which provides info about item
--        item - Item, which is being described by floating box. Action helper should provide appropriate action helper
+-        item - Item, which is being described by floating box
 -        itemType - name of the item type for visualization (e.g., Job or Node)
 -
 -    @author Oleg Nenashev
@@ -34,60 +34,87 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <link rel="stylesheet" href="${rootURL}/plugin/ownership/css/ownership-summary.css" type="text/css"/>
+    <script src="${rootURL}/plugin/ownership/js/ownership-summary.js"></script>
+
     <j:set var="layoutFormatter" value="${it.layoutFormatter}"/>
     <j:set var="ownershipDescription" value="${helper.getOwnershipDescription(item)}"/>
 
-    <!-- Layout for ownership with available data -->
+    <!-- Configured ownership: collapsed-first summary card -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and ownershipDescription.ownershipEnabled}">
-      <div data-testid="ownership-summary" class="jenkins-!-margin-bottom-3">
-        <l:card title="${itemType} ${%Owners}" id="ownership-summary">
-            <div class="jenkins-!-margin-bottom-2">
-                <div class="jenkins-!-margin-bottom-1">
-                    <strong>${%Primary}</strong>
-                </div>
-                <div data-testid="ownership-user-info" class="jenkins-!-margin-left-2">
-                    <j:out value="${layoutFormatter.formatOwner(item, helper.getOwner(item))}"/>
-                </div>
-            </div>
+      <j:set var="coownersList" value="${ownershipDescription.getCoownersIds()}"/>
+      <j:set var="coownersCount" value="${coownersList.size()}"/>
+      <j:set var="primaryOwnerUser" value="${ownershipDescription.primaryOwner}"/>
+      <j:set var="primaryLabel" value="${helper.getDisplayName(primaryOwnerUser)}"/>
+      <j:set var="storageKey" value="${itemType}:${item.url}"/>
 
-            <j:set var="coownersList" value="${helper.getOwnershipDescription(item).getCoownersIds()}"/>
-            <j:if test="${not coownersList.isEmpty()}">
-                <div class="jenkins-!-margin-bottom-2">
-                    <div class="jenkins-!-margin-bottom-1">
-                        <strong>${%Secondary}</strong>
-                    </div>
-                    <j:forEach var="coownerId" items="${coownersList}">
-                        <div data-testid="ownership-user-info" class="jenkins-!-margin-left-2 jenkins-!-margin-bottom-1">
-                            <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
-                        </div>
-                    </j:forEach>
-                </div>
+      <details class="jenkins-card ownership-summary-card"
+               data-testid="ownership-summary"
+               data-ownership-summary="true"
+               data-default-collapsed="true"
+               data-storage-key="${storageKey}"
+               id="ownership-summary">
+        <summary>
+          <span class="ownership-summary__title">${itemType} ${%Owners}</span>
+          <span class="ownership-summary__preview" data-testid="ownership-summary-preview">
+            <j:choose>
+              <j:when test="${coownersCount == 0}">${primaryLabel}</j:when>
+              <j:when test="${coownersCount == 1}">${%preview.one(primaryLabel)}</j:when>
+              <j:otherwise>${%preview.many(primaryLabel, coownersCount)}</j:otherwise>
+            </j:choose>
+          </span>
+          <l:icon src="symbol-chevron-down-outline plugin-ionicons-api" class="icon-sm ownership-summary__chevron" title="${%Toggle details}"/>
+        </summary>
+
+        <div class="jenkins-card__content">
+          <div class="jenkins-!-margin-bottom-2">
+            <div class="ownership-summary__section-label">${%Primary}</div>
+            <div data-testid="ownership-user-info" class="ownership-summary__owners-inline">
+              <j:out value="${layoutFormatter.formatOwner(item, ownershipDescription.primaryOwnerId)}"/>
+            </div>
+          </div>
+
+          <j:if test="${coownersCount != 0}">
+            <div class="jenkins-!-margin-bottom-2">
+              <div class="ownership-summary__section-label">${%Secondary}</div>
+              <div class="ownership-summary__owners-inline">
+                <j:forEach var="coownerId" items="${coownersList}">
+                  <span data-testid="ownership-user-info">
+                    <j:out value="${layoutFormatter.formatOwner(item, coownerId)}"/>
+                  </span>
+                </j:forEach>
+              </div>
+            </div>
+          </j:if>
+
+          <div class="ownership-summary__actions jenkins-buttons-row">
+            <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
+            <j:if test="${ownersMailToLink != null}">
+              <a class="jenkins-button jenkins-button--tertiary" href="${ownersMailToLink}">
+                <l:icon src="symbol-mail-outline plugin-ionicons-api" class="icon-sm"/>
+                ${%ownersMailToLink.text(itemType)}
+              </a>
             </j:if>
 
-            <div class="jenkins-buttons-row jenkins-!-margin-top-2">
-                <j:set var="ownersMailToLink" value="${layoutFormatter.formatContactOwnersLink(item,helper)}"/>
-                <j:if test="${ownersMailToLink != null}">
-                    <a class="jenkins-button jenkins-button--tertiary" href="${ownersMailToLink}">
-                        <l:icon src="symbol-user" class="icon-sm"/>
-                        ${%ownersMailToLink.text(itemType)}
-                    </a>
-                </j:if>
-
-                <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
-                <j:if test="${adminsMailToLink != null}">
-                    <a class="jenkins-button jenkins-button--tertiary" href="${adminsMailToLink}">
-                        <l:icon src="symbol-setting" class="icon-sm"/>
-                        ${%adminsMailToLink.text}
-                    </a>
-                </j:if>
-            </div>
-        </l:card>
-      </div>
+            <j:set var="adminsMailToLink" value="${layoutFormatter.formatContactAdminsLink(item,helper)}"/>
+            <j:if test="${adminsMailToLink != null}">
+              <a class="jenkins-button jenkins-button--tertiary" href="${adminsMailToLink}"
+                 tooltip="${%adminsMailToLink.text}">
+                <span class="ownership-summary__mail-admin-icon" aria-hidden="true">
+                  <l:icon src="symbol-mail-outline plugin-ionicons-api" class="icon-sm"/>
+                  <l:icon src="symbol-settings-outline plugin-ionicons-api" class="icon-sm ownership-summary__mail-admin-badge"/>
+                </span>
+                ${%adminsMailToLink.text}
+              </a>
+            </j:if>
+          </div>
+        </div>
+      </details>
     </j:if>
 
-    <!-- Layout for ownership with missing data -->
+    <!-- Missing ownership: always expanded empty-state card -->
     <j:if test="${helper.isDisplayOwnershipSummaryBox(item) and !ownershipDescription.ownershipEnabled}">
-      <div data-testid="ownership-summary" class="jenkins-!-margin-bottom-3">
+      <div data-testid="ownership-summary" class="ownership-summary-empty">
         <l:card title="${itemType} ${%Ownership}" id="ownership-summary">
           <p class="jenkins-leading-paragraph">
             ${%noOwnership.info.text(itemType)}
