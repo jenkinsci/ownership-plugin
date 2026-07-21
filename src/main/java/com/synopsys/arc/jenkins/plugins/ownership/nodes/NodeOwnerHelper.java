@@ -26,12 +26,8 @@ package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
 import hudson.Extension;
 import hudson.model.Computer;
-import hudson.model.Job;
 import hudson.model.Node;
 import hudson.model.User;
 
@@ -49,7 +45,6 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Provides helper for Node owner.
- * TODO: Add Bug reference
  * @since 0.0.3
  * @author Oleg Nenashev
  * @see OwnerNodeProperty
@@ -85,10 +80,12 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
         if (item == null) { // Handle renames, etc.
             return OwnershipInfo.DISABLED_INFO;
         }
-        
+
         OwnerNodeProperty prop = getOwnerProperty(item);
-        return prop != null ? new OwnershipInfo(OwnershipDescription.DISABLED_DESCR, 
-                new NodeOwnershipDescriptionSource(item)) : OwnershipInfo.DISABLED_INFO;
+        OwnershipDescription descr = prop != null ? prop.getOwnership() : null;
+        return descr != null
+                ? new OwnershipInfo(descr, new NodeOwnershipDescriptionSource(item))
+                : OwnershipInfo.DISABLED_INFO;
     }
 
     @Override
@@ -103,12 +100,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
 
     @Override
     public Collection<User> getPossibleOwners(Node item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
-            IUserFilter filter = new AccessRightsFilter(item, Computer.CONFIGURE);
-            return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
-        } else {
-            return User.getAll();
-        }
+        return filterPossibleOwners(item, Computer.CONFIGURE);
     }  
     
     /**
