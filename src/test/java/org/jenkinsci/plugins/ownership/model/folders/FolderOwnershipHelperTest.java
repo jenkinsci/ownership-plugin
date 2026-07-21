@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.ownership.model.folders;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,15 +32,13 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Tests of {@link FolderOwnershipHelper}.
  * @author Oleg Nenashev
  */
 @WithJenkins
 class FolderOwnershipHelperTest {
-    
+
     private JenkinsRule j;
 
     @BeforeEach
@@ -49,8 +49,10 @@ class FolderOwnershipHelperTest {
     @Test
     void locatorShouldReturnRightHelperForFolder() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "myFolder");
-        
-        assertEquals(OwnershipHelperLocator.locate(folder),
-                FolderOwnershipHelper.getInstance(), "OwnershipHelperLocator should return the FolderOwnershipHelper instance");
+
+        assertEquals(
+                OwnershipHelperLocator.locate(folder),
+                FolderOwnershipHelper.getInstance(),
+                "OwnershipHelperLocator should return the FolderOwnershipHelper instance");
     }
 }

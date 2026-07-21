@@ -63,7 +63,6 @@ public class UserWrapper {
             this.user = User.getById(userMacro, false);
             //   throw new UnsupportedOperationException("User macro must start with prefix '"+USER_MACRO_PREFIX+"'");
         }
-
     }
 
     /**
@@ -74,7 +73,7 @@ public class UserWrapper {
     public boolean IsUser() {
         return isUser;
     }
-    
+
     public boolean isUser() {
         return isUser;
     }
@@ -109,8 +108,7 @@ public class UserWrapper {
             comparedId = current.getId();
         }
 
-        // Check      
+        // Check
         return User.idStrategy().equals(comparedId, userId);
     }
-
 }

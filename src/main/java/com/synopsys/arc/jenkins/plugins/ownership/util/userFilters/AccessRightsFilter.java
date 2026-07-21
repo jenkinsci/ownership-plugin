@@ -38,7 +38,7 @@ import org.acegisecurity.userdetails.UsernameNotFoundException;
  * @since 0.1
  */
 public class AccessRightsFilter implements IUserFilter {
-    
+
     private final AccessControlled item;
     private final Permission permission;
 
@@ -51,11 +51,11 @@ public class AccessRightsFilter implements IUserFilter {
         this.item = item;
         this.permission = permission;
     }
-   
+
     @Override
-    public boolean filter(@Nonnull User user) {        
+    public boolean filter(@Nonnull User user) {
         boolean permissionCheckResult = false;
-        
+
         // Impersonate to check the permission
         SecurityContext initialContext = null;
         try {
@@ -69,7 +69,7 @@ public class AccessRightsFilter implements IUserFilter {
                 SecurityContextHolder.setContext(initialContext);
             }
         }
-        
-        return  permissionCheckResult;
-    } 
+
+        return permissionCheckResult;
+    }
 }

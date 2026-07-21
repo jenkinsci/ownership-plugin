@@ -23,11 +23,15 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
-import org.htmlunit.HttpMethod;
-import org.htmlunit.WebRequest;
-import org.htmlunit.html.HtmlCheckBoxInput;
-import org.htmlunit.html.HtmlForm;
-import org.htmlunit.html.HtmlPage;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
@@ -42,6 +46,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
+import org.htmlunit.HttpMethod;
+import org.htmlunit.WebRequest;
+import org.htmlunit.html.HtmlCheckBoxInput;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
 import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,15 +58,6 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Functional coverage for JobOwnerJobAction item-specific security flows
@@ -104,9 +104,14 @@ class JobOwnerJobActionItemSpecificSecurityTest {
         JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(project);
         assertThat(prop, notNullValue());
         assertTrue(prop.hasItemSpecificSecurity());
-        assertTrue(prop.getItemSpecificSecurity().getPermissionsMatrix()
-                .getGrantedPermissionEntries().get(Item.READ)
-                .stream().anyMatch(e -> "alice".equals(e.getSid())));
+        assertTrue(
+                prop
+                        .getItemSpecificSecurity()
+                        .getPermissionsMatrix()
+                        .getGrantedPermissionEntries()
+                        .get(Item.READ)
+                        .stream()
+                        .anyMatch(e -> "alice".equals(e.getSid())));
         assertThat(prop.getItemSpecificSecurity(), not(sameInstance(defaults)));
     }
 
@@ -158,8 +163,8 @@ class JobOwnerJobActionItemSpecificSecurityTest {
         assertFalse(action().hasItemSpecificSecurity());
         ItemSpecificSecurity resolved = action().getItemSpecificSecurity();
         assertThat(resolved, sameInstance(defaults));
-        assertTrue(resolved.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ)
-                .stream().anyMatch(e -> "alice".equals(e.getSid())));
+        assertTrue(resolved.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ).stream()
+                .anyMatch(e -> "alice".equals(e.getSid())));
     }
 
     @Test

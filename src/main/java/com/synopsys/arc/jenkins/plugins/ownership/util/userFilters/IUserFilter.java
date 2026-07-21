@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
  * @since 0.1
  */
 public interface IUserFilter {
-    
+
     /**
      * Checks if the specified {@link User} satisfies the filter.
      * @param user User to be checked

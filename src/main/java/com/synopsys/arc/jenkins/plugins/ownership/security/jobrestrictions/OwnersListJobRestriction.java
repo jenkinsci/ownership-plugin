@@ -45,14 +45,15 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Oleg Nenashev
  * @since 0.2
  */
-@SuppressFBWarnings(value = "SE_NO_SERIALVERSIONID", 
+@SuppressFBWarnings(
+        value = "SE_NO_SERIALVERSIONID",
         justification = "JobRestriction should not be serializable, not required for Xstream")
 public class OwnersListJobRestriction extends JobRestriction {
-    
+
     private static final JobOwnerHelper helper = new JobOwnerHelper();
     private final List<UserSelector> usersList;
     private final boolean acceptsCoOwners;
-    transient private Set<String> usersMap = null;
+    private transient Set<String> usersMap = null;
 
     @DataBoundConstructor
     public OwnersListJobRestriction(List<UserSelector> usersList, boolean acceptsCoOwners) {
@@ -60,8 +61,8 @@ public class OwnersListJobRestriction extends JobRestriction {
         this.acceptsCoOwners = acceptsCoOwners;
         updateUsersMap();
     }
-    
-    protected synchronized final void updateUsersMap() {
+
+    protected final synchronized void updateUsersMap() {
         if (usersMap == null) {
             // Update users map
             usersMap = new TreeSet<>(new IdStrategyComparator());
@@ -79,13 +80,13 @@ public class OwnersListJobRestriction extends JobRestriction {
     }
 
     /**
-     * @deprecated use {@link #isAcceptSecondaryOwners() } 
+     * @deprecated use {@link #isAcceptSecondaryOwners() }
      */
     @Deprecated
     public boolean isAcceptsCoOwners() {
         return acceptsCoOwners;
     }
-    
+
     /**
      * Checks if the filter accepts secondary owners.
      * @return {@code true} if secondary owners should be accepted
@@ -94,15 +95,15 @@ public class OwnersListJobRestriction extends JobRestriction {
     public boolean isAcceptSecondaryOwners() {
         return acceptsCoOwners;
     }
-    
+
     @Override
     public boolean canTake(Queue.BuildableItem item) {
         if (item.task instanceof Job) {
-            Job job = (Job)item.task;
+            Job job = (Job) item.task;
             OwnershipDescription descr = helper.getOwnershipDescription(job);
             return canTake(descr);
         }
-        
+
         // Plugin covers only jobs
         return true;
     }
@@ -112,13 +113,13 @@ public class OwnersListJobRestriction extends JobRestriction {
         OwnershipDescription descr = helper.getOwnershipDescription(run.getParent());
         return canTake(descr);
     }
-    
+
     private boolean canTake(OwnershipDescription descr) {
         if (!descr.isOwnershipEnabled()) {
             return false;
         }
-        
-        synchronized(this) {
+
+        synchronized (this) {
             updateUsersMap();
             if (usersMap.contains(descr.getPrimaryOwnerId())) {
                 return true;
@@ -135,17 +136,16 @@ public class OwnersListJobRestriction extends JobRestriction {
                 }
             }
         }
-        
+
         // Default fallback - user is not a primary or secondary owner
         return false;
     }
-
 
     @Extension(optional = true)
     public static class DescriptorImpl extends JobRestrictionDescriptor {
         @Override
         public String getDisplayName() {
             return Messages.Security_JobRestrictions_OwnershipRestriction_DisplayName();
-        }       
+        }
     }
 }

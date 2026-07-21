@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.apache.http.NameValuePair;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -41,20 +41,20 @@ import org.apache.http.message.BasicNameValuePair;
  * @since 0.6
  */
 public class MailFormatter {
-    
+
     private static final String DEFAULT_ENCODING = "UTF-8";
-    
+
     private final @Nonnull String encoding;
     private final @Nonnull String separator;
 
     public MailFormatter() {
-        this (DEFAULT_ENCODING, MailOptions.DEFAULT.getEmailListSeparator());
+        this(DEFAULT_ENCODING, MailOptions.DEFAULT.getEmailListSeparator());
     }
-  
+
     public MailFormatter(@Nonnull String separator) {
-        this (DEFAULT_ENCODING, separator);
+        this(DEFAULT_ENCODING, separator);
     }
-    
+
     public MailFormatter(@Nonnull String encoding, @Nonnull String separator) {
         this.encoding = encoding;
         this.separator = separator;
@@ -67,13 +67,14 @@ public class MailFormatter {
     public @Nonnull String getSeparator() {
         return separator;
     }
-       
-    public @Nonnull String createMailToString (
-            @CheckForNull List<String> to, 
-            @CheckForNull List<String> cc, 
-            @CheckForNull List<String> bcc, 
-            @CheckForNull String subject, 
-            @CheckForNull String body) throws UnsupportedEncodingException {
+
+    public @Nonnull String createMailToString(
+            @CheckForNull List<String> to,
+            @CheckForNull List<String> cc,
+            @CheckForNull List<String> bcc,
+            @CheckForNull String subject,
+            @CheckForNull String body)
+            throws UnsupportedEncodingException {
         StringBuilder b = new StringBuilder("mailto:");
         String toString = joinMailAddresses(to);
         if (toString != null) {
@@ -91,26 +92,25 @@ public class MailFormatter {
         if (!params.isEmpty()) {
             b.append("?");
             String encodedParams = URLEncodedUtils.format(params, encoding);
-            encodedParams = encodedParams.replace("+","%20");
+            encodedParams = encodedParams.replace("+", "%20");
             b.append(encodedParams);
         }
         return b.toString();
     }
-    
-    private @CheckForNull String joinMailAddresses (@CheckForNull List<String> items) {
+
+    private @CheckForNull String joinMailAddresses(@CheckForNull List<String> items) {
         if (items != null && items.size() > 0) {
             return StringUtils.join(items, separator);
-        } 
+        }
         return null;
     }
-    
-    private void joinMailAddresses (@CheckForNull List<String> items, 
-            @CheckForNull String paramName, @Nonnull List<NameValuePair> target) 
+
+    private void joinMailAddresses(
+            @CheckForNull List<String> items, @CheckForNull String paramName, @Nonnull List<NameValuePair> target)
             throws UnsupportedEncodingException {
         final String res = joinMailAddresses(items);
         if (res != null) {
-           target.add(new BasicNameValuePair(paramName, res));
+            target.add(new BasicNameValuePair(paramName, res));
         }
     }
-    
 }

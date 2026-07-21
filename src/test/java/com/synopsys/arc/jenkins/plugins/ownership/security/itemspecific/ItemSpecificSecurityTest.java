@@ -23,6 +23,14 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import hudson.model.Item;
 import hudson.security.AuthorizationMatrixProperty;
 import hudson.security.Permission;
@@ -35,14 +43,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit-style coverage for {@link ItemSpecificSecurity} (clone, ctor, descriptor).
@@ -80,10 +80,11 @@ class ItemSpecificSecurityTest {
         assertThat(copy, not(sameInstance(original)));
         assertThat(copy.getPermissionsMatrix(), not(sameInstance(original.getPermissionsMatrix())));
 
-        Set<?> entries = copy.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ);
+        Set<?> entries =
+                copy.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ);
         assertThat(entries, notNullValue());
-        assertTrue(copy.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ)
-                .stream().anyMatch(e -> "alice".equals(e.getSid())));
+        assertTrue(copy.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ).stream()
+                .anyMatch(e -> "alice".equals(e.getSid())));
     }
 
     @Test

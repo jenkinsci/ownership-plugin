@@ -38,15 +38,14 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
- * Implements an ownership changes policy for {@link Item}s. 
+ * Implements an ownership changes policy for {@link Item}s.
  * This policy defines actions to be implemented if specific changes in jobs occur.
  * @author Oleg Nenashev
  */
-public abstract class ItemOwnershipPolicy 
-        implements ExtensionPoint, Describable<ItemOwnershipPolicy> {
-    
+public abstract class ItemOwnershipPolicy implements ExtensionPoint, Describable<ItemOwnershipPolicy> {
+
     private static final ItemOwnershipPolicy DEFAULT = new DropOwnershipPolicy();
-    
+
     /**
      * Returns default Item Ownership Policy, which should be assigned on first startup.
      * @return Ownership policy
@@ -56,45 +55,44 @@ public abstract class ItemOwnershipPolicy
     public static ItemOwnershipPolicy getDefault() {
         return DEFAULT;
     }
-    
+
     /**
      * A handler for newly created items.
      * By default, the ownership won't be set.
      * @param item A newly created item, for which the ownership should be set
-     * @return An ownership description to be assigned. Return null to 
+     * @return An ownership description to be assigned. Return null to
      * leave the ownership unassigned.
      */
     public @CheckForNull OwnershipDescription onCreated(@Nonnull Item item) {
         return null; // Do not assign ownership
     }
-    
+
     /**
      * A handler for copied items.
      * By default, the {@link #onCreated(hudson.model.Item)} handler will be called;
      * @param src A source item
      * @param item A newly created item, for which the ownership should be set
-     * @return An ownership description to be assigned. Return null to 
+     * @return An ownership description to be assigned. Return null to
      * leave the ownership unassigned.
      */
     public @CheckForNull OwnershipDescription onCopied(@Nonnull Item src, @Nonnull Item item) {
         return onCreated(item);
     }
-       
+
     @Override
     public ItemOwnershipPolicyDescriptor getDescriptor() {
-        return (ItemOwnershipPolicyDescriptor) Jenkins.get()
-                .getDescriptorOrDie(getClass());
+        return (ItemOwnershipPolicyDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
     }
-    
+
     /**
      * Get list of all registered {@link ItemOwnershipPolicy}s.
      * @return List of {@link ItemOwnershipPolicy}s.
-     */    
-    public static DescriptorExtensionList<ItemOwnershipPolicy,ItemOwnershipPolicyDescriptor> all() {
-        //TODO: rework to Extension list Lookup
+     */
+    public static DescriptorExtensionList<ItemOwnershipPolicy, ItemOwnershipPolicyDescriptor> all() {
+        // TODO: rework to Extension list Lookup
         return Jenkins.get().getDescriptorList(ItemOwnershipPolicy.class);
     }
-    
+
     /**
      * Returns list of JobRestriction descriptors.
      * @return List of available descriptors.

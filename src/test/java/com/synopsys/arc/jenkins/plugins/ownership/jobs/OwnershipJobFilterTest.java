@@ -23,6 +23,11 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import hudson.model.FreeStyleProject;
 import hudson.model.ListView;
@@ -36,11 +41,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests for {@link OwnershipJobFilter}.
@@ -83,7 +83,8 @@ class OwnershipJobFilterTest {
         assertThat(primaryOnly.filter(Collections.singletonList(job), Collections.singletonList(job), view), empty());
 
         OwnershipJobFilter withSecondary = new OwnershipJobFilter("bob", true);
-        assertThat(withSecondary.filter(Collections.singletonList(job), Collections.singletonList(job), view),
+        assertThat(
+                withSecondary.filter(Collections.singletonList(job), Collections.singletonList(job), view),
                 contains(job));
         assertThat(withSecondary.isAcceptSecondaryOwners(), equalTo(true));
         assertThat(withSecondary.isAcceptsCoowners(), equalTo(true));
@@ -99,8 +100,7 @@ class OwnershipJobFilterTest {
 
     @Test
     void availableUsers_includeMeMacro() {
-        boolean hasMe = OwnershipJobFilter.getAvailableUsers().stream()
-                .anyMatch(u -> "@Me".equals(u.getId()));
+        boolean hasMe = OwnershipJobFilter.getAvailableUsers().stream().anyMatch(u -> "@Me".equals(u.getId()));
         assertThat(hasMe, equalTo(true));
     }
 }

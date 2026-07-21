@@ -23,11 +23,15 @@
  */
 package org.jenkinsci.plugins.ownership.model.folders;
 
-import org.htmlunit.HttpMethod;
-import org.htmlunit.WebRequest;
-import org.htmlunit.html.HtmlCheckBoxInput;
-import org.htmlunit.html.HtmlForm;
-import org.htmlunit.html.HtmlPage;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
@@ -41,23 +45,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
+import org.htmlunit.HttpMethod;
+import org.htmlunit.WebRequest;
+import org.htmlunit.html.HtmlCheckBoxInput;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
 import org.jenkinsci.plugins.matrixauth.PermissionEntry;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Functional coverage for FolderOwnershipAction item-specific security flows.
@@ -103,9 +103,14 @@ class FolderOwnershipActionItemSpecificSecurityTest {
         FolderOwnershipProperty prop = FolderOwnershipHelper.getOwnerProperty(folder);
         assertThat(prop, notNullValue());
         assertTrue(prop.hasItemSpecificSecurity());
-        assertTrue(prop.getItemSpecificSecurity().getPermissionsMatrix()
-                .getGrantedPermissionEntries().get(Item.READ)
-                .stream().anyMatch(e -> "alice".equals(e.getSid())));
+        assertTrue(
+                prop
+                        .getItemSpecificSecurity()
+                        .getPermissionsMatrix()
+                        .getGrantedPermissionEntries()
+                        .get(Item.READ)
+                        .stream()
+                        .anyMatch(e -> "alice".equals(e.getSid())));
         assertThat(prop.getItemSpecificSecurity(), not(sameInstance(defaults)));
     }
 
@@ -157,8 +162,8 @@ class FolderOwnershipActionItemSpecificSecurityTest {
         assertFalse(action().hasItemSpecificSecurity());
         FolderSpecificSecurity resolved = action().getItemSpecificSecurity();
         assertThat(resolved, sameInstance(defaults));
-        assertTrue(resolved.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ)
-                .stream().anyMatch(e -> "alice".equals(e.getSid())));
+        assertTrue(resolved.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ).stream()
+                .anyMatch(e -> "alice".equals(e.getSid())));
     }
 
     @Test

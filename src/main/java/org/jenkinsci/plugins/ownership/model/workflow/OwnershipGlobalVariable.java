@@ -69,7 +69,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
     public String getName() {
         return "ownership";
     }
-    
+
     /**
      * Loads a snippet from the resource file.
      * @param name Name of the snippet (e.g. &quot;loadMultipleFiles&quot;)
@@ -85,7 +85,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
         }
         return IOUtils.toString(scriptStream, "UTF-8");
     }
-    
+
     @Restricted(NoExternalUse.class)
     @Whitelisted
     public static OwnershipDescription getJobOwnershipDescription(RunWrapper currentRun) {
@@ -95,7 +95,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
         }
         return JobOwnerHelper.Instance.getOwnershipDescription(rawBuild.getParent());
     }
-    
+
     @CheckForNull
     @Whitelisted
     @Restricted(NoExternalUse.class)
@@ -104,17 +104,16 @@ public class OwnershipGlobalVariable extends GlobalVariable {
             // Master node may have null or empty name, use Jenkins.get() as fallback
             return NodeOwnerHelper.Instance.getOwnershipDescription(Jenkins.get());
         }
-        final Node node = "master".equals(nodeName) 
-                ? Jenkins.get()
-                : Jenkins.get().getNode(nodeName);
+        final Node node =
+                "master".equals(nodeName) ? Jenkins.get() : Jenkins.get().getNode(nodeName);
         if (node == null) {
             // If node is not found by name, try to use master node as fallback
             // This handles cases where env.NODE_NAME is set but node doesn't exist
             return NodeOwnerHelper.Instance.getOwnershipDescription(Jenkins.get());
-        }     
+        }
         return NodeOwnerHelper.Instance.getOwnershipDescription(node);
     }
-    
+
     @Extension(optional = true)
     public static class MiscWhitelist extends ProxyWhitelist {
 
@@ -122,8 +121,7 @@ public class OwnershipGlobalVariable extends GlobalVariable {
             super(new StaticWhitelist(
                     "new java.util.TreeMap",
                     "method groovy.lang.Closure call java.lang.Object",
-                    "method java.lang.Object toString"
-            ));
+                    "method java.lang.Object toString"));
         }
     }
 }

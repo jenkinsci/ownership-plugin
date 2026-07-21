@@ -23,6 +23,10 @@
  */
 package org.jenkinsci.plugins.ownership.model.folders;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
@@ -39,10 +43,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Security tests for FolderOwnershipAction item-specific security endpoints.
@@ -84,8 +84,7 @@ class FolderOwnershipActionSecurityTest {
 
         try {
             WebRequest req = new WebRequest(
-                    wc.createCrumbedUrl(folder.getUrl() + "ownership/projectSpecificSecuritySubmit"),
-                    HttpMethod.GET);
+                    wc.createCrumbedUrl(folder.getUrl() + "ownership/projectSpecificSecuritySubmit"), HttpMethod.GET);
             wc.getPage(req);
             fail("GET request should be rejected for doProjectSpecificSecuritySubmit");
         } catch (FailingHttpStatusCodeException e) {
@@ -101,15 +100,13 @@ class FolderOwnershipActionSecurityTest {
 
         try {
             WebRequest req = new WebRequest(
-                    wc.createCrumbedUrl(folder.getUrl() + "ownership/projectSpecificSecuritySubmit"),
-                    HttpMethod.POST);
+                    wc.createCrumbedUrl(folder.getUrl() + "ownership/projectSpecificSecuritySubmit"), HttpMethod.POST);
             req.setAdditionalHeader("Content-Type", "application/x-www-form-urlencoded");
             req.setRequestBody("");
             wc.getPage(req);
             fail("User with only READ permission should not be able to modify folder-specific security");
         } catch (FailingHttpStatusCodeException e) {
-            assertThat("User without MANAGE_ITEMS_OWNERSHIP should be rejected",
-                    e.getStatusCode(), is(403));
+            assertThat("User without MANAGE_ITEMS_OWNERSHIP should be rejected", e.getStatusCode(), is(403));
         }
     }
 
@@ -145,8 +142,7 @@ class FolderOwnershipActionSecurityTest {
             wc.getPage(req);
             fail("User with only READ permission should not be able to restore default security");
         } catch (FailingHttpStatusCodeException e) {
-            assertThat("User without MANAGE_ITEMS_OWNERSHIP should be rejected",
-                    e.getStatusCode(), is(403));
+            assertThat("User without MANAGE_ITEMS_OWNERSHIP should be rejected", e.getStatusCode(), is(403));
         }
     }
 }

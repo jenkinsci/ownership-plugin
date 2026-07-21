@@ -24,9 +24,16 @@
 
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
-import org.htmlunit.FailingHttpStatusCodeException;
-import org.htmlunit.HttpMethod;
-import org.htmlunit.WebRequest;
+import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
+import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import hudson.cli.CLICommandInvoker;
@@ -44,6 +51,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.HttpMethod;
+import org.htmlunit.WebRequest;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,16 +62,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
-import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @WithJenkins
 class JobOwnerJobPropertyTest {
@@ -76,9 +76,7 @@ class JobOwnerJobPropertyTest {
         mas.grant(Jenkins.ADMINISTER) // Implies MANAGE_ITEMS_OWNERSHIP.
                 .everywhere()
                 .to("admin");
-        mas.grant(Item.CONFIGURE, Item.READ, Jenkins.READ)
-                .everywhere()
-                .to("non-admin");
+        mas.grant(Item.CONFIGURE, Item.READ, Jenkins.READ).everywhere().to("non-admin");
         r.jenkins.setAuthorizationStrategy(mas);
     }
 
@@ -90,12 +88,15 @@ class JobOwnerJobPropertyTest {
 
         WebClient wc = r.createWebClient();
         wc.login("non-admin", "non-admin");
-        WebRequest req = new WebRequest(wc.createCrumbedUrl(String.format("%sconfig.xml", p.getUrl())), HttpMethod.POST);
+        WebRequest req =
+                new WebRequest(wc.createCrumbedUrl(String.format("%sconfig.xml", p.getUrl())), HttpMethod.POST);
         req.setAdditionalHeader("Content-Type", "application/xml");
         req.setRequestBody(getJobXml("admin"));
         wc.getPage(req);
-        assertThat("Users should be able to configure jobs when ownership is unchanged",
-                getPrimaryOwner(p), is(equalTo("admin")));
+        assertThat(
+                "Users should be able to configure jobs when ownership is unchanged",
+                getPrimaryOwner(p),
+                is(equalTo("admin")));
 
         try {
             wc.login("non-admin", "non-admin");
@@ -109,8 +110,10 @@ class JobOwnerJobPropertyTest {
         wc.login("admin", "admin");
         req.setRequestBody(getJobXml("non-admin"));
         wc.getPage(req);
-        assertThat("Users with Manage Ownership/Jobs permissions should be able to change ownership",
-                getPrimaryOwner(p), is(equalTo("non-admin")));
+        assertThat(
+                "Users with Manage Ownership/Jobs permissions should be able to change ownership",
+                getPrimaryOwner(p),
+                is(equalTo("non-admin")));
     }
 
     @Test
@@ -123,15 +126,17 @@ class JobOwnerJobPropertyTest {
                 .asUser("non-admin")
                 .withArgs(p.getFullName())
                 .withStdin(getJobXmlAsStream("admin"));
-        assertThat("Users without Overall/Administer permissions should not be able to configure jobs via CLI", 
-                command.invoke(), failedWith(1));
+        assertThat(
+                "Users without Overall/Administer permissions should not be able to configure jobs via CLI",
+                command.invoke(),
+                failedWith(1));
         assertThat(getPrimaryOwner(p), is(equalTo("admin")));
 
-        command.asUser("admin")
-                .withArgs(p.getFullName())
-                .withStdin(getJobXmlAsStream("non-admin"));
-        assertThat("Users with Overall/Administer permissions should be able to configure jobs via CLI", 
-                command.invoke(), succeededSilently());
+        command.asUser("admin").withArgs(p.getFullName()).withStdin(getJobXmlAsStream("non-admin"));
+        assertThat(
+                "Users with Overall/Administer permissions should be able to configure jobs via CLI",
+                command.invoke(),
+                succeededSilently());
         assertThat(getPrimaryOwner(p), is(equalTo("non-admin")));
     }
 
@@ -160,7 +165,7 @@ class JobOwnerJobPropertyTest {
         return new ItemSpecificSecurity(new AuthorizationMatrixProperty(permissions));
     }
 
-    private String getPrimaryOwner(Job<?,?> job) {
+    private String getPrimaryOwner(Job<?, ?> job) {
         return job.getProperty(JobOwnerJobProperty.class).getOwnership().getPrimaryOwnerId();
     }
 
@@ -172,17 +177,15 @@ class JobOwnerJobPropertyTest {
         return new ByteArrayInputStream(getJobXml(ownerSid).getBytes(StandardCharsets.UTF_8));
     }
 
-    private static final String JOB_XML_TEMPLATE =
-            "<?xml version='1.0' encoding='UTF-8'?>" +
-            "<project>" +
-            "<properties>" +
-            "    <com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty plugin=\"ownership@0.10.1-SNAPSHOT\">" +
-            "        <ownership>" +
-            "           <ownershipEnabled>true</ownershipEnabled>" +
-            "           <primaryOwnerId>%s</primaryOwnerId>" +
-            "           <coownersIds class=\"sorted-set\"/>" +
-            "       </ownership>" +
-            "   </com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty>" +
-            "</properties>" +
-            "</project>";
+    private static final String JOB_XML_TEMPLATE = "<?xml version='1.0' encoding='UTF-8'?>" + "<project>"
+            + "<properties>"
+            + "    <com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty plugin=\"ownership@0.10.1-SNAPSHOT\">"
+            + "        <ownership>"
+            + "           <ownershipEnabled>true</ownershipEnabled>"
+            + "           <primaryOwnerId>%s</primaryOwnerId>"
+            + "           <coownersIds class=\"sorted-set\"/>"
+            + "       </ownership>"
+            + "   </com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty>"
+            + "</properties>"
+            + "</project>";
 }

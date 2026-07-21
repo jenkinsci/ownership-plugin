@@ -50,10 +50,9 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Rustam Atai
  * @since 0.9
  */
-public class FolderOwnershipProperty 
-        extends AbstractFolderProperty<AbstractFolder<?>> 
-        implements IOwnershipItem<AbstractFolder<?>>{
-    
+public class FolderOwnershipProperty extends AbstractFolderProperty<AbstractFolder<?>>
+        implements IOwnershipItem<AbstractFolder<?>> {
+
     @CheckForNull
     OwnershipDescription ownership;
 
@@ -64,8 +63,8 @@ public class FolderOwnershipProperty
         this(ownership, null);
     }
 
-    public FolderOwnershipProperty(@CheckForNull OwnershipDescription ownership,
-                                   @CheckForNull FolderSpecificSecurity itemSpecificSecurity) {
+    public FolderOwnershipProperty(
+            @CheckForNull OwnershipDescription ownership, @CheckForNull FolderSpecificSecurity itemSpecificSecurity) {
         this.ownership = ownership;
         this.itemSpecificSecurity = itemSpecificSecurity;
     }
@@ -128,19 +127,20 @@ public class FolderOwnershipProperty
         // Retain the current configuration in order to prevent changes by form submissions
         return new FolderOwnershipProperty(ownership, itemSpecificSecurity);
     }
-    
+
     @Extension(optional = true)
     public static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
 
         @Override
-        @SuppressFBWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "TODO: should be fixed, see jenkinsci PR #1880")
+        @SuppressFBWarnings(
+                value = "NP_NONNULL_RETURN_VIOLATION",
+                justification = "TODO: should be fixed, see jenkinsci PR #1880")
         public String getDisplayName() {
             // It prevents the property from displaying
             return null;
         }
-        
     }
-    
+
     static {
         // TODO: Remove reflection once baseline is updated past 2.85.
         try {

@@ -23,14 +23,21 @@
  */
 package org.jenkinsci.plugins.ownership.security.folderspecific;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import hudson.model.Item;
+import java.util.List;
 import java.util.Set;
 import jenkins.model.Jenkins;
-import java.util.List;
 import org.htmlunit.html.HtmlCheckBoxInput;
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlPage;
@@ -44,13 +51,6 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies FolderSpecificSecurity form binding goes through matrix-auth's
@@ -146,8 +146,8 @@ class FolderSpecificSecurityBindingTest {
         assertThat("anonymous permission rows", rows, notNullValue());
         assertThat("expected matrix rows on configure page", rows.isEmpty(), is(false));
         HtmlTableRow row = rows.get(rows.size() - 1);
-        HtmlCheckBoxInput read = row.getFirstByXPath(
-                ".//input[@type='checkbox' and @name='[" + Item.READ.getId() + "]']");
+        HtmlCheckBoxInput read =
+                row.getFirstByXPath(".//input[@type='checkbox' and @name='[" + Item.READ.getId() + "]']");
         assertThat("Item.Read checkbox for anonymous", read, notNullValue());
         if (!read.isChecked()) {
             read.setChecked(true);
@@ -165,8 +165,8 @@ class FolderSpecificSecurityBindingTest {
     private static void grantAnonymousRead(HtmlForm form) {
         HtmlTableRow row = form.getFirstByXPath(".//tr[@name='[USER:anonymous]']");
         assertThat("anonymous permission row", row, notNullValue());
-        HtmlCheckBoxInput read = row.getFirstByXPath(
-                ".//input[@type='checkbox' and @name='[" + Item.READ.getId() + "]']");
+        HtmlCheckBoxInput read =
+                row.getFirstByXPath(".//input[@type='checkbox' and @name='[" + Item.READ.getId() + "]']");
         assertThat("Item.Read checkbox for anonymous", read, notNullValue());
         if (!read.isChecked()) {
             read.setChecked(true);

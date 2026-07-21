@@ -34,9 +34,8 @@ import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
  * @since 0.9
  */
 public class FolderOwnershipDescriptionSource extends OwnershipDescriptionSource<AbstractFolder<?>> {
-    
+
     public FolderOwnershipDescriptionSource(@CheckForNull AbstractFolder<?> item) {
         super(item);
     }
-    
 }

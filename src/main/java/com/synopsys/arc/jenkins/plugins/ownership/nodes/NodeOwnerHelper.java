@@ -30,13 +30,11 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.User;
-
+import hudson.security.Permission;
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSource;
@@ -52,7 +50,8 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
 
     public static final NodeOwnerHelper Instance = new NodeOwnerHelper();
-    /**package*/ static final String ITEM_TYPE_NAME = "node";
+    /**package*/
+    static final String ITEM_TYPE_NAME = "node";
 
     /**
      * Gets OwnerNodeProperty from job if possible.
@@ -63,14 +62,14 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     public static OwnerNodeProperty getOwnerProperty(@Nonnull Node node) {
         return node.getNodeProperties().get(OwnerNodeProperty.class);
     }
-        
+
     @Override
     public OwnershipDescription getOwnershipDescription(@CheckForNull Node item) {
         // TODO: This method impl is a performance hack. May be replaced by getOwnershipInfo() in 1.0
         if (item == null) { // Handle renames, etc.
             return OwnershipDescription.DISABLED_DESCR;
         }
-        
+
         OwnerNodeProperty prop = getOwnerProperty(item);
         return prop != null ? prop.getOwnership() : OwnershipDescription.DISABLED_DESCR;
     }
@@ -101,16 +100,15 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     @Override
     public Collection<User> getPossibleOwners(Node item) {
         return filterPossibleOwners(item, Computer.CONFIGURE);
-    }  
-    
+    }
+
     /**
      * Sets ownership of the node.
      * @param node A target node
      * @param descr An ownership description to be assigned
      * @throws IOException A property modification error
      */
-    public static void setOwnership(@Nonnull Node node, 
-            @CheckForNull OwnershipDescription descr) throws IOException {
+    public static void setOwnership(@Nonnull Node node, @CheckForNull OwnershipDescription descr) throws IOException {
         OwnerNodeProperty prop = NodeOwnerHelper.getOwnerProperty(node);
         if (prop == null) {
             prop = new OwnerNodeProperty(node, descr);
@@ -124,7 +122,7 @@ public class NodeOwnerHelper extends AbstractOwnershipHelper<Node> {
     public String getItemTypeName(Node item) {
         return ITEM_TYPE_NAME;
     }
-    
+
     @Override
     public String getItemDisplayName(Node item) {
         return item.getDisplayName();

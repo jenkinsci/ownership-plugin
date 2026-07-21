@@ -25,7 +25,6 @@
 package com.synopsys.arc.jenkins.plugins.ownership;
 
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy;
-import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
@@ -35,6 +34,7 @@ import org.jenkinsci.plugins.ownership.config.DisplayOptions;
 import org.jenkinsci.plugins.ownership.config.InheritanceOptions;
 import org.jenkinsci.plugins.ownership.model.runs.OwnershipRunListener;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
+import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -42,14 +42,13 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Oleg Nenashev
  * @since 0.5
  */
-public class OwnershipPluginConfiguration 
-        implements Describable<OwnershipPluginConfiguration> {
+public class OwnershipPluginConfiguration implements Describable<OwnershipPluginConfiguration> {
 
     private final ItemOwnershipPolicy itemOwnershipPolicy;
     private final @CheckForNull MailOptions mailOptions;
     private final @CheckForNull DisplayOptions displayOptions;
     private final @CheckForNull InheritanceOptions inheritanceOptions;
-    
+
     /**
      * Enforces the injection of ownership variables in {@link OwnershipRunListener}.
      * Null means the injection is disabled.
@@ -58,31 +57,38 @@ public class OwnershipPluginConfiguration
     private final @CheckForNull EnvSetupOptions globalEnvSetupOptions;
 
     @Deprecated
-    public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy, 
-            @Nonnull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions, 
+    public OwnershipPluginConfiguration(
+            @Nonnull ItemOwnershipPolicy itemOwnershipPolicy,
+            @Nonnull MailOptions mailOptions,
+            EnvSetupOptions globalEnvSetupOptions,
             @Nonnull DisplayOptions displayOptions) {
         this(itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, InheritanceOptions.DEFAULT);
     }
-    
+
     @DataBoundConstructor
-    public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy, 
-            @Nonnull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions, 
-            @Nonnull DisplayOptions displayOptions, @Nonnull InheritanceOptions inheritanceOptions) {
+    public OwnershipPluginConfiguration(
+            @Nonnull ItemOwnershipPolicy itemOwnershipPolicy,
+            @Nonnull MailOptions mailOptions,
+            EnvSetupOptions globalEnvSetupOptions,
+            @Nonnull DisplayOptions displayOptions,
+            @Nonnull InheritanceOptions inheritanceOptions) {
         this.itemOwnershipPolicy = itemOwnershipPolicy;
         this.mailOptions = mailOptions;
         this.globalEnvSetupOptions = globalEnvSetupOptions;
         this.displayOptions = displayOptions;
         this.inheritanceOptions = inheritanceOptions;
     }
-    
+
     @Deprecated
     public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy) {
-        this (itemOwnershipPolicy, MailOptions.DEFAULT, null);
+        this(itemOwnershipPolicy, MailOptions.DEFAULT, null);
     }
-    
+
     @Deprecated
-    public OwnershipPluginConfiguration(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy, 
-            @Nonnull MailOptions mailOptions, EnvSetupOptions globalEnvSetupOptions) {
+    public OwnershipPluginConfiguration(
+            @Nonnull ItemOwnershipPolicy itemOwnershipPolicy,
+            @Nonnull MailOptions mailOptions,
+            EnvSetupOptions globalEnvSetupOptions) {
         this(itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, DisplayOptions.DEFAULT);
     }
 
@@ -107,7 +113,7 @@ public class OwnershipPluginConfiguration
     public InheritanceOptions getInheritanceOptions() {
         return inheritanceOptions != null ? inheritanceOptions : InheritanceOptions.DEFAULT;
     }
-    
+
     /**
      * @return Global environment inject options. Null - global setup is disabled
      * @since 0.6
@@ -120,10 +126,10 @@ public class OwnershipPluginConfiguration
     public Descriptor<OwnershipPluginConfiguration> getDescriptor() {
         return DESCRIPTOR;
     }
-    
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
-    
+
     public static class DescriptorImpl extends Descriptor<OwnershipPluginConfiguration> {
 
         @Override
@@ -131,8 +137,7 @@ public class OwnershipPluginConfiguration
             return "N/A";
         }
     }
-    
-    
+
     /**
      * Gets the {@link OwnershipPlugin} configuration.
      * @return The plugin configuration if available.

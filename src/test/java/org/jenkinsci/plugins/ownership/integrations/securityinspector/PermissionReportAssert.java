@@ -23,12 +23,12 @@
  */
 package org.jenkinsci.plugins.ownership.integrations.securityinspector;
 
-import hudson.security.Permission;
-import java.util.Set;
-import javax.annotation.Nonnull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import hudson.security.Permission;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import org.hamcrest.Matchers;
 import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
 
@@ -40,51 +40,50 @@ import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
 public class PermissionReportAssert {
 
     public static <TRow> void assertHasPermissions(
-            @Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row,
-            @Nonnull Permission ... permissions) {
+            @Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row, @Nonnull Permission... permissions) {
         for (Permission permission : permissions) {
             assertPermissionValue(report, row, permission, true);
         }
     }
-    
+
     public static <TRow> void assertHasNotPermissions(
-            @Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row,
-            @Nonnull Permission ... permissions) {
+            @Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row, @Nonnull Permission... permissions) {
         for (Permission permission : permissions) {
             assertPermissionValue(report, row, permission, false);
         }
     }
-    
+
     public static <TRow, TEntryReport> void assertPermissionValue(
-            @Nonnull PermissionReport<TRow, TEntryReport> report, @Nonnull TRow row,
-            @Nonnull Permission permission, @Nonnull TEntryReport expectedValue) {
-        
+            @Nonnull PermissionReport<TRow, TEntryReport> report,
+            @Nonnull TRow row,
+            @Nonnull Permission permission,
+            @Nonnull TEntryReport expectedValue) {
+
         final TEntryReport entryReport = report.getEntry(row, permission);
-        assertThat("Wrong value for " + report.getRowTitle(row) + "=" + row + " and permission=" + permission.getId(), 
-                entryReport, Matchers.equalTo(expectedValue));
-        
+        assertThat(
+                "Wrong value for " + report.getRowTitle(row) + "=" + row + " and permission=" + permission.getId(),
+                entryReport,
+                Matchers.equalTo(expectedValue));
     }
-    
-    public static <TRow> void assertHasRow(
-            @Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row) {
-        
+
+    public static <TRow> void assertHasRow(@Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row) {
+
         final Set<TRow> rows = report.getRows();
         for (TRow r : rows) {
-           if (r.equals(row)) {
-               return;
-           }
+            if (r.equals(row)) {
+                return;
+            }
         }
         fail("Row " + row + "hasn't been added in this report");
     }
-    
-    public static <TRow> void assertHasNotRow(
-            @Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row) {
-        
+
+    public static <TRow> void assertHasNotRow(@Nonnull PermissionReport<TRow, Boolean> report, @Nonnull TRow row) {
+
         final Set<TRow> rows = report.getRows();
         for (TRow r : rows) {
-           if (r.equals(row)) {
-               fail("Row " + row + "has been added in this report");
-           }
+            if (r.equals(row)) {
+                fail("Row " + row + "has been added in this report");
+            }
         }
     }
 }

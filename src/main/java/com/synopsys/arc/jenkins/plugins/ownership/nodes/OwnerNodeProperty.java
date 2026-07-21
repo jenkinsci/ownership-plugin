@@ -52,29 +52,28 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Oleg Nenashev
  * @since 0.0.3
  */
-public class OwnerNodeProperty extends NodeProperty<Node> 
-    implements IOwnershipItem<NodeProperty> {
+public class OwnerNodeProperty extends NodeProperty<Node> implements IOwnershipItem<NodeProperty> {
 
     private OwnershipDescription ownership;
-    private String nodeName; 
-    
+    private String nodeName;
+
     @DataBoundConstructor
     public OwnerNodeProperty(NodeOwnerWrapper slaveOwnership) {
         this(null, (slaveOwnership != null) ? slaveOwnership.getDescription() : null);
     }
-    
+
     public OwnerNodeProperty(Node node, OwnershipDescription ownership) {
-         setNode(node);
-         //FIXME: remove hack with owner
-         this.nodeName = (node != null) ? node.getNodeName() : null;
-         this.ownership = (ownership != null) ? ownership : OwnershipDescription.DISABLED_DESCR;
+        setNode(node);
+        // FIXME: remove hack with owner
+        this.nodeName = (node != null) ? node.getNodeName() : null;
+        this.ownership = (ownership != null) ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
-    
+
     @Override
-    public OwnershipDescription getOwnership() {             
+    public OwnershipDescription getOwnership() {
         return ownership != null ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
-    
+
     public void setOwnershipDescription(OwnershipDescription descr) throws IOException {
         ownership = descr;
         Node node = getNode();
@@ -82,7 +81,7 @@ public class OwnerNodeProperty extends NodeProperty<Node>
             node.save();
         }
     }
-    
+
     @CheckForNull
     public Node getNode() {
         if (node == null) {
@@ -93,11 +92,11 @@ public class OwnerNodeProperty extends NodeProperty<Node>
 
     @Override
     public NodePropertyDescriptor getDescriptor() {
-        return super.getDescriptor(); 
+        return super.getDescriptor();
     }
-            
+
     @Override
-    public IOwnershipHelper<NodeProperty> helper() {       
+    public IOwnershipHelper<NodeProperty> helper() {
         return NodeOwnerPropertyHelper.Instance;
     }
 
@@ -105,54 +104,57 @@ public class OwnerNodeProperty extends NodeProperty<Node>
     public NodeProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
         return new OwnerNodeProperty(DescriptorImpl.getNodePropertyOwner(req), getOwnership());
     }
-     
+
     @Override
     public NodeProperty getDescribedItem() {
         return this;
     }
-    
+
     public OwnershipLayoutFormatter<Node> getLayoutFormatter() {
-        return OwnershipPlugin.getInstance().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getNode());
-    }  
-      
+        return OwnershipPlugin.getInstance()
+                .getOwnershipLayoutFormatterProvider()
+                .getLayoutFormatter(getNode());
+    }
+
     @Extension
-    public static class DescriptorImpl extends NodePropertyDescriptor {       
+    public static class DescriptorImpl extends NodePropertyDescriptor {
         /**
          * Gets Node, which is being configured by StaplerRequest
          * @remarks Workaround for
          * @param req StaplerRequest (ex, from NodePropertyDescriptor::newInstance())
          * @return Instance of the node, which is being configured (or null)
-         * 
+         *
          * @since 0.0.5
          * @author Oleg Nenashev
          */
-        private static Node getNodePropertyOwner(StaplerRequest req)
-        {                
+        private static Node getNodePropertyOwner(StaplerRequest req) {
             List<Ancestor> ancestors = req.getAncestors();
             if (ancestors.isEmpty()) {
                 assert false : "StaplerRequest is empty";
                 return null;
             }
-            
-            Object node = ancestors.get(ancestors.size()-1).getObject();
+
+            Object node = ancestors.get(ancestors.size() - 1).getObject();
             if (SlaveComputer.class.isAssignableFrom(node.getClass())) {
-                return ((SlaveComputer)node).getNode();
+                return ((SlaveComputer) node).getNode();
             } else {
                 assert false : "StaplerRequest should have Node ancestor";
                 return null;
             }
         }
-        
+
         @Override
-        @SuppressFBWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "TODO: should be fixed, see jenkinsci PR #1880")
+        @SuppressFBWarnings(
+                value = "NP_NONNULL_RETURN_VIOLATION",
+                justification = "TODO: should be fixed, see jenkinsci PR #1880")
         public String getDisplayName() {
-                return null;
+            return null;
         }
-        
+
         @Override
-        public boolean isApplicable( Class<? extends Node> Type ) {
-                return true;
-        }         
+        public boolean isApplicable(Class<? extends Node> Type) {
+            return true;
+        }
     }
 
     static {

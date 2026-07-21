@@ -40,6 +40,7 @@ import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
 import hudson.tasks.MailAddressResolver;
 import hudson.util.FormValidation;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +48,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jakarta.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
@@ -61,29 +61,41 @@ import org.kohsuke.stapler.verb.POST;
  * @author Oleg Nenashev
  */
 public class OwnershipPlugin extends Plugin {
-    
-    public static final String LOG_PREFIX="[OwnershipPlugin] - ";
+
+    public static final String LOG_PREFIX = "[OwnershipPlugin] - ";
     private static final Logger LOGGER = Logger.getLogger(OwnershipPlugin.class.getName());
 
-    public static final String FAST_RESOLVER_ID="Fast resolver for UI (recommended)";
-    
-    private static final PermissionGroup PERMISSIONS = new PermissionGroup(OwnershipPlugin.class, Messages._OwnershipPlugin_ManagePermissions_Title());    
-    public static final Permission MANAGE_ITEMS_OWNERSHIP = new Permission(PERMISSIONS, "Jobs", Messages._OwnershipPlugin_ManagePermissions_JobDescription(), Permission.CONFIGURE, PermissionScope.ITEM);
-    public static final Permission MANAGE_SLAVES_OWNERSHIP = new Permission(PERMISSIONS, "Nodes", Messages._OwnershipPlugin_ManagePermissions_SlaveDescription(), Permission.CONFIGURE, PermissionScope.COMPUTER);
-     
+    public static final String FAST_RESOLVER_ID = "Fast resolver for UI (recommended)";
+
+    private static final PermissionGroup PERMISSIONS =
+            new PermissionGroup(OwnershipPlugin.class, Messages._OwnershipPlugin_ManagePermissions_Title());
+    public static final Permission MANAGE_ITEMS_OWNERSHIP = new Permission(
+            PERMISSIONS,
+            "Jobs",
+            Messages._OwnershipPlugin_ManagePermissions_JobDescription(),
+            Permission.CONFIGURE,
+            PermissionScope.ITEM);
+    public static final Permission MANAGE_SLAVES_OWNERSHIP = new Permission(
+            PERMISSIONS,
+            "Nodes",
+            Messages._OwnershipPlugin_ManagePermissions_SlaveDescription(),
+            Permission.CONFIGURE,
+            PermissionScope.COMPUTER);
+
     private boolean requiresConfigureRights;
-    
+
     /**
      * @deprecated Replaced by {@link ItemOwnershipPolicy}
      */
     @Deprecated
     private transient boolean assignOnCreate;
+
     private final List<OwnershipAction> pluginActions = new ArrayList<>();
     private String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
     private FolderSpecificSecurity defaultFoldersSecurity;
     private OwnershipPluginConfiguration configuration;
-    
+
     /**
      * @deprecated Use {@link #getInstance()} instead
      */
@@ -92,39 +104,40 @@ public class OwnershipPlugin extends Plugin {
     public static OwnershipPlugin Instance() {
         return getInstance();
     }
-    
+
     public static OwnershipPlugin getInstance() {
         Jenkins j = Jenkins.get();
         OwnershipPlugin plugin = j.getPlugin(OwnershipPlugin.class);
         if (plugin == null) { // Fail horribly
             // TODO: throw a graceful error
-            throw new IllegalStateException("Cannot get the plugin's instance. Jenkins or the plugin have not been initialized yet");
+            throw new IllegalStateException(
+                    "Cannot get the plugin's instance. Jenkins or the plugin have not been initialized yet");
         }
         return plugin;
     }
-    
-    @Override 
+
+    @Override
     public void start() throws Exception {
-	load();
+        load();
         reinitActionsList();
-	Jenkins.get().getActions().addAll(pluginActions);
+        Jenkins.get().getActions().addAll(pluginActions);
     }
 
     @Override
     public void load() throws IOException {
         super.load();
-        
+
         // Migration to 1.5.0: Check ItemOwnershipPolicy
         if (configuration == null) {
-            
-            ItemOwnershipPolicy itemOwnershipPolicy = (assignOnCreate) 
-                    ? new AssignCreatorPolicy() : new DropOwnershipPolicy();
+
+            ItemOwnershipPolicy itemOwnershipPolicy =
+                    (assignOnCreate) ? new AssignCreatorPolicy() : new DropOwnershipPolicy();
             configuration = new OwnershipPluginConfiguration(itemOwnershipPolicy);
-            
+
             save();
         }
     }
-       
+
     public boolean isRequiresConfigureRights() {
         return requiresConfigureRights;
     }
@@ -148,11 +161,11 @@ public class OwnershipPlugin extends Plugin {
     public FolderSpecificSecurity getDefaultFoldersSecurity() {
         return defaultFoldersSecurity;
     }
-    
+
     public OwnershipPluginConfiguration getConfiguration() {
         return configuration;
     }
-     
+
     /**
      * Gets descriptor of ItemSpecificProperty.
      * Required for jelly.
@@ -179,11 +192,14 @@ public class OwnershipPlugin extends Plugin {
      * @param mailResolverClassName
      * @param defaultJobsSecurity
      * @param configuration
-     * @throws IOException 
+     * @throws IOException
      */
-    public void configure(boolean requiresConfigureRights, String mailResolverClassName, 
-            ItemSpecificSecurity defaultJobsSecurity, 
-            OwnershipPluginConfiguration configuration) throws IOException {
+    public void configure(
+            boolean requiresConfigureRights,
+            String mailResolverClassName,
+            ItemSpecificSecurity defaultJobsSecurity,
+            OwnershipPluginConfiguration configuration)
+            throws IOException {
         configure(requiresConfigureRights, mailResolverClassName, defaultJobsSecurity, null, configuration);
     }
 
@@ -196,61 +212,66 @@ public class OwnershipPlugin extends Plugin {
      * @param configuration
      * @throws IOException
      */
-    public void configure(boolean requiresConfigureRights, String mailResolverClassName,
+    public void configure(
+            boolean requiresConfigureRights,
+            String mailResolverClassName,
             ItemSpecificSecurity defaultJobsSecurity,
             FolderSpecificSecurity defaultFoldersSecurity,
-            OwnershipPluginConfiguration configuration) throws IOException {
+            OwnershipPluginConfiguration configuration)
+            throws IOException {
         this.requiresConfigureRights = requiresConfigureRights;
         this.mailResolverClassName = mailResolverClassName;
         this.defaultJobsSecurity = defaultJobsSecurity;
         this.defaultFoldersSecurity = defaultFoldersSecurity;
         this.configuration = configuration;
-        
+
         reinitActionsList();
-	save();
+        save();
         Jenkins.get().getActions().addAll(pluginActions);
     }
 
-    @Override 
+    @Override
     public void configure(StaplerRequest2 req, JSONObject formData)
-	    throws IOException, ServletException, Descriptor.FormException {
-	Jenkins.get().getActions().removeAll(pluginActions);
+            throws IOException, ServletException, Descriptor.FormException {
+        Jenkins.get().getActions().removeAll(pluginActions);
         requiresConfigureRights = formData.getBoolean("requiresConfigureRights");
-        
+
         // Configurations
-        configuration = req.bindJSON(OwnershipPluginConfiguration.class, formData);              
-              
+        configuration = req.bindJSON(OwnershipPluginConfiguration.class, formData);
+
         if (formData.containsKey("enableResolverRestrictions")) {
             JSONObject mailResolversConf = formData.getJSONObject("enableResolverRestrictions");
             mailResolverClassName = hudson.Util.fixEmptyAndTrim(mailResolversConf.getString("mailResolverClassName"));
         } else {
             mailResolverClassName = null;
         }
-        
+
         if (formData.containsKey("defaultJobsSecurity")) {
-            this.defaultJobsSecurity = getItemSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultJobsSecurity"));
+            this.defaultJobsSecurity =
+                    getItemSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultJobsSecurity"));
         }
 
         if (formData.containsKey("defaultFoldersSecurity")) {
-            this.defaultFoldersSecurity = getFolderSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultFoldersSecurity"));
+            this.defaultFoldersSecurity =
+                    getFolderSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultFoldersSecurity"));
         }
-        
+
         reinitActionsList();
-	save();
+        save();
         Jenkins.get().getActions().addAll(pluginActions);
     }
-   
+
     private void reinitActionsList() {
         pluginActions.clear();
     }
-    
-    //TODO: clarify the default value
+
+    // TODO: clarify the default value
     @Nonnull
     public static String getDefaultOwner() {
-        User current = User.current();       
+        User current = User.current();
         return current != null ? current.getId() : "";
     }
-    
+
     public boolean hasMailResolverRestriction() {
         return mailResolverClassName != null;
     }
@@ -259,17 +280,17 @@ public class OwnershipPlugin extends Plugin {
     public String getMailResolverClassName() {
         return mailResolverClassName;
     }
-    
+
     /**
      * Gets the configured {@link OwnershipLayoutFormatterProvider}.
      * @since 0.5
      * @return Ownership Layout Formatter to be used
      */
     public @Nonnull OwnershipLayoutFormatterProvider getOwnershipLayoutFormatterProvider() {
-        //TODO: replace by the extension point
+        // TODO: replace by the extension point
         return OwnershipLayoutFormatterProvider.DEFAULT_PROVIDER;
-    } 
-    
+    }
+
     @POST
     public FormValidation doCheckUser(@QueryParameter String userId) {
         Jenkins.get().checkPermission(Jenkins.READ);
@@ -277,15 +298,15 @@ public class OwnershipPlugin extends Plugin {
         if (userId == null) {
             return FormValidation.error("Field is empty. Field will be ignored");
         }
-        
+
         User usr = User.getById(userId, false);
         if (usr == null) {
             return FormValidation.warning("User " + userId + " is not registered in Jenkins");
         }
-       
+
         return FormValidation.ok();
     }
-    
+
     /**
      * Resolves e-mail using resolvers and global configuration.
      * @param user A user to be used
@@ -298,22 +319,23 @@ public class OwnershipPlugin extends Plugin {
                 if (mailResolverClassName.equals(FAST_RESOLVER_ID)) {
                     return MailAddressResolver.resolveFast(user);
                 } else {
-                    Class<MailAddressResolver> resolverClass = (Class<MailAddressResolver>)Class.forName(mailResolverClassName);
+                    Class<MailAddressResolver> resolverClass =
+                            (Class<MailAddressResolver>) Class.forName(mailResolverClassName);
                     MailAddressResolver res = MailAddressResolver.all().get(resolverClass);
                     if (res != null) {
                         return res.findMailAddressFor(user);
                     }
                 }
-            } 
+            }
         } catch (ClassNotFoundException ex) {
             // Do nothing - fallback do default handler
         }
-        //TODO: ClassCastException (bug)
-        //TODO: methods above should log errors
-        
+        // TODO: ClassCastException (bug)
+        // TODO: methods above should log errors
+
         return MailAddressResolver.resolve(user);
     }
-    
+
     @Nonnull
     public Collection<String> getPossibleMailResolvers() {
         ExtensionList<MailAddressResolver> extensions = MailAddressResolver.all();

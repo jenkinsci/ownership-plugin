@@ -37,8 +37,8 @@ import jenkins.model.Jenkins;
  * @author Oleg Nenashev
  * @since 0.9
  */
-public abstract class OwnershipHelperLocator <T extends Object> implements ExtensionPoint {
-    
+public abstract class OwnershipHelperLocator<T extends Object> implements ExtensionPoint {
+
     /**
      * Looks up ownership helpers for a class.
      * @param item Item, for which the ownership should be retrieved
@@ -46,7 +46,7 @@ public abstract class OwnershipHelperLocator <T extends Object> implements Exten
      */
     @CheckForNull
     public abstract AbstractOwnershipHelper<T> findHelper(Object item);
-    
+
     /**
      * Returns all the registered {@link OwnershipHelperLocator}s.
      * @return All registered {@link OwnershipHelperLocator}s
@@ -55,7 +55,7 @@ public abstract class OwnershipHelperLocator <T extends Object> implements Exten
     public static ExtensionList<OwnershipHelperLocator> all() {
         return Jenkins.get().getExtensionList(OwnershipHelperLocator.class);
     }
-    
+
     /**
      * Locates {@link IOwnershipHelper} for the specified item.
      * @param <T> Class of the required helper
@@ -65,9 +65,9 @@ public abstract class OwnershipHelperLocator <T extends Object> implements Exten
     @CheckForNull
     @SuppressWarnings("unchecked")
     public static <T> AbstractOwnershipHelper<T> locate(T item) {
-        return (AbstractOwnershipHelper<T>)locate(item, item.getClass());
+        return (AbstractOwnershipHelper<T>) locate(item, item.getClass());
     }
-    
+
     /**
      * Locates {@link IOwnershipHelper} for the specified item.
      * @param <T> Class of the required helper
@@ -80,7 +80,7 @@ public abstract class OwnershipHelperLocator <T extends Object> implements Exten
     public static <T> AbstractOwnershipHelper<T> locate(Object item, Class<T> requiredClass) {
         for (OwnershipHelperLocator<?> helper : all()) {
             AbstractOwnershipHelper<?> located = helper.findHelper(item);
-            //TODO: Helper verification would be useful
+            // TODO: Helper verification would be useful
             if (located != null) {
                 return (AbstractOwnershipHelper<T>) located;
             }

@@ -26,15 +26,15 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
-import org.kohsuke.stapler.DataBoundConstructor;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
-import hudson.views.ListViewColumnDescriptor;
 import hudson.views.ListViewColumn;
+import hudson.views.ListViewColumnDescriptor;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Provides Ownership column for the list view.
@@ -51,14 +51,16 @@ public class JobOwnerColumn extends ListViewColumn {
     @Nonnull
     public String getJobOwner(Item item) {
         final OwnershipDescription description = getDescription(item);
-        return description != null ? description.getPrimaryOwnerId() : User.getUnknown().getId();
+        return description != null
+                ? description.getPrimaryOwnerId()
+                : User.getUnknown().getId();
     }
-    
+
     public boolean isOwnerExists(Item item) {
         final OwnershipDescription description = getDescription(item);
-        return description != null ? description.hasPrimaryOwner(): false;
+        return description != null ? description.hasPrimaryOwner() : false;
     }
-    
+
     @CheckForNull
     private OwnershipDescription getDescription(Item item) {
         AbstractOwnershipHelper<Item> helper = OwnershipHelperLocator.locate(item);

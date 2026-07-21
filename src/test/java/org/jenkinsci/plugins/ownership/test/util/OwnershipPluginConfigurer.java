@@ -37,14 +37,15 @@ import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSec
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
 import org.jvnet.hudson.test.JenkinsRule;
+
 /**
  * Manages configuration of {@link OwnershipPlugin}.
  * @author Oleg Nenashev
  */
 public class OwnershipPluginConfigurer {
-    
+
     private final Jenkins jenkins;
-    
+
     // Parameters. All items are nullable
     private boolean requiresConfigurePermissions;
     private String mailResolverClassName;
@@ -55,31 +56,31 @@ public class OwnershipPluginConfigurer {
     private DisplayOptions displayOptions;
     private EnvSetupOptions globalEnvSetupOptions;
     private InheritanceOptions inheritanceOptions;
-      
+
     private OwnershipPluginConfigurer(Jenkins jenkins) {
         this.jenkins = jenkins;
         // Default policy in the plugin
         this.itemOwnershipPolicy = new DropOwnershipPolicy();
     }
-    
+
     public static OwnershipPluginConfigurer forJenkinsRule(JenkinsRule rule) {
         return forInstance(rule.jenkins);
     }
-    
+
     public static OwnershipPluginConfigurer forInstance(Jenkins jenkins) {
         return new OwnershipPluginConfigurer(jenkins);
     }
-    
+
     public OwnershipPluginConfigurer requireConfigurePermissions(boolean requiresConfigurePermissions) {
         this.requiresConfigurePermissions = requiresConfigurePermissions;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withMailResolverClassName(String mailResolverClassName) {
         this.mailResolverClassName = mailResolverClassName;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withDefaultJobsSecurity(ItemSpecificSecurity defaultJobsSecurity) {
         this.defaultJobsSecurity = defaultJobsSecurity;
         return this;
@@ -89,45 +90,45 @@ public class OwnershipPluginConfigurer {
         this.defaultFoldersSecurity = defaultFoldersSecurity;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withItemOwnershipPolicy(@Nonnull ItemOwnershipPolicy itemOwnershipPolicy) {
         this.itemOwnershipPolicy = itemOwnershipPolicy;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withDisplayOptions(DisplayOptions displayOptions) {
         this.displayOptions = displayOptions;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withMailOptions(MailOptions mailOptions) {
         this.mailOptions = mailOptions;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withGlobalEnvSetupOptions(EnvSetupOptions globalEnvSetupOptions) {
         this.globalEnvSetupOptions = globalEnvSetupOptions;
         return this;
     }
-    
+
     public OwnershipPluginConfigurer withInheritanceOptions(InheritanceOptions inheritanceOptions) {
         this.inheritanceOptions = inheritanceOptions;
         return this;
     }
-    
+
     public void configure() throws IOException {
-        OwnershipPluginConfiguration conf = new OwnershipPluginConfiguration
-                (itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, inheritanceOptions);
-        
+        OwnershipPluginConfiguration conf = new OwnershipPluginConfiguration(
+                itemOwnershipPolicy, mailOptions, globalEnvSetupOptions, displayOptions, inheritanceOptions);
+
         // Get plugin - if it's null, that's a test setup problem and should fail immediately
         OwnershipPlugin plugin = jenkins.getPlugin(OwnershipPlugin.class);
         if (plugin == null) {
-            throw new IllegalStateException(
-                "OwnershipPlugin is not loaded! This indicates a test setup problem. " +
-                "The plugin should be automatically loaded by JenkinsRule. " +
-                "Make sure the test is using JenkinsRule correctly and the plugin is in the test classpath.");
+            throw new IllegalStateException("OwnershipPlugin is not loaded! This indicates a test setup problem. "
+                    + "The plugin should be automatically loaded by JenkinsRule. "
+                    + "Make sure the test is using JenkinsRule correctly and the plugin is in the test classpath.");
         }
-        
-        plugin.configure(requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, defaultFoldersSecurity, conf);
+
+        plugin.configure(
+                requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, defaultFoldersSecurity, conf);
     }
 }

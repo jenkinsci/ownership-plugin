@@ -30,13 +30,12 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.User;
+import hudson.security.Permission;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.kohsuke.accmod.Restricted;
@@ -54,39 +53,35 @@ public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
     public static ComputerOwnerHelper getInstance() {
         return INSTANCE;
     }
-        
+
     @Override
     public OwnershipDescription getOwnershipDescription(@Nonnull Computer item) {
         // TODO: This method impl is a performance hack. May be replaced by getOwnershipInfo() in 1.0
-        Node node = item.getNode();      
-        return node != null 
+        Node node = item.getNode();
+        return node != null
                 ? NodeOwnerHelper.Instance.getOwnershipDescription(node)
                 : OwnershipDescription.DISABLED_DESCR; // No node - no ownership
     }
 
     @Override
     public OwnershipInfo getOwnershipInfo(Computer item) {
-        Node node = item.getNode();      
-        return node != null 
-                ? NodeOwnerHelper.Instance.getOwnershipInfo(node)
-                : OwnershipInfo.DISABLED_INFO;
+        Node node = item.getNode();
+        return node != null ? NodeOwnerHelper.Instance.getOwnershipInfo(node) : OwnershipInfo.DISABLED_INFO;
     }
 
     @Override
     public Collection<User> getPossibleOwners(@Nonnull Computer computer) {
         Node node = computer.getNode();
-        return node != null 
-                ? NodeOwnerHelper.Instance.getPossibleOwners(node)
-                : Collections.<User>emptyList();
-    }  
-    
-    public static void setOwnership(@Nonnull Computer computer, 
-            @CheckForNull OwnershipDescription descr) throws IOException {
+        return node != null ? NodeOwnerHelper.Instance.getPossibleOwners(node) : Collections.<User>emptyList();
+    }
+
+    public static void setOwnership(@Nonnull Computer computer, @CheckForNull OwnershipDescription descr)
+            throws IOException {
         Node node = computer.getNode();
         if (node == null) {
             throw new IOException("Cannot set ownership. Probably, the node has been renamed or deleted.");
         }
-        
+
         NodeOwnerHelper.setOwnership(node, descr);
     }
 
@@ -117,7 +112,7 @@ public class ComputerOwnerHelper extends AbstractOwnershipHelper<Computer> {
 
     @Override
     public String getItemURL(Computer item) {
-        //TODO: Absolute URL
+        // TODO: Absolute URL
         return item.getUrl();
     }
 

@@ -42,7 +42,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
  */
 @Extension(optional = true, ordinal = -5)
 public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
-    
+
     @Override
     public String getName() {
         return Messages.Security_RoleStrategy_ItemSpecificMacro_Name();
@@ -58,7 +58,7 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
     public boolean IsApplicable(RoleType roleType) {
         return roleType == RoleType.Project;
     }
-   
+
     @Override
     public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
         if (type == RoleType.Project) {
@@ -69,5 +69,4 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
         }
         return false;
     }
-    
 }

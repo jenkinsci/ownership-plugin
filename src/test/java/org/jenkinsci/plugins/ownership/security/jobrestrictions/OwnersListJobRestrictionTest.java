@@ -23,6 +23,9 @@
  */
 package org.jenkinsci.plugins.ownership.security.jobrestrictions;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
@@ -36,16 +39,13 @@ import hudson.model.Queue;
 import hudson.model.labels.LabelAtom;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.slaves.DumbSlave;
-import jenkins.model.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import static org.hamcrest.Matchers.*;
+import jenkins.model.*;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
@@ -71,7 +71,7 @@ class OwnersListJobRestrictionTest {
         j = rule;
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
-        
+
         testLabel = new LabelAtom("testLabel");
         slave = j.createOnlineSlave(testLabel);
         jobRestrictionProperty = new JobRestrictionProperty(
@@ -85,36 +85,38 @@ class OwnersListJobRestrictionTest {
     void nodeShouldAcceptRunsFromOwner() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setAssignedLabel(testLabel);
-        JobOwnerHelper.setOwnership(project, 
-                new OwnershipDescription(true, "owner", Collections.emptyList()));
-        
+        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, "owner", Collections.emptyList()));
+
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
-        
+
         List<Queue.BuildableItem> items = j.jenkins.getQueue().getBuildableItems();
         assertThat("1 item should be in the queue", items.size(), equalTo(1));
         Queue.BuildableItem item = items.get(0);
-        
-        assertThat("Job has not been accepted, but JobRestrictions should allow the run", 
-                jobRestrictionProperty.canTake(item), nullValue());
+
+        assertThat(
+                "Job has not been accepted, but JobRestrictions should allow the run",
+                jobRestrictionProperty.canTake(item),
+                nullValue());
     }
 
     @Test
     void nodeShouldDeclineRunsFromNotOwner() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setAssignedLabel(testLabel);
-        JobOwnerHelper.setOwnership(project, 
-                new OwnershipDescription(true, "notOwner", Collections.emptyList()));
-        
+        JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, "notOwner", Collections.emptyList()));
+
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
-        
+
         List<Queue.BuildableItem> items = j.jenkins.getQueue().getBuildableItems();
         assertThat("1 item should be in the queue", items.size(), equalTo(1));
         Queue.BuildableItem item = items.get(0);
-        
-        assertThat("Job restrictions should not allow the run, because the job has wrong owner",
-                jobRestrictionProperty.canTake(item), instanceOf(JobRestrictionBlockageCause.class));
+
+        assertThat(
+                "Job restrictions should not allow the run, because the job has wrong owner",
+                jobRestrictionProperty.canTake(item),
+                instanceOf(JobRestrictionBlockageCause.class));
     }
 
     @Test
@@ -123,18 +125,19 @@ class OwnersListJobRestrictionTest {
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project");
         project.setAssignedLabel(testLabel);
-        FolderOwnershipHelper.setOwnership(folder, 
-                new OwnershipDescription(true, "owner", Collections.emptyList()));
-        
+        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "owner", Collections.emptyList()));
+
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
-        
+
         List<Queue.BuildableItem> items = j.jenkins.getQueue().getBuildableItems();
         assertThat("1 item should be in the queue", items.size(), equalTo(1));
         Queue.BuildableItem item = items.get(0);
-        
-        assertThat("Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
-                jobRestrictionProperty.canTake(item), nullValue());
+
+        assertThat(
+                "Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
+                jobRestrictionProperty.canTake(item),
+                nullValue());
     }
 
     @Test
@@ -143,18 +146,19 @@ class OwnersListJobRestrictionTest {
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project");
         project.setAssignedLabel(testLabel);
-        FolderOwnershipHelper.setOwnership(folder, 
-                new OwnershipDescription(true, "notOwner", Collections.emptyList()));
-        
+        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "notOwner", Collections.emptyList()));
+
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
-        
+
         List<Queue.BuildableItem> items = j.jenkins.getQueue().getBuildableItems();
         assertThat("1 item should be in the queue", items.size(), equalTo(1));
         Queue.BuildableItem item = items.get(0);
-        
-        assertThat("Job restrictions should not allow the run, because the job has wrong owner",
-                jobRestrictionProperty.canTake(item), instanceOf(JobRestrictionBlockageCause.class));
+
+        assertThat(
+                "Job restrictions should not allow the run, because the job has wrong owner",
+                jobRestrictionProperty.canTake(item),
+                instanceOf(JobRestrictionBlockageCause.class));
     }
 
     @Test
@@ -165,8 +169,7 @@ class OwnersListJobRestrictionTest {
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project2");
         project.setAssignedLabel(testLabel);
-        FolderOwnershipHelper.setOwnership(folder,
-                new OwnershipDescription(true, "Owner", Collections.emptyList()));
+        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "Owner", Collections.emptyList()));
 
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -175,8 +178,10 @@ class OwnersListJobRestrictionTest {
         assertThat("1 item should be in the queue", items.size(), equalTo(1));
         Queue.BuildableItem item = items.get(0);
 
-        assertThat("Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
-                jobRestrictionProperty.canTake(item), nullValue());
+        assertThat(
+                "Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
+                jobRestrictionProperty.canTake(item),
+                nullValue());
     }
 
     @Test
@@ -192,8 +197,8 @@ class OwnersListJobRestrictionTest {
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project3");
         project.setAssignedLabel(testLabel);
-        FolderOwnershipHelper.setOwnership(folder,
-                new OwnershipDescription(true, "owner1", Arrays.asList("owner2", "Owner")));
+        FolderOwnershipHelper.setOwnership(
+                folder, new OwnershipDescription(true, "owner1", Arrays.asList("owner2", "Owner")));
 
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -202,8 +207,10 @@ class OwnersListJobRestrictionTest {
         assertThat("1 item should be in the queue", items.size(), equalTo(1));
         Queue.BuildableItem item = items.get(0);
 
-        assertThat("Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
-                jobRestrictionProperty.canTake(item), nullValue());
+        assertThat(
+                "Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
+                jobRestrictionProperty.canTake(item),
+                nullValue());
     }
 
     private void applyIdStrategy(final IdStrategy idStrategy) throws IOException {

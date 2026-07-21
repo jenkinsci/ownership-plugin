@@ -36,7 +36,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 0.6
  */
 public class EnvSetupOptions implements Describable<EnvSetupOptions> {
-    
+
     private final boolean injectNodeOwnership;
     private final boolean injectJobOwnership;
 
@@ -53,7 +53,7 @@ public class EnvSetupOptions implements Describable<EnvSetupOptions> {
     public boolean isInjectNodeOwnership() {
         return injectNodeOwnership;
     }
-    
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
@@ -61,9 +61,9 @@ public class EnvSetupOptions implements Describable<EnvSetupOptions> {
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }
-  
+
     public static class DescriptorImpl extends Descriptor<EnvSetupOptions> {
-        
+
         @Override
         public String getDisplayName() {
             return "N/A";

@@ -34,15 +34,14 @@ import javax.annotation.Nonnull;
  * @since 0.9
  */
 public class OwnershipInfo {
-    
+
     private final OwnershipDescription description;
     private final OwnershipDescriptionSource<?> source;
-    
-    public static final OwnershipInfo DISABLED_INFO = 
+
+    public static final OwnershipInfo DISABLED_INFO =
             new OwnershipInfo(OwnershipDescription.DISABLED_DESCR, new OwnershipDescriptionSource.DisabledSource<>());
 
-    public OwnershipInfo(@Nonnull OwnershipDescription description, 
-            @Nonnull OwnershipDescriptionSource<?> source) {
+    public OwnershipInfo(@Nonnull OwnershipDescription description, @Nonnull OwnershipDescriptionSource<?> source) {
         this.description = description;
         this.source = source;
     }

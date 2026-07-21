@@ -36,13 +36,13 @@ import hudson.model.listeners.RunListener;
  */
 @Extension
 public class OwnershipRunListener extends RunListener<Run> {
- 
+
     @Override
     public void onStarted(Run r, TaskListener listener) {
         if (r.getAction(RunOwnershipAction.class) == null) {
             r.addAction(new RunOwnershipAction(r));
         }
     }
-    
+
     // TODO: Add actions to previously created builds (?)
 }

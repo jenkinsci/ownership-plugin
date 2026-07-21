@@ -30,12 +30,11 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.Extension;
 import hudson.model.User;
+import hudson.security.Permission;
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.OwnershipInheritance;
@@ -49,14 +48,14 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * @since 0.9
  */
 public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolder<?>> {
-    
+
     static final FolderOwnershipHelper INSTANCE = new FolderOwnershipHelper();
 
     @Nonnull
     public static FolderOwnershipHelper getInstance() {
         return INSTANCE;
     }
-    
+
     /**
      * Gets OwnerNodeProperty from job if possible.
      * @param folder Folder
@@ -67,7 +66,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         FolderOwnershipProperty prop = folder.getProperties().get(FolderOwnershipProperty.class);
         return prop != null ? prop : null;
     }
-    
+
     @Override
     public String getItemTypeName(AbstractFolder<?> item) {
         return "folder";
@@ -82,7 +81,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
     public String getItemURL(AbstractFolder<?> item) {
         return item.getUrl();
     }
-    
+
     @Override
     public OwnershipDescription getOwnershipDescription(AbstractFolder<?> item) {
         // TODO: Maybe makes sense to unwrap the method to get a better performance (esp. for Security)
@@ -105,7 +104,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         if (item == null) { // Handle renames, etc.
             return OwnershipInfo.DISABLED_INFO;
         }
-        
+
         // Retrieve Ownership from the Folder property
         FolderOwnershipProperty prop = getOwnerProperty(item);
         if (prop != null) {
@@ -117,7 +116,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
 
         return OwnershipInheritance.fromParents(item);
     }
-    
+
     @Override
     public Collection<User> getPossibleOwners(AbstractFolder<?> item) {
         return filterPossibleOwners(item, AbstractFolder.CONFIGURE);
@@ -134,15 +133,15 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         }
         return false;
     }
-    
+
     /**
      * Sets the ownership information.
      * @param folder Folder to be modified
      * @param descr A description to be set. Use null to drop settings.
-     * @throws IOException 
+     * @throws IOException
      */
-    public static void setOwnership(@Nonnull AbstractFolder<?> folder, 
-            @CheckForNull OwnershipDescription descr) throws IOException {
+    public static void setOwnership(@Nonnull AbstractFolder<?> folder, @CheckForNull OwnershipDescription descr)
+            throws IOException {
         FolderOwnershipProperty prop = getOwnerProperty(folder);
         if (prop == null) {
             prop = new FolderOwnershipProperty(descr, null);
@@ -158,8 +157,8 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
      * @param security Security settings to be set. Use null to drop settings
      * @throws IOException if ownership is not configured or save fails
      */
-    public static void setProjectSpecificSecurity(@Nonnull AbstractFolder<?> folder,
-            @CheckForNull FolderSpecificSecurity security) throws IOException {
+    public static void setProjectSpecificSecurity(
+            @Nonnull AbstractFolder<?> folder, @CheckForNull FolderSpecificSecurity security) throws IOException {
         FolderOwnershipProperty prop = getOwnerProperty(folder);
         if (prop == null) {
             throw new IOException("Ownership is not configured for " + folder);
@@ -167,17 +166,17 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
             prop.setItemSpecificSecurity(security);
         }
     }
-    
+
     @Extension(optional = true)
     @Restricted(NoExternalUse.class)
     public static class LocatorImpl extends OwnershipHelperLocator<AbstractFolder<?>> {
-        
+
         @Override
         public AbstractOwnershipHelper<AbstractFolder<?>> findHelper(Object item) {
             if (item instanceof AbstractFolder<?>) {
                 return INSTANCE;
             }
             return null;
-        }      
+        }
     }
 }

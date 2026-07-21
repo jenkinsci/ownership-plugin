@@ -37,14 +37,14 @@ import javax.annotation.CheckForNull;
  * @since 0.9
  */
 public abstract class OwnershipDescriptionSource<TSourceType extends Object> {
-    
+
     @CheckForNull
     private final TSourceType item;
 
     public OwnershipDescriptionSource(@CheckForNull TSourceType item) {
         this.item = item;
     }
-       
+
     /**
      * Provides a reference to the item, which acts as a source.
      * It may be {@link Job}, {@link Node} or whatever other class.
@@ -55,8 +55,8 @@ public abstract class OwnershipDescriptionSource<TSourceType extends Object> {
     public TSourceType getItem() {
         return item;
     }
-    
-    public static class DisabledSource<TSourceType extends Object> extends OwnershipDescriptionSource<TSourceType>{
+
+    public static class DisabledSource<TSourceType extends Object> extends OwnershipDescriptionSource<TSourceType> {
         public DisabledSource() {
             super(null);
         }

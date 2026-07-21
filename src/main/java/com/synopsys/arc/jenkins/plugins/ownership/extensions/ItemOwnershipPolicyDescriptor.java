@@ -30,7 +30,4 @@ import hudson.model.Descriptor;
  * Defines a descriptor for {@link ItemOwnershipPolicy}.
  * @author Oleg Nenashev
  */
-public abstract class ItemOwnershipPolicyDescriptor 
-        extends Descriptor<ItemOwnershipPolicy> {
-    
-}
+public abstract class ItemOwnershipPolicyDescriptor extends Descriptor<ItemOwnershipPolicy> {}

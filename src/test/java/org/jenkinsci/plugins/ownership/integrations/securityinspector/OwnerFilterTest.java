@@ -23,6 +23,12 @@
  */
 package org.jenkinsci.plugins.ownership.integrations.securityinspector;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import hudson.model.FreeStyleProject;
@@ -35,12 +41,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for package-private {@link OwnerFilter}.
@@ -74,8 +74,7 @@ class OwnerFilterTest {
     @Test
     void doFilter_includesSecondaryOwners() throws Exception {
         FreeStyleProject job = j.createFreeStyleProject("with-secondary");
-        JobOwnerHelper.setOwnership(job,
-                new OwnershipDescription(true, "alice", Collections.singletonList("bob")));
+        JobOwnerHelper.setOwnership(job, new OwnershipDescription(true, "alice", Collections.singletonList("bob")));
 
         User bob = User.getById("bob", true);
         List<TopLevelItem> items = new OwnerFilter().doFilter(bob);

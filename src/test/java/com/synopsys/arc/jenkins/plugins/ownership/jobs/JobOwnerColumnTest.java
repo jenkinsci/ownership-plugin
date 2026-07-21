@@ -23,6 +23,11 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import hudson.model.FreeStyleProject;
 import hudson.model.User;
@@ -32,11 +37,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link JobOwnerColumn}.
@@ -76,7 +76,8 @@ class JobOwnerColumnTest {
     void descriptor() {
         JobOwnerColumn.DescriptorImpl descriptor = new JobOwnerColumn.DescriptorImpl();
         assertFalse(descriptor.shownByDefault());
-        assertThat(descriptor.getDisplayName(), equalTo(
-                com.synopsys.arc.jenkins.plugins.ownership.Messages.JobOwnership_Column_Title()));
+        assertThat(
+                descriptor.getDisplayName(),
+                equalTo(com.synopsys.arc.jenkins.plugins.ownership.Messages.JobOwnership_Column_Title()));
     }
 }

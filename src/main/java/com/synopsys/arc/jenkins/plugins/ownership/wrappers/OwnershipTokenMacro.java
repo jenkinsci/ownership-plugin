@@ -45,8 +45,8 @@ import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
  */
 @Extension(optional = true)
 public class OwnershipTokenMacro extends DataBoundTokenMacro {
-    public static final String MACRO_NAME="OWNERSHIP";
-    
+    public static final String MACRO_NAME = "OWNERSHIP";
+
     /**
      * An information type to be retrieved.
      * {@link OwnershipFunction} contains list of supported commands.
@@ -58,32 +58,33 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
     public boolean acceptsMacroName(String string) {
         return string.equals(MACRO_NAME);
     }
-    
+
     @Override
-    public String evaluate(AbstractBuild<?, ?> ab, TaskListener tl, String string) throws MacroEvaluationException, IOException, InterruptedException {
-        OwnershipFunction func;      
+    public String evaluate(AbstractBuild<?, ?> ab, TaskListener tl, String string)
+            throws MacroEvaluationException, IOException, InterruptedException {
+        OwnershipFunction func;
         if (var == null) {
-            throw new MacroEvaluationException(MACRO_NAME+" macro requires the 'var' parameter");
+            throw new MacroEvaluationException(MACRO_NAME + " macro requires the 'var' parameter");
         }
-        
+
         try {
             func = OwnershipFunction.valueOf(var);
         } catch (IllegalArgumentException ex) {
-            throw new MacroEvaluationException(MACRO_NAME+" macro does not support var="+var);
+            throw new MacroEvaluationException(MACRO_NAME + " macro does not support var=" + var);
         }
-            
+
         OwnershipDescription job = JobOwnerHelper.Instance.getOwnershipDescription(ab.getProject());
-        
+
         // Get data for node
         final Node node = ab.getBuiltOn();
-        OwnershipDescription nodeDescription = node != null 
-                ? NodeOwnerHelper.Instance.getOwnershipDescription(node) 
+        OwnershipDescription nodeDescription = node != null
+                ? NodeOwnerHelper.Instance.getOwnershipDescription(node)
                 : OwnershipDescription.DISABLED_DESCR;
-        
+
         // Evaluate the macro
         return func.evaluate(job, nodeDescription);
     }
-          
+
     // TODO: This implementation needs some polishing in order to address naming changes
     // in primary and secondary owners
     private static enum OwnershipFunction {
@@ -95,21 +96,21 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
         NODE_OWNER_EMAIL(false),
         NODE_COOWNERS(false),
         NODE_COOWNERS_EMAILS(false);
-        
+
         private final boolean isJob;
-        
+
         private OwnershipFunction(boolean isJob) {
             this.isJob = isJob;
         }
-        
+
         public boolean isJobFunction() {
             return isJob;
         }
-        
+
         public boolean isNodeFunction() {
             return !isJob;
         }
-        
+
         public String evaluate(OwnershipDescription job, OwnershipDescription node) throws IOException {
             if (isJobFunction() && !job.isOwnershipEnabled()) {
                 throw new IOException("Job Ownership is disabled");
@@ -117,8 +118,8 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
             if (isNodeFunction() && !node.isOwnershipEnabled()) {
                 throw new IOException("Node Ownership is disabled");
             }
-            
-            switch(this) {
+
+            switch (this) {
                 case JOB_OWNER:
                     return OwnershipDescriptionHelper.getPrimaryOwnerId(job);
                 case JOB_OWNER_EMAIL:
@@ -126,7 +127,7 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
                 case JOB_COOWNERS:
                     return OwnershipDescriptionHelper.getAllOwnerIdsString(job);
                 case JOB_COOWNERS_EMAILS:
-                    return OwnershipDescriptionHelper.getAllOwnerEmailsString(job);   
+                    return OwnershipDescriptionHelper.getAllOwnerEmailsString(job);
                 case NODE_OWNER:
                     return OwnershipDescriptionHelper.getPrimaryOwnerId(node);
                 case NODE_OWNER_EMAIL:
@@ -134,9 +135,9 @@ public class OwnershipTokenMacro extends DataBoundTokenMacro {
                 case NODE_COOWNERS:
                     return OwnershipDescriptionHelper.getAllOwnerIdsString(node);
                 case NODE_COOWNERS_EMAILS:
-                    return OwnershipDescriptionHelper.getAllOwnerEmailsString(node); 
+                    return OwnershipDescriptionHelper.getAllOwnerEmailsString(node);
                 default:
-                    throw new IOException(this+" ownership function is not implemented");
+                    throw new IOException(this + " ownership function is not implemented");
             }
         }
     }

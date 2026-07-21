@@ -23,12 +23,13 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
+import static java.util.Collections.singleton;
+
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Computer;
 import hudson.model.TransientComputerActionFactory;
 import java.util.Collection;
-import static java.util.Collections.singleton;
 
 /**
  * Generates ownership actions for the Jenkins nodes.
@@ -42,5 +43,4 @@ public class OwnershipActionFactory extends TransientComputerActionFactory {
     public Collection<? extends Action> createFor(Computer target) {
         return singleton(new NodeOwnershipAction(target));
     }
-    
 }

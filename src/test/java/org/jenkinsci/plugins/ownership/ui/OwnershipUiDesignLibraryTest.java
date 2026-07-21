@@ -23,6 +23,12 @@
  */
 package org.jenkinsci.plugins.ownership.ui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
@@ -45,12 +51,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * UI integration and flow tests for Design Library migration.
@@ -79,8 +79,11 @@ class OwnershipUiDesignLibraryTest {
         assertThat(page.getFirstByXPath("//div[contains(@class,'jenkins-card')]"), notNullValue());
         assertThat(page.getAnchorByHref("manage-owners"), notNullValue());
         assertThat(page.getAnchorByHref("configure-project-specifics"), notNullValue());
-        assertThat(page.asNormalizedText(), containsString(project.getAction(
-                com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobAction.class).getDisplayName()));
+        assertThat(
+                page.asNormalizedText(),
+                containsString(
+                        project.getAction(com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobAction.class)
+                                .getDisplayName()));
     }
 
     @Test
@@ -122,7 +125,8 @@ class OwnershipUiDesignLibraryTest {
     @Test
     void folderOwnershipFlowShowsSummaryCard() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "owned-folder");
-        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "alice", Collections.singletonList("bob")));
+        FolderOwnershipHelper.setOwnership(
+                folder, new OwnershipDescription(true, "alice", Collections.singletonList("bob")));
 
         HtmlPage page = j.createWebClient().goTo(folder.getUrl());
         HtmlElement summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
@@ -169,8 +173,8 @@ class OwnershipUiDesignLibraryTest {
     @Test
     void jobSummaryCollapsedPreviewShowsPrimaryAndCoownerCount() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("preview-job");
-        JobOwnerHelper.setOwnership(project,
-                new OwnershipDescription(true, "alice", java.util.Arrays.asList("bob", "charlie")));
+        JobOwnerHelper.setOwnership(
+                project, new OwnershipDescription(true, "alice", java.util.Arrays.asList("bob", "charlie")));
 
         HtmlPage page = j.createWebClient().goTo(project.getUrl());
         HtmlElement preview = page.getFirstByXPath("//*[@data-testid='ownership-summary-preview']");
@@ -201,7 +205,8 @@ class OwnershipUiDesignLibraryTest {
         assertThat(page.getFirstByXPath("//div[contains(@class,'jenkins-card')]"), notNullValue());
     }
 
-    private static void submitOwners(JenkinsRule.WebClient wc, String itemUrl, String primary, String secondary) throws Exception {
+    private static void submitOwners(JenkinsRule.WebClient wc, String itemUrl, String primary, String secondary)
+            throws Exception {
         JSONObject ownersJson = new JSONObject();
         ownersJson.put("primaryOwner", primary);
         if (secondary != null) {

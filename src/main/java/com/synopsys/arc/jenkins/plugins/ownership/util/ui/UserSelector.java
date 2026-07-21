@@ -32,7 +32,6 @@ import hudson.util.FormValidation;
 import java.io.Serializable;
 import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
-
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -44,11 +43,12 @@ import org.kohsuke.stapler.verb.POST;
  * Features: validation
  * @author Oleg Nenashev
  */
-//TODO: Autocompletion
+// TODO: Autocompletion
 public class UserSelector implements Describable<UserSelector>, Serializable {
-    
+
     /**ID of the user*/
-    @CheckForNull String selectedUserId;
+    @CheckForNull
+    String selectedUserId;
 
     @DataBoundConstructor
     public UserSelector(@CheckForNull String selectedUserId) {
@@ -66,12 +66,12 @@ public class UserSelector implements Describable<UserSelector>, Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {       
+    public boolean equals(Object obj) {
         if (obj instanceof UserSelector) {
-            UserSelector cmp = (UserSelector)obj;
+            UserSelector cmp = (UserSelector) obj;
             return selectedUserId != null ? selectedUserId.equals(cmp.selectedUserId) : cmp.selectedUserId == null;
-        }           
-        return false;    
+        }
+        return false;
     }
 
     @Override
@@ -80,11 +80,12 @@ public class UserSelector implements Describable<UserSelector>, Serializable {
         hash = 17 * hash + (selectedUserId != null ? selectedUserId.hashCode() : 0);
         return hash;
     }
-          
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+
     public static class DescriptorImpl extends Descriptor<UserSelector> {
-        
+
         @Override
         public String getDisplayName() {
             return "N/A";

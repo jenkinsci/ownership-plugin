@@ -37,14 +37,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Stores inheritance options for {@link OwnershipPlugin}.
  * This section is attached as an advanced section to {@link OwnershipPluginConfiguration}.
- * These options has been created 
+ * These options has been created
  * @author Oleg Nenashev
  * @since 0.9
  */
 public class InheritanceOptions implements Describable<InheritanceOptions> {
-       
+
     public static final InheritanceOptions DEFAULT = new InheritanceOptions(false);
-    
+
     private final boolean blockInheritanceFromItemGroups;
 
     @DataBoundConstructor
@@ -62,7 +62,7 @@ public class InheritanceOptions implements Describable<InheritanceOptions> {
     public boolean isBlockInheritanceFromItemGroups() {
         return blockInheritanceFromItemGroups;
     }
-    
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
@@ -70,9 +70,9 @@ public class InheritanceOptions implements Describable<InheritanceOptions> {
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }
-  
+
     public static class DescriptorImpl extends Descriptor<InheritanceOptions> {
-        
+
         @Override
         public String getDisplayName() {
             return "N/A";

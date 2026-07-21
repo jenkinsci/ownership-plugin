@@ -24,6 +24,10 @@
 
 package com.synopsys.arc.jenkins.plugins.ownership.wrappers;
 
+import static hudson.Functions.isWindows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
@@ -50,11 +54,6 @@ import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
-
-import static hudson.Functions.isWindows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
@@ -85,29 +84,29 @@ class OwnershipBuildWrapperTest {
         nodeOwner.setFullName("Test Node Owner");
         projectOwner = User.get(PROJECT_OWNER_ID);
         projectOwner.setFullName("Test Project Owner");
-        
+
         // Configure ownership plugin
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withItemOwnershipPolicy(new AssignCreatorPolicy())
                 .configure();
-        
+
         // Create node with ownership
         node = r.createOnlineSlave();
         NodeOwnerHelper.setOwnership(node, new OwnershipDescription(true, NODE_OWNER_ID, Collections.emptyList()));
-        
+
         // Create project
         project = r.createFreeStyleProject();
         JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.emptyList()));
         project.getBuildersList().add(isWindows() ? new BatchFile("set") : new Shell("env"));
     }
-    
+
     @Test
     void testVarsPresenceOnSuccess() throws Exception {
         final OwnershipBuildWrapper wrapper = new OwnershipBuildWrapper(true, true);
         project.getBuildWrappersList().add(wrapper);
         testVarsPresence(false);
     }
-    
+
     @Issue("JENKINS-23926")
     @Test
     void testVarsPresenceOnSCMFailure() throws Exception {
@@ -116,7 +115,7 @@ class OwnershipBuildWrapperTest {
 
         testVarsPresence(true);
     }
-    
+
     @Issue("JENKINS-23947")
     @Test
     void testVarsPresenceOnGlobalOptions() throws Exception {
@@ -127,7 +126,7 @@ class OwnershipBuildWrapperTest {
                 .configure();
         testVarsPresence(true);
     }
-    
+
     @Issue("JENKINS-27715")
     @Test
     void testCoOwnersVarsInjection() throws Exception {
@@ -136,7 +135,7 @@ class OwnershipBuildWrapperTest {
                 .withMailOptions(MailOptions.DEFAULT)
                 .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
                 .configure();
-        
+
         FreeStyleBuild build = testVarsPresence(false);
         r.assertLogContains("NODE_COOWNERS=" + NODE_OWNER_ID, build);
         r.assertLogContains("JOB_COOWNERS=" + PROJECT_OWNER_ID, build);
@@ -148,30 +147,31 @@ class OwnershipBuildWrapperTest {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withGlobalEnvSetupOptions(new EnvSetupOptions(true, true))
                 .configure();
-        
+
         // Init folder with a nested job
         Folder folder = r.jenkins.createProject(Folder.class, "folder");
-        FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.emptyList()));
+        FolderOwnershipHelper.setOwnership(
+                folder, new OwnershipDescription(true, PROJECT_OWNER_ID, Collections.emptyList()));
         FreeStyleProject prj = folder.createProject(FreeStyleProject.class, "projectInsideFolder");
         prj.getBuildersList().add(isWindows() ? new BatchFile("set") : new Shell("env"));
-        
+
         // Run test. We expect Ownership info to be inherited for the project
         FreeStyleBuild build = testVarsPresence(false);
         r.assertLogContains("NODE_COOWNERS=" + NODE_OWNER_ID, build);
         r.assertLogContains("JOB_COOWNERS=" + PROJECT_OWNER_ID, build);
     }
-    
+
     private FreeStyleBuild testVarsPresence(boolean failSCM) throws Exception {
         project.setAssignedNode(node);
         if (failSCM) {
             project.setScm(new AlwaysFailNullSCM());
         }
-        
+
         // Run without params
         Future<FreeStyleBuild> fBuild = project.scheduleBuild2(0);
         assertNotNull(fBuild);
         FreeStyleBuild build = fBuild.get();
-        
+
         // Check the build environment
         final EnvVars env = build.getEnvironment(TaskListener.NULL);
         if (!failSCM) {
@@ -179,15 +179,22 @@ class OwnershipBuildWrapperTest {
             r.assertLogContains("JOB_OWNER=" + PROJECT_OWNER_ID, build);
         }
         assertTrue(env.containsKey("NODE_OWNER"));
-        assertTrue(env.containsKey("JOB_OWNER"));  
+        assertTrue(env.containsKey("JOB_OWNER"));
         return build;
     }
-    
+
     private static class AlwaysFailNullSCM extends NullSCM {
-        
+
         @Override
-        public void checkout(Run<?, ?> build, Launcher launcher, FilePath workspace, TaskListener listener, File changelogFile, SCMRevisionState baseline) throws IOException, InterruptedException {
+        public void checkout(
+                Run<?, ?> build,
+                Launcher launcher,
+                FilePath workspace,
+                TaskListener listener,
+                File changelogFile,
+                SCMRevisionState baseline)
+                throws IOException, InterruptedException {
             throw new IOException("Checkout failed (as designed)");
-        }     
+        }
     }
 }

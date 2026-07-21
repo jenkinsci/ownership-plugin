@@ -28,7 +28,6 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import hudson.Extension;
-import hudson.model.Job;
 import hudson.model.Node;
 import hudson.model.User;
 import hudson.security.Permission;
@@ -36,7 +35,6 @@ import hudson.slaves.NodeProperty;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.nodes.NodeOwnershipDescriptionSource;
@@ -60,10 +58,10 @@ public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodePropert
      * @return OwnerNodeProperty or null
      */
     @CheckForNull
-    private static OwnerNodeProperty getOwnerProperty(@CheckForNull NodeProperty node)  {
-        return (OwnerNodeProperty)node;
+    private static OwnerNodeProperty getOwnerProperty(@CheckForNull NodeProperty node) {
+        return (OwnerNodeProperty) node;
     }
-      
+
     @Nonnull
     @Override
     public OwnershipDescription getOwnershipDescription(@CheckForNull NodeProperty item) {
@@ -77,23 +75,23 @@ public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodePropert
     public OwnershipInfo getOwnershipInfo(NodeProperty item) {
         OwnerNodeProperty prop = getOwnerProperty(item);
         OwnershipDescription descr = (prop != null) ? prop.getOwnership() : null;
-        return descr != null 
+        return descr != null
                 ? new OwnershipInfo(descr, new NodeOwnershipDescriptionSource(getNode(item)))
                 : OwnershipInfo.DISABLED_INFO;
     }
-    
+
     @Nonnull
     @Override
     public Collection<User> getPossibleOwners(NodeProperty item) {
         if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
-            //FIXME: Fix after fix of bug at Jenkins
+            // FIXME: Fix after fix of bug at Jenkins
             return UserCollectionFilter.filterUsers(User.getAll(), true);
         } else {
             return User.getAll();
         }
-    }   
+    }
 
-    private @CheckForNull Node getNode(@Nonnull NodeProperty item){
+    private @CheckForNull Node getNode(@Nonnull NodeProperty item) {
         if (item instanceof OwnerNodeProperty) {
             OwnerNodeProperty prop = (OwnerNodeProperty) item;
             return prop.getNode();
@@ -116,9 +114,9 @@ public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodePropert
     public String getItemTypeName(NodeProperty item) {
         return NodeOwnerHelper.ITEM_TYPE_NAME;
     }
-    
+
     @Override
-    public String getItemDisplayName(NodeProperty item) { 
+    public String getItemDisplayName(NodeProperty item) {
         Node node = getNode(item);
         return node != null ? NodeOwnerHelper.Instance.getItemDisplayName(node) : "unknown node";
     }

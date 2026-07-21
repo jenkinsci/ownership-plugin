@@ -24,18 +24,33 @@
 
 package org.jenkinsci.plugins.ownership.folders;
 
+import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
-import org.htmlunit.FailingHttpStatusCodeException;
-import org.htmlunit.HttpMethod;
-import org.htmlunit.WebRequest;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.cli.CLICommandInvoker;
 import hudson.cli.UpdateJobCommand;
 import hudson.model.Item;
 import hudson.security.Permission;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import jenkins.model.Jenkins;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.HttpMethod;
+import org.htmlunit.WebRequest;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty;
@@ -48,22 +63,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // TODO: DRY, merge with JobOwnerJobHelper once helper#setOwnership() is a non-static method
 @For(FolderOwnershipProperty.class)
@@ -82,14 +81,13 @@ class FolderOwnershipPropertyTest {
         mas.grant(Jenkins.ADMINISTER) // Implies MANAGE_ITEMS_OWNERSHIP.
                 .everywhere()
                 .to("admin");
-        mas.grant(Item.CONFIGURE, Item.READ, Jenkins.READ)
-                .everywhere()
-                .to("non-admin");
+        mas.grant(Item.CONFIGURE, Item.READ, Jenkins.READ).everywhere().to("non-admin");
         r.jenkins.setAuthorizationStrategy(mas);
 
         // Initialize plugin before using it
-        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(r).configure();
-        
+        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(r)
+                .configure();
+
         // Unique project name
         p = r.createProject(Folder.class, "test" + r.jenkins.getItems().size());
         ownershipHelper = OwnershipHelperLocator.locate(p);
@@ -101,12 +99,12 @@ class FolderOwnershipPropertyTest {
     @Test
     @Issue("JENKINS-49744")
     void changeOwnerViaPost() throws Exception {
-        FolderOwnershipHelper.setOwnership(p,
-                new OwnershipDescription(true, "admin", null));
+        FolderOwnershipHelper.setOwnership(p, new OwnershipDescription(true, "admin", null));
 
         WebClient wc = r.createWebClient();
         wc.login("non-admin", "non-admin");
-        WebRequest req = new WebRequest(wc.createCrumbedUrl(String.format("%sconfig.xml", p.getUrl())), HttpMethod.POST);
+        WebRequest req =
+                new WebRequest(wc.createCrumbedUrl(String.format("%sconfig.xml", p.getUrl())), HttpMethod.POST);
         req.setAdditionalHeader("Content-Type", "application/xml");
         req.setRequestBody(getItemXml("admin"));
         wc.getPage(req);
@@ -116,8 +114,10 @@ class FolderOwnershipPropertyTest {
         FolderOwnershipProperty prop1 = FolderOwnershipHelper.getOwnerProperty(p);
         assertThat("Property should exist", prop1, notNullValue());
         assertThat("Ownership should be enabled", prop1.getOwnership().isOwnershipEnabled(), is(true));
-        assertThat("Users should be able to configure Folder when ownership is unchanged",
-                prop1.getOwnership().getPrimaryOwnerId(), is(equalTo("admin")));
+        assertThat(
+                "Users should be able to configure Folder when ownership is unchanged",
+                prop1.getOwnership().getPrimaryOwnerId(),
+                is(equalTo("admin")));
 
         try {
             wc.login("non-admin", "non-admin");
@@ -143,15 +143,16 @@ class FolderOwnershipPropertyTest {
         FolderOwnershipProperty prop3 = FolderOwnershipHelper.getOwnerProperty(p);
         assertThat("Property should exist", prop3, notNullValue());
         assertThat("Ownership should be enabled", prop3.getOwnership().isOwnershipEnabled(), is(true));
-        assertThat("Users with Manage Ownership/Jobs permissions should be able to change ownership",
-                prop3.getOwnership().getPrimaryOwnerId(), is(equalTo("non-admin")));
+        assertThat(
+                "Users with Manage Ownership/Jobs permissions should be able to change ownership",
+                prop3.getOwnership().getPrimaryOwnerId(),
+                is(equalTo("non-admin")));
     }
 
     @Test
     @Issue("JENKINS-49744")
     void changeOwnerViaCLI() throws Exception {
-        FolderOwnershipHelper.setOwnership(p,
-                new OwnershipDescription(true, "admin", null));
+        FolderOwnershipHelper.setOwnership(p, new OwnershipDescription(true, "admin", null));
 
         CLICommandInvoker command = new CLICommandInvoker(r, new UpdateJobCommand())
                 .asUser("non-admin")
@@ -159,11 +160,11 @@ class FolderOwnershipPropertyTest {
                 .withStdin(getItemXmlAsStream("admin"));
         assertThat(ownershipHelper.getOwner(p), is(equalTo("admin")));
 
-        command.asUser("admin")
-                .withArgs(p.getFullName())
-                .withStdin(getItemXmlAsStream("non-admin"));
-        assertThat("Users with Overall/Administer permissions should be able to configure jobs via CLI", 
-                command.invoke(), succeededSilently());
+        command.asUser("admin").withArgs(p.getFullName()).withStdin(getItemXmlAsStream("non-admin"));
+        assertThat(
+                "Users with Overall/Administer permissions should be able to configure jobs via CLI",
+                command.invoke(),
+                succeededSilently());
         assertThat(ownershipHelper.getOwner(p), is(equalTo("non-admin")));
     }
 
@@ -198,8 +199,7 @@ class FolderOwnershipPropertyTest {
         return new ByteArrayInputStream(getItemXml(ownerSid).getBytes(StandardCharsets.UTF_8));
     }
 
-    private static final String FOLDER_XML_TEMPLATE =
-            """
+    private static final String FOLDER_XML_TEMPLATE = """
                     <?xml version='1.0' encoding='UTF-8'?>
                     <com.cloudbees.hudson.plugins.folder.Folder plugin="cloudbees-folder@6.1.0">
                       <properties>
@@ -222,5 +222,4 @@ class FolderOwnershipPropertyTest {
                       </views>
                       <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
                     </com.cloudbees.hudson.plugins.folder.Folder>""";
-
 }

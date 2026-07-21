@@ -44,15 +44,15 @@ import javax.annotation.Nonnull;
  * @see NodeOwnerHelper
  * @see AbstractOwnershipHelper
  */
-public interface IOwnershipHelper<TObjectType>  {
-    
+public interface IOwnershipHelper<TObjectType> {
+
     /**
      * Gets a type of the item to be displayed.
-     * @param item 
+     * @param item
      * @return Display name of the item type
      */
     public @Nonnull String getItemTypeName(@Nonnull TObjectType item);
-    
+
     /**
      * Gets a short classifier.
      * Usage example: e-mail headers
@@ -61,7 +61,7 @@ public interface IOwnershipHelper<TObjectType>  {
      * @since 0.6
      */
     public @Nonnull String getItemDisplayName(@Nonnull TObjectType item);
-    
+
     /**
      * Gets a relative URL to the item.
      * @param item
@@ -69,7 +69,7 @@ public interface IOwnershipHelper<TObjectType>  {
      * @since 0.6
      */
     public @CheckForNull String getItemURL(@Nonnull TObjectType item);
-    
+
     /**
      * Get ID of the item's owner.
      * @param item Item to be describes
@@ -77,7 +77,7 @@ public interface IOwnershipHelper<TObjectType>  {
      */
     @CheckForNull
     public String getOwner(TObjectType item);
-    
+
     /**
      * Get e-mail of the owner.
      * @param item Item to be describes
@@ -86,14 +86,14 @@ public interface IOwnershipHelper<TObjectType>  {
      */
     @CheckForNull
     public String getOwnerEmail(@Nonnull TObjectType item);
-    
+
     /**
      * Check if item has owners.
      * @param item Item to be checked
      * @return true if item has owners
      */
     public boolean isOwnerExists(@Nonnull TObjectType item);
-    
+
     /**
      * Get Display string of the owner.
      * @param item Item to be described
@@ -101,17 +101,17 @@ public interface IOwnershipHelper<TObjectType>  {
      */
     @Nonnull
     public String getOwnerLongString(@Nonnull TObjectType item);
-    
+
     /**
      * Gets ownership description of the requested item.
      * @param item Item to be described
-     * @return Ownership description. The method returns a 
+     * @return Ownership description. The method returns a
      * {@link OwnershipDescription#DISABLED_DESCR}
      * @since 0.0.3
      */
     @Nonnull
     public OwnershipDescription getOwnershipDescription(@Nonnull TObjectType item);
-    
+
     /**
      * Get list of users, who can be item's owner.
      * @param item Item to be described
@@ -121,7 +121,7 @@ public interface IOwnershipHelper<TObjectType>  {
      */
     @Nonnull
     public Collection<User> getPossibleOwners(@Nonnull TObjectType item);
-    
+
     /**
      * Gets User's name for visualization in ownership.
      * @param usr User to be displayed

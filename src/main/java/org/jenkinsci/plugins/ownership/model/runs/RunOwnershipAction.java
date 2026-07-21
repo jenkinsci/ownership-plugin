@@ -40,14 +40,13 @@ import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 
 /**
- * Displays ownership info for builds. 
+ * Displays ownership info for builds.
  * This implementation is a stub for summaries visualization.
  * Currently, users cannot manage builds ownership.
  * @author Oleg Nenashev
  * @since 0.6
  */
-public class RunOwnershipAction extends ItemOwnershipAction<Run> 
-         implements EnvironmentContributingAction {
+public class RunOwnershipAction extends ItemOwnershipAction<Run> implements EnvironmentContributingAction {
 
     public RunOwnershipAction(@Nonnull Run describedItem) {
         super(describedItem);
@@ -72,35 +71,37 @@ public class RunOwnershipAction extends ItemOwnershipAction<Run>
     public IOwnershipHelper<Run> helper() {
         return RunOwnershipHelper.getInstance();
     }
-    
+
     public OwnershipLayoutFormatter<Run> getLayoutFormatter() {
-        return OwnershipPlugin.getInstance().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getDescribedItem());
-    }   
-    
+        return OwnershipPlugin.getInstance()
+                .getOwnershipLayoutFormatterProvider()
+                .getLayoutFormatter(getDescribedItem());
+    }
+
     @Override
     public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
         boolean injectNodeOwnership = false;
         boolean injectJobOwnership = false;
-        
+
         // Handle global options
-        final EnvSetupOptions globalEnvSetupOptions = OwnershipPlugin.getInstance().
-                getConfiguration().getGlobalEnvSetupOptions();
+        final EnvSetupOptions globalEnvSetupOptions =
+                OwnershipPlugin.getInstance().getConfiguration().getGlobalEnvSetupOptions();
         if (globalEnvSetupOptions != null) {
             injectNodeOwnership |= globalEnvSetupOptions.isInjectNodeOwnership();
             injectJobOwnership |= globalEnvSetupOptions.isInjectJobOwnership();
         }
-        
+
         // Check BuildWrapper options id available
         final Job parent = build.getParent();
-        if (parent instanceof BuildableItemWithBuildWrappers) { 
+        if (parent instanceof BuildableItemWithBuildWrappers) {
             final BuildableItemWithBuildWrappers prj = (BuildableItemWithBuildWrappers) parent;
             final OwnershipBuildWrapper wrapper = prj.getBuildWrappersList().get(OwnershipBuildWrapper.class);
             if (wrapper != null) {
                 injectJobOwnership |= wrapper.isInjectJobOwnership();
-                injectNodeOwnership |= wrapper.isInjectNodeOwnership();             
+                injectNodeOwnership |= wrapper.isInjectNodeOwnership();
             }
         } // TODO: else do something?
-        
+
         RunOwnershipHelper.setUp(build, env, null, injectJobOwnership, injectNodeOwnership);
     }
 }

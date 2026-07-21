@@ -50,24 +50,24 @@ import org.kohsuke.stapler.StaplerRequest2;
  * @since 0.3
  */
 public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, Cloneable {
-    
+
     private @Nonnull AuthorizationMatrixProperty permissionsMatrix;
-    
+
     @DataBoundConstructor
     public ItemSpecificSecurity(@CheckForNull AuthorizationMatrixProperty permissionsMatrix) {
-        this.permissionsMatrix = permissionsMatrix != null 
+        this.permissionsMatrix = permissionsMatrix != null
                 ? permissionsMatrix
                 : new AuthorizationMatrixProperty(new HashMap<Permission, Set<String>>());
     }
 
     @Override
     public ItemSpecificDescriptor getDescriptor() {
-        return DESCRIPTOR; 
+        return DESCRIPTOR;
     }
 
     @Nonnull
     public AuthorizationMatrixProperty getPermissionsMatrix() {
-         return permissionsMatrix;
+        return permissionsMatrix;
     }
 
     /**
@@ -76,17 +76,17 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
      * two-argument {@code hasPermission(String, Permission)}.
      */
     public boolean grants(@Nonnull String sid, @Nonnull Permission p) {
-        return permissionsMatrix.hasPermission(sid, p, true)
-                || permissionsMatrix.hasPermission(sid, p, false);
+        return permissionsMatrix.hasPermission(sid, p, true) || permissionsMatrix.hasPermission(sid, p, false);
     }
 
     @Override
     public ItemSpecificSecurity clone() {
         ItemSpecificSecurity newItem;
         try {
-            newItem = (ItemSpecificSecurity)super.clone();
+            newItem = (ItemSpecificSecurity) super.clone();
             // Use getGrantedPermissionEntries() instead of deprecated getGrantedPermissions()
-            Map<Permission, Set<PermissionEntry>> permissionEntries = this.permissionsMatrix.getGrantedPermissionEntries();
+            Map<Permission, Set<PermissionEntry>> permissionEntries =
+                    this.permissionsMatrix.getGrantedPermissionEntries();
             // Convert PermissionEntry to String (SID) for the constructor
             // HashMap: Permission is not Comparable, so TreeMap throws ClassCastException
             Map<Permission, Set<String>> permissions = new HashMap<>();
@@ -102,11 +102,11 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ItemSpecificSecurity.class.getName()).log(Level.SEVERE, null, ex);
             return null;
-        }     
+        }
     }
-        
+
     public static final ItemSpecificDescriptor DESCRIPTOR = new ItemSpecificDescriptor();
-    
+
     @Extension
     public static class ItemSpecificDescriptor extends Descriptor<ItemSpecificSecurity> {
         @Override
@@ -120,7 +120,8 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
             if (formData.containsKey("permissionsMatrix")) {
                 Descriptor<?> d = Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
                 if (d != null) {
-                    prop = (AuthorizationMatrixProperty) d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                    prop = (AuthorizationMatrixProperty)
+                            d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
                 }
             }
             return new ItemSpecificSecurity(prop);

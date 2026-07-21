@@ -78,8 +78,7 @@ public class FolderSpecificSecurity implements Describable<FolderSpecificSecurit
      * two-argument {@code hasPermission(String, Permission)}.
      */
     public boolean grants(@Nonnull String sid, @Nonnull Permission p) {
-        return permissionsMatrix.hasPermission(sid, p, true)
-                || permissionsMatrix.hasPermission(sid, p, false);
+        return permissionsMatrix.hasPermission(sid, p, true) || permissionsMatrix.hasPermission(sid, p, false);
     }
 
     @Override
@@ -87,7 +86,8 @@ public class FolderSpecificSecurity implements Describable<FolderSpecificSecurit
         FolderSpecificSecurity newItem;
         try {
             newItem = (FolderSpecificSecurity) super.clone();
-            Map<Permission, Set<PermissionEntry>> permissionEntries = this.permissionsMatrix.getGrantedPermissionEntries();
+            Map<Permission, Set<PermissionEntry>> permissionEntries =
+                    this.permissionsMatrix.getGrantedPermissionEntries();
             Map<Permission, Set<String>> permissions = new HashMap<>();
             for (Map.Entry<Permission, Set<PermissionEntry>> entry : permissionEntries.entrySet()) {
                 Set<String> sids = new HashSet<>();
@@ -119,7 +119,8 @@ public class FolderSpecificSecurity implements Describable<FolderSpecificSecurit
             if (formData.containsKey("permissionsMatrix")) {
                 Descriptor<?> d = Jenkins.get().getDescriptor(AuthorizationMatrixProperty.class);
                 if (d != null) {
-                    prop = (AuthorizationMatrixProperty) d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
+                    prop = (AuthorizationMatrixProperty)
+                            d.newInstance(req, formData.getJSONObject("permissionsMatrix"));
                 }
             }
             return new FolderSpecificSecurity(prop);

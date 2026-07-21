@@ -41,20 +41,21 @@ import org.jenkinsci.plugins.ownership.integrations.rolestrategy.macros.CurrentU
 @Deprecated
 @Extension(optional = true, ordinal = -1000)
 public class OwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro {
-    
+
     @Override
     public String getName() {
-        return Messages.Security_RoleStrategy_OwnerRoleMacro_Name()+NO_SID_SUFFIX; 
-    }
-    
-    @Override
-    public String getDescription() {
-        return Messages.Security_RoleStrategy_OwnerRoleMacro_Description()+Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+        return Messages.Security_RoleStrategy_OwnerRoleMacro_Name() + NO_SID_SUFFIX;
     }
 
     @Override
-    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
-        User user = User.current();              
+    public String getDescription() {
+        return Messages.Security_RoleStrategy_OwnerRoleMacro_Description()
+                + Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+    }
+
+    @Override
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
+        User user = User.current();
         return hasPermission(user, type, item, macro, false);
     }
 }

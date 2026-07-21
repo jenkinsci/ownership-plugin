@@ -39,25 +39,26 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  */
 @Restricted(NoExternalUse.class)
 public abstract class OwnershipLayoutFormatterProvider {
-    
+
     public static final OwnershipLayoutFormatterProvider DEFAULT_PROVIDER = new DefaultProvider();
-    private static final OwnershipLayoutFormatter<Job<?,?>> DEFAULT_JOB_FORMATTER = new OwnershipLayoutFormatter.DefaultJobFormatter<>();
-    private static final OwnershipLayoutFormatter<Node> DEFAULT_NODE_FORMATTER = new OwnershipLayoutFormatter.DefaultJobFormatter<>();
-    private static final OwnershipLayoutFormatter<Run> DEFAULT_RUN_FORMATTER = new OwnershipLayoutFormatter.DefaultJobFormatter<>();
-    
-    public @Nonnull OwnershipLayoutFormatter<Job<?,?>> getLayoutFormatter(Job<?,?> job) {
+    private static final OwnershipLayoutFormatter<Job<?, ?>> DEFAULT_JOB_FORMATTER =
+            new OwnershipLayoutFormatter.DefaultJobFormatter<>();
+    private static final OwnershipLayoutFormatter<Node> DEFAULT_NODE_FORMATTER =
+            new OwnershipLayoutFormatter.DefaultJobFormatter<>();
+    private static final OwnershipLayoutFormatter<Run> DEFAULT_RUN_FORMATTER =
+            new OwnershipLayoutFormatter.DefaultJobFormatter<>();
+
+    public @Nonnull OwnershipLayoutFormatter<Job<?, ?>> getLayoutFormatter(Job<?, ?> job) {
         return DEFAULT_JOB_FORMATTER;
     }
-    
+
     public @Nonnull OwnershipLayoutFormatter<Node> getLayoutFormatter(Node node) {
         return DEFAULT_NODE_FORMATTER;
     }
-    
+
     public @Nonnull OwnershipLayoutFormatter<Run> getLayoutFormatter(Run run) {
         return DEFAULT_RUN_FORMATTER;
     }
-    
-    
-    public static final class DefaultProvider extends OwnershipLayoutFormatterProvider {        
-    }
+
+    public static final class DefaultProvider extends OwnershipLayoutFormatterProvider {}
 }

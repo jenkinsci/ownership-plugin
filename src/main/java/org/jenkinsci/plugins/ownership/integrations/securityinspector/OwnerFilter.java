@@ -49,9 +49,9 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 
 class OwnerFilter {
-    
+
     private static final Logger LOGGER = Logger.getLogger(OwnerFilter.class.getName());
-    
+
     /**
      * Include regex string.
      */
@@ -63,13 +63,13 @@ class OwnerFilter {
      */
     @CheckForNull
     private final Pattern includePattern;
-    
+
     /**
      * Folder name for report
      */
     @CheckForNull
     private final String report4folder;
-    
+
     /**
      * Constructs empty filter.
      */
@@ -78,10 +78,9 @@ class OwnerFilter {
         this.includePattern = null;
         this.report4folder = null;
     }
-    
+
     @Restricted(NoExternalUse.class)
-    public OwnerFilter(@Nonnull StaplerRequest req)
-            throws Descriptor.FormException, ServletException {
+    public OwnerFilter(@Nonnull StaplerRequest req) throws Descriptor.FormException, ServletException {
         if (req.getParameter("useincluderegex") != null) {
             includeRegex = Util.nullify(req.getParameter("_.includeRegex"));
             if (includeRegex == null) {
@@ -89,7 +88,7 @@ class OwnerFilter {
             } else {
                 try {
                     includePattern = Pattern.compile(includeRegex);
-                } catch(PatternSyntaxException ex) {
+                } catch (PatternSyntaxException ex) {
                     throw new Descriptor.FormException(ex, "includeRegex");
                 }
             }
@@ -97,25 +96,25 @@ class OwnerFilter {
             includeRegex = null;
             includePattern = null;
         }
-        
+
         if (req.getParameter("usefolder") != null) {
             report4folder = req.getParameter("selectedFolder");
         } else {
             report4folder = null;
         }
     }
-    
+
     @Nonnull
     @Restricted(NoExternalUse.class)
     public List<TopLevelItem> doFilter(User owner) {
-        
+
         final Jenkins jenkins = Jenkins.get();
         final List<Item> allItems;
-        
+
         if (report4folder != null) {
             Item folder = jenkins.getItem(report4folder);
             if (folder instanceof ItemGroup) {
-                Collection<Item> items = ((ItemGroup)folder).getItems();
+                Collection<Item> items = ((ItemGroup) folder).getItems();
                 allItems = new ArrayList<>(items.size());
                 for (Item item : items) {
                     allItems.add(item);
@@ -128,19 +127,19 @@ class OwnerFilter {
         } else {
             allItems = jenkins.getAllItems(Item.class);
         }
-        
+
         String itemName;
-        
+
         List<TopLevelItem> items = new ArrayList<>();
         OwnershipDescription ownershipDescription;
         AbstractOwnershipHelper<Item> located;
-        
+
         for (Item item : allItems) {
-            
+
             if (!(item instanceof TopLevelItem)) {
                 continue;
             }
-            
+
             located = OwnershipHelperLocator.locate(item);
             if (located == null) {
                 continue;
@@ -148,20 +147,18 @@ class OwnerFilter {
 
             itemName = item.getFullName();
             ownershipDescription = located.getOwnershipDescription(item);
-            
-            if (ownershipDescription.isOwnershipEnabled()
-                    && ownershipDescription.isOwner(owner, true)) {
-                
-                if (includePattern == null
-                        || includePattern.matcher(itemName).matches()) {
+
+            if (ownershipDescription.isOwnershipEnabled() && ownershipDescription.isOwner(owner, true)) {
+
+                if (includePattern == null || includePattern.matcher(itemName).matches()) {
                     items.add((TopLevelItem) item);
                 }
             }
         }
-             
+
         return items;
     }
-    
+
     @CheckForNull
     public Pattern getIncludePattern() {
         return includePattern;
@@ -170,5 +167,5 @@ class OwnerFilter {
     @CheckForNull
     public String getIncludeRegex() {
         return includeRegex;
-    } 
+    }
 }

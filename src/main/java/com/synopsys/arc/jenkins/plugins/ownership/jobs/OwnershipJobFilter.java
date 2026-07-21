@@ -26,8 +26,8 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.UserComparator;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserWrapper;
+import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.UserComparator;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.TopLevelItem;
@@ -71,10 +71,10 @@ public class OwnershipJobFilter extends ViewJobFilter {
     public boolean isAcceptsCoowners() {
         return acceptsCoowners;
     }
-    
+
     /**
      * Enables checking of secondary owners
-     * @return 
+     * @return
      * @since TODO
      */
     public boolean isAcceptSecondaryOwners() {
@@ -102,7 +102,7 @@ public class OwnershipJobFilter extends ViewJobFilter {
                 // We cannot retrieve helper for the object => keep moving
                 continue;
             }
-            
+
             OwnershipDescription ownership = helper.getOwnershipDescription(item);
             if (!ownership.isOwnershipEnabled()) {
                 continue;
