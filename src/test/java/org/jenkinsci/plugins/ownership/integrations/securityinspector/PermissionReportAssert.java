@@ -27,9 +27,10 @@ import hudson.security.Permission;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.hamcrest.Matchers;
 import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
-import org.junit.Assert;
 
 /**
  * Basic asserts for {@link PermissionReport}
@@ -73,7 +74,7 @@ public class PermissionReportAssert {
                return;
            }
         }
-        Assert.fail("Row " + row + "hasn't been added in this report");
+        fail("Row " + row + "hasn't been added in this report");
     }
     
     public static <TRow> void assertHasNotRow(
@@ -82,7 +83,7 @@ public class PermissionReportAssert {
         final Set<TRow> rows = report.getRows();
         for (TRow r : rows) {
            if (r.equals(row)) {
-               Assert.fail("Row " + row + "has been added in this report");
+               fail("Row " + row + "has been added in this report");
            }
         }
     }

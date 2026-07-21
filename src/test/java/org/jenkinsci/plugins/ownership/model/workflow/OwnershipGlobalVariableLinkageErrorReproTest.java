@@ -31,6 +31,7 @@ import hudson.model.Result;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.tasks.Mailer;
 import java.util.Arrays;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
@@ -40,12 +41,11 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Regression for
@@ -56,7 +56,8 @@ import org.jvnet.hudson.test.JenkinsRule;
  * <p>The binding-clear script is synthetic (deterministic). Declarative
  * stage + cleanup is a smoke of the original report shape.
  */
-public class OwnershipGlobalVariableLinkageErrorReproTest {
+@WithJenkins
+class OwnershipGlobalVariableLinkageErrorReproTest {
 
     /** Synthetic double-load is deterministic; one build is enough. */
     private static final int ITERATIONS = 1;
@@ -93,35 +94,28 @@ public class OwnershipGlobalVariableLinkageErrorReproTest {
             + "  echo \"second=${ownership.job.ownershipEnabled}/${ownership.job.primaryOwnerEmail}\"\n"
             + "}\n";
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
 
-    @Before
-    public void setupMailOptions() throws Exception {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        j = rule;
         Descriptor<?> mailerDescriptor = j.jenkins.getDescriptor(Mailer.class);
         assertThat(mailerDescriptor, instanceOf(Mailer.DescriptorImpl.class));
         ((Mailer.DescriptorImpl) mailerDescriptor).setDefaultSuffix("mailsuff.ix");
-    }
 
-    @Before
-    public void initSecurityRealm() {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-    }
-
-    @Before
-    public void initPlugin() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
     }
 
     @Test
-    public void declarativeStageAndCleanup_succeeds() throws Exception {
+    void declarativeStageAndCleanup_succeeds() throws Exception {
         ReproStats stats = runBuilds("issue84-declarative", DECLARATIVE_PIPELINE, true);
         assertNoLinkageError(stats);
         assertThat(stats.lastResult, equalTo(Result.SUCCESS));
     }
 
     @Test
-    public void secondGetValueWithoutBindingCache_mustNotLinkageError() throws Exception {
+    void secondGetValueWithoutBindingCache_mustNotLinkageError() throws Exception {
         ReproStats stats = runBuilds("issue84-scripted-binding-clear",
                 SCRIPTED_RELOAD_VIA_BINDING_CLEAR, false);
         assertNoLinkageError(stats);
@@ -173,10 +167,10 @@ public class OwnershipGlobalVariableLinkageErrorReproTest {
     }
 
     private static void assertNoLinkageError(ReproStats stats) {
-        assertFalse("expected 0 LinkageError in " + ITERATIONS
+        assertFalse(stats.linkageErrors > 0,
+                "expected 0 LinkageError in " + ITERATIONS
                 + " runs, got " + stats.linkageErrors
-                + " (otherFailures=" + stats.otherFailures + ")",
-                stats.linkageErrors > 0);
+                + " (otherFailures=" + stats.otherFailures + ")");
     }
 
     private static boolean isLinkageError(String log) {

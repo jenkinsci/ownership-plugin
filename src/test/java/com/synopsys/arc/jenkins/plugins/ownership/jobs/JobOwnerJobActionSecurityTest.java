@@ -27,8 +27,6 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
-import org.htmlunit.html.HtmlForm;
-import org.htmlunit.html.HtmlPage;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import hudson.model.FreeStyleProject;
@@ -36,32 +34,33 @@ import hudson.model.Item;
 import hudson.model.User;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Security tests for JobOwnerJobAction endpoints.
  * Tests CSRF protection and permission checks for SECURITY-2062 fixes.
  */
-public class JobOwnerJobActionSecurityTest {
+@WithJenkins
+class JobOwnerJobActionSecurityTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
 
     private FreeStyleProject project;
 
-    @Before
-    public void setupSecurity() throws Exception {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception{
+        r = rule;
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
         
         // Create users explicitly
@@ -109,7 +108,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doOwnersSubmit_requiresPOST() throws Exception {
+    void doOwnersSubmit_requiresPOST() throws Exception {
         WebClient wc = r.createWebClient();
         wc.login("admin", "admin");
         
@@ -128,7 +127,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doOwnersSubmit_requiresManageOwnershipPermission() throws Exception {
+    void doOwnersSubmit_requiresManageOwnershipPermission() throws Exception {
         WebClient wc = r.createWebClient();
         
         // Try with readonly user - should fail
@@ -153,7 +152,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doOwnersSubmit_allowsPOSTWithProperPermissions() throws Exception {
+    void doOwnersSubmit_allowsPOSTWithProperPermissions() throws Exception {
         WebClient wc = r.createWebClient();
         wc.login("admin", "admin");
         
@@ -169,7 +168,7 @@ public class JobOwnerJobActionSecurityTest {
                 wc.createCrumbedUrl(project.getUrl() + "ownership/ownersSubmit"), 
                 HttpMethod.POST);
         req.setAdditionalHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.setRequestBody("json=" + formData.toString());
+        req.setRequestBody("json=" + formData);
         wc.getPage(req);
         
         // Verify ownership was changed
@@ -178,7 +177,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doProjectSpecificSecuritySubmit_requiresPOST() throws Exception {
+    void doProjectSpecificSecuritySubmit_requiresPOST() throws Exception {
         WebClient wc = r.createWebClient();
         wc.login("admin", "admin");
         
@@ -197,7 +196,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doProjectSpecificSecuritySubmit_requiresManageOwnershipPermission() throws Exception {
+    void doProjectSpecificSecuritySubmit_requiresManageOwnershipPermission() throws Exception {
         WebClient wc = r.createWebClient();
         
         // Try with readonly user - should fail
@@ -219,7 +218,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doRestoreDefaultSpecificSecuritySubmit_requiresPOST() throws Exception {
+    void doRestoreDefaultSpecificSecuritySubmit_requiresPOST() throws Exception {
         WebClient wc = r.createWebClient();
         wc.login("admin", "admin");
         
@@ -238,7 +237,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void doRestoreDefaultSpecificSecuritySubmit_requiresManageOwnershipPermission() throws Exception {
+    void doRestoreDefaultSpecificSecuritySubmit_requiresManageOwnershipPermission() throws Exception {
         WebClient wc = r.createWebClient();
         
         // Try with readonly user - should fail
@@ -260,7 +259,7 @@ public class JobOwnerJobActionSecurityTest {
 
     @Test
     @Issue("SECURITY-2062")
-    public void configureUser_cannotModifyOwnership() throws Exception {
+    void configureUser_cannotModifyOwnership() throws Exception {
         WebClient wc = r.createWebClient();
         
         // User with CONFIGURE but not MANAGE_ITEMS_OWNERSHIP should not be able to modify ownership

@@ -33,6 +33,8 @@ import hudson.remoting.Callable;
 import hudson.security.ACL;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
+
+import java.io.Serial;
 import java.util.Arrays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -40,22 +42,28 @@ import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.remoting.RoleChecker;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Checks ownership-based security.
  * @author Oleg Nenashev
  */
-public class OwnershipBasedSecurityTest {
+@WithJenkins
+class OwnershipBasedSecurityTest {
     
-    @Rule
-    public final JenkinsRule j = new JenkinsRule();
-    
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
     @Test
-    public void shouldWorkForProjects() throws Exception {
+    void shouldWorkForProjects() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         OwnershipBasedSecurityTestHelper.setup(j.jenkins);
         
@@ -64,10 +72,10 @@ public class OwnershipBasedSecurityTest {
         
         verifyItemPermissions(project);
     }
-    
+
     @Test
     @Issue("JENKINS-28881")
-    public void shouldWorkForProjectsWithInheritedOwnership() throws Exception {
+    void shouldWorkForProjectsWithInheritedOwnership() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         OwnershipBasedSecurityTestHelper.setup(j.jenkins);
         
@@ -81,10 +89,10 @@ public class OwnershipBasedSecurityTest {
         // Also check folder permissions
         verifyItemPermissions(folder);
     }
-    
+
     @Test
     @Issue("JENKINS-32353")
-    public void shouldWorkForPipelineProjectsInFolders() throws Exception {
+    void shouldWorkForPipelineProjectsInFolders() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         OwnershipBasedSecurityTestHelper.setup(j.jenkins);
         
@@ -135,6 +143,7 @@ public class OwnershipBasedSecurityTest {
     private boolean hasPermission(String userId, final AccessControlled item, final Permission p) {
         User user = User.get(userId);
         return ACL.impersonate(user.impersonate(), new Callable<Boolean, IllegalStateException>() {
+            @Serial
             private static final long serialVersionUID = 1L;
        
             @Override

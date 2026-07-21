@@ -31,9 +31,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import net.sf.json.JSONObject;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -41,32 +42,37 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit-style coverage for {@link ItemSpecificSecurity} (clone, ctor, descriptor).
  */
-public class ItemSpecificSecurityTest {
+@WithJenkins
+class ItemSpecificSecurityTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        r = rule;
+    }
 
     @Test
-    public void nullMatrixConstructor_createsEmptyProperty() {
+    void nullMatrixConstructor_createsEmptyProperty() {
         ItemSpecificSecurity security = new ItemSpecificSecurity(null);
         assertThat(security.getPermissionsMatrix(), notNullValue());
         assertThat(security.getPermissionsMatrix().getGrantedPermissionEntries().entrySet(), empty());
     }
 
     @Test
-    public void getDescriptor_and_displayName() {
+    void getDescriptor_and_displayName() {
         ItemSpecificSecurity security = new ItemSpecificSecurity(null);
         assertThat(security.getDescriptor(), sameInstance(ItemSpecificSecurity.DESCRIPTOR));
         assertThat(ItemSpecificSecurity.DESCRIPTOR.getDisplayName(), is("Item-specific security"));
     }
 
     @Test
-    public void clone_copiesGrantedSidsIndependently() {
+    void clone_copiesGrantedSidsIndependently() {
         ItemSpecificSecurity original = matrixWith(Item.READ, "alice");
         ItemSpecificSecurity copy = original.clone();
 
@@ -81,7 +87,7 @@ public class ItemSpecificSecurityTest {
     }
 
     @Test
-    public void newInstance_withoutPermissionsMatrix_yieldsEmptySecurity() throws Exception {
+    void newInstance_withoutPermissionsMatrix_yieldsEmptySecurity() throws Exception {
         // req unused when permissionsMatrix key is absent
         ItemSpecificSecurity security = ItemSpecificSecurity.DESCRIPTOR.newInstance(
                 (org.kohsuke.stapler.StaplerRequest2) null, new JSONObject());

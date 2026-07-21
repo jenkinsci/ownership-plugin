@@ -44,47 +44,49 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Tests of {@link OwnersListJobRestriction}.
  * @author Oleg Nenashev
  */
-public class OwnersListJobRestrictionTest {
+@WithJenkins
+class OwnersListJobRestrictionTest {
+
     private static final IdStrategy CASE_SENSITIVE = new IdStrategy.CaseSensitive();
 
-    @Rule
-    public final JenkinsRule j = new JenkinsRule();
-    
+    private JenkinsRule j;
     private Label testLabel;
     private DumbSlave slave;
     private JobRestrictionProperty jobRestrictionProperty;
-               
-    @Before
-    public void setUp() throws Exception {
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        j = rule;
         // Initialize plugin before using it
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
         
         testLabel = new LabelAtom("testLabel");
         slave = j.createOnlineSlave(testLabel);
         jobRestrictionProperty = new JobRestrictionProperty(
-                new OwnersListJobRestriction(Arrays.asList(new UserSelector("owner")), false));;
+                new OwnersListJobRestriction(Arrays.asList(new UserSelector("owner")), false));
         slave.getNodeProperties().add(jobRestrictionProperty);
 
         applyIdStrategy(CASE_SENSITIVE);
     }
-    
+
     @Test
-    public void nodeShouldAcceptRunsFromOwner() throws Exception {
+    void nodeShouldAcceptRunsFromOwner() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setAssignedLabel(testLabel);
         JobOwnerHelper.setOwnership(project, 
-                new OwnershipDescription(true, "owner", Collections.<String>emptyList()));
+                new OwnershipDescription(true, "owner", Collections.emptyList()));
         
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -96,13 +98,13 @@ public class OwnersListJobRestrictionTest {
         assertThat("Job has not been accepted, but JobRestrictions should allow the run", 
                 jobRestrictionProperty.canTake(item), nullValue());
     }
-    
+
     @Test
-    public void nodeShouldDeclineRunsFromNotOwner() throws Exception {
+    void nodeShouldDeclineRunsFromNotOwner() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         project.setAssignedLabel(testLabel);
         JobOwnerHelper.setOwnership(project, 
-                new OwnershipDescription(true, "notOwner", Collections.<String>emptyList()));
+                new OwnershipDescription(true, "notOwner", Collections.emptyList()));
         
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -114,15 +116,15 @@ public class OwnersListJobRestrictionTest {
         assertThat("Job restrictions should not allow the run, because the job has wrong owner",
                 jobRestrictionProperty.canTake(item), instanceOf(JobRestrictionBlockageCause.class));
     }
-    
+
     @Test
     @Issue("JENKINS-28881")
-    public void nodeShouldAcceptRunsFromInheritedOwner() throws Exception {
+    void nodeShouldAcceptRunsFromInheritedOwner() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project");
         project.setAssignedLabel(testLabel);
         FolderOwnershipHelper.setOwnership(folder, 
-                new OwnershipDescription(true, "owner", Collections.<String>emptyList()));
+                new OwnershipDescription(true, "owner", Collections.emptyList()));
         
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -134,15 +136,15 @@ public class OwnersListJobRestrictionTest {
         assertThat("Run has been prohibited, but Ownership plugin should allow it according to the inherited value",
                 jobRestrictionProperty.canTake(item), nullValue());
     }
-    
+
     @Test
     @Issue("JENKINS-28881")
-    public void nodeShouldDeclineRunsFromInheritedNotOwner() throws Exception {
+    void nodeShouldDeclineRunsFromInheritedNotOwner() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project");
         project.setAssignedLabel(testLabel);
         FolderOwnershipHelper.setOwnership(folder, 
-                new OwnershipDescription(true, "notOwner", Collections.<String>emptyList()));
+                new OwnershipDescription(true, "notOwner", Collections.emptyList()));
         
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -157,14 +159,14 @@ public class OwnersListJobRestrictionTest {
 
     @Test
     @Issue("JENKINS-20832")
-    public void nodeShouldAcceptRunsFromWithInsensitiveCaseOnOwner() throws Exception {
+    void nodeShouldAcceptRunsFromWithInsensitiveCaseOnOwner() throws Exception {
         applyIdStrategy(IdStrategy.CASE_INSENSITIVE);
 
         Folder folder = j.jenkins.createProject(Folder.class, "folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "project2");
         project.setAssignedLabel(testLabel);
         FolderOwnershipHelper.setOwnership(folder,
-                new OwnershipDescription(true, "Owner", Collections.<String>emptyList()));
+                new OwnershipDescription(true, "Owner", Collections.emptyList()));
 
         project.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -179,7 +181,7 @@ public class OwnersListJobRestrictionTest {
 
     @Test
     @Issue("JENKINS-20832")
-    public void nodeShouldAcceptRunsFromWithInsensitiveCaseOnCoOwner() throws Exception {
+    void nodeShouldAcceptRunsFromWithInsensitiveCaseOnCoOwner() throws Exception {
         applyIdStrategy(IdStrategy.CASE_INSENSITIVE);
 
         // Change to accept coowners

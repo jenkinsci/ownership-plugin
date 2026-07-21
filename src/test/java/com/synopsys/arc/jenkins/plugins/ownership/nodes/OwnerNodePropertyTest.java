@@ -35,27 +35,28 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import jenkins.model.Jenkins;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class OwnerNodePropertyTest {
+@WithJenkins
+class OwnerNodePropertyTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
 
-    @Before
-    public void setupSecurity() {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        r = rule;
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
         MockAuthorizationStrategy mas = new MockAuthorizationStrategy();
         mas.grant(Jenkins.ADMINISTER) // Implies MANAGE_SLAVES_OWNERSHIP.
@@ -69,7 +70,7 @@ public class OwnerNodePropertyTest {
 
     @Test
     @Issue("SECURITY-498")
-    public void changeOwnerViaPost() throws Exception {
+    void changeOwnerViaPost() throws Exception {
         String nodeName; // Computer#updateByXml replaces the existing node with a new instance, so we always need to look up the current instance.
         String nodeUrl;
         {
@@ -106,7 +107,7 @@ public class OwnerNodePropertyTest {
 
     @Test
     @Issue("SECURITY-498")
-    public void changeOwnerViaCLI() throws Exception {
+    void changeOwnerViaCLI() throws Exception {
         String nodeName;
         {
             Node n = r.createSlave();

@@ -25,25 +25,32 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
 import hudson.model.FreeStyleProject;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
-import static org.junit.Assert.assertEquals;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for {@link JobOwnerHelper}.
  * @author Oleg Nenashev
  */
-public class JobOwnerHelperTest {
+@WithJenkins
+class JobOwnerHelperTest {
     
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-    
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
     @Test
-    public void locatorShouldReturnRightHelperForFolder() throws Exception {
+    void locatorShouldReturnRightHelperForFolder() throws Exception {
         FreeStyleProject folder = j.jenkins.createProject(FreeStyleProject.class, "myFolder");
-        
-        assertEquals("OwnershipHelperLocator should return the FolderOwnershipHelper instance",
-                OwnershipHelperLocator.locate(folder), JobOwnerHelper.Instance);
+
+        assertEquals(
+                JobOwnerHelper.Instance, OwnershipHelperLocator.locate(folder), "OwnershipHelperLocator should return the FolderOwnershipHelper instance");
     }
 }

@@ -27,27 +27,35 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 
 import org.htmlunit.html.HtmlPage;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class OwnershipActionTest {
+@WithJenkins
+class OwnershipActionTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         // There is no particular reason why email value should look like this, but for a user configurable field this is a realistic scenario.
         String mail = "\"T&J\" <TnJ@mailinator.com>";
         String id = "_T&J_";
@@ -64,7 +72,7 @@ public class OwnershipActionTest {
         assertThat(job.asXml(), not(containsString("<T&J>")));
         // Find anchor by partial href match - HtmlUnit normalizes URLs automatically
         // Try with URL-encoded version first (as it appears in HTML)
-        String encodedId = java.net.URLEncoder.encode(id, "UTF-8");
+        String encodedId = java.net.URLEncoder.encode(id, StandardCharsets.UTF_8);
         String userUrlEncoded = j.getURL() + "user/" + encodedId;
         String userUrlPlain = j.getURL() + "user/" + id;
         

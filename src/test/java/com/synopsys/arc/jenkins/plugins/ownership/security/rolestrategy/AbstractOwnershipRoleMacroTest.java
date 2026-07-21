@@ -29,9 +29,10 @@ import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
 import hudson.security.Permission;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,16 +40,21 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Tests for {@link AbstractOwnershipRoleMacro} focusing on null and empty SID validation.
  */
-public class AbstractOwnershipRoleMacroTest {
+@WithJenkins
+class AbstractOwnershipRoleMacroTest {
     
-    @Rule
-    public final JenkinsRule j = new JenkinsRule();
-    
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
     /**
      * Test that hasPermission returns false when PermissionEntry is null.
      */
     @Test
-    public void testHasPermissionWithNullEntry() throws Exception {
+    void testHasPermissionWithNullEntry() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -59,12 +65,12 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when PermissionEntry is null", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission returns false when PermissionEntry.getSid() returns null.
      */
     @Test
-    public void testHasPermissionWithNullSid() throws Exception {
+    void testHasPermissionWithNullSid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -77,12 +83,12 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when SID is null", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission returns false when PermissionEntry.getSid() returns empty string.
      */
     @Test
-    public void testHasPermissionWithEmptySid() throws Exception {
+    void testHasPermissionWithEmptySid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -95,12 +101,12 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when SID is empty", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission returns false when PermissionEntry.getSid() returns whitespace-only string.
      */
     @Test
-    public void testHasPermissionWithWhitespaceSid() throws Exception {
+    void testHasPermissionWithWhitespaceSid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -113,12 +119,12 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when SID contains only whitespace", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission(String sid, ...) returns false when sid is null.
      */
     @Test
-    public void testHasPermissionWithNullStringSid() throws Exception {
+    void testHasPermissionWithNullStringSid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -129,12 +135,12 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when SID string is null", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission(String sid, ...) returns false when sid is empty string.
      */
     @Test
-    public void testHasPermissionWithEmptyStringSid() throws Exception {
+    void testHasPermissionWithEmptyStringSid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -145,12 +151,12 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when SID string is empty", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission(String sid, ...) returns false when sid is whitespace-only string.
      */
     @Test
-    public void testHasPermissionWithWhitespaceStringSid() throws Exception {
+    void testHasPermissionWithWhitespaceStringSid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;
@@ -161,13 +167,13 @@ public class AbstractOwnershipRoleMacroTest {
         
         assertThat("Access should be denied when SID string contains only whitespace", result, equalTo(false));
     }
-    
+
     /**
      * Test that hasPermission works correctly with valid SID (even if user doesn't exist).
      * This test verifies that null/empty checks don't interfere with normal operation.
      */
     @Test
-    public void testHasPermissionWithValidSid() throws Exception {
+    void testHasPermissionWithValidSid() throws Exception {
         OwnerRoleMacro macro = new OwnerRoleMacro();
         FreeStyleProject project = j.createFreeStyleProject("test");
         Permission permission = Item.READ;

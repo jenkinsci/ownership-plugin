@@ -25,27 +25,32 @@
 package com.synopsys.arc.jenkins.plugins.ownership.util.mail;
 
 import org.jenkinsci.plugins.ownership.util.mail.MailFormatter;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import static org.junit.Assert.*;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link MailFormatter}.
  * @author Oleg Nenashev
  */
-public class MailFormatterTest {
+@WithJenkins
+class MailFormatterTest {
     
-    MailFormatter formatter = new MailFormatter();
+    private final MailFormatter formatter = new MailFormatter();
     
     /**
      * Just checks if nothing breaks horribly.
      * @throws UnsupportedEncodingException Issues with the default encoding
      * @throws MalformedURLException {@link MailFormatter} generated wrong link
      */
-    public @Test void spotCheck() throws UnsupportedEncodingException, MalformedURLException {
+    @Test
+    void spotCheck() throws UnsupportedEncodingException, MalformedURLException {
         String res = formatter.createMailToString(
                 Arrays.asList("test@foo.bar"), 
                 Arrays.asList("test1@foo.bar", "test2@foo.bar"), null, 

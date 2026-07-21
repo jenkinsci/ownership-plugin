@@ -38,31 +38,32 @@ import java.util.Set;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies ItemSpecificSecurity form binding goes through matrix-auth's
  * StaplerRequest2 / createNewInstance path (data format), not bindJSON(entries).
  */
-public class ItemSpecificSecurityBindingTest {
+@WithJenkins
+class ItemSpecificSecurityBindingTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
 
     private FreeStyleProject project;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp(JenkinsRule rule) throws Exception {
+        r = rule;
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
 
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
@@ -77,7 +78,7 @@ public class ItemSpecificSecurityBindingTest {
     }
 
     @Test
-    public void projectSpecificSecuritySubmit_bindsMatrixViaStaplerRequest2() throws Exception {
+    void projectSpecificSecuritySubmit_bindsMatrixViaStaplerRequest2() throws Exception {
         JenkinsRule.WebClient wc = r.createWebClient();
         wc.login("admin", "admin");
 
@@ -103,7 +104,7 @@ public class ItemSpecificSecurityBindingTest {
     }
 
     @Test
-    public void globalConfigure_bindsDefaultJobsSecurityViaStaplerRequest2() throws Exception {
+    void globalConfigure_bindsDefaultJobsSecurityViaStaplerRequest2() throws Exception {
         JenkinsRule.WebClient wc = r.createWebClient();
         wc.login("admin", "admin");
 
