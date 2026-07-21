@@ -27,14 +27,8 @@ package org.jenkinsci.plugins.ownership.model.folders;
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
 import hudson.Extension;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.User;
 import java.io.IOException;
 import java.util.Collection;
@@ -44,6 +38,7 @@ import javax.annotation.Nonnull;
 import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
+import org.jenkinsci.plugins.ownership.model.OwnershipInheritance;
 import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -119,37 +114,13 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
                 return new OwnershipInfo(prop.getOwnership(), new FolderOwnershipDescriptionSource(item));
             }
         }
-        
-        // We go to upper items in order to get the ownership description
-        if (!OwnershipPluginConfiguration.get().getInheritanceOptions().isBlockInheritanceFromItemGroups()) {
-            ItemGroup parent = item.getParent();
-            AbstractOwnershipHelper<ItemGroup> located = OwnershipHelperLocator.locate(parent);
-            while (located != null) {
-                OwnershipInfo fromParent = located.getOwnershipInfo(parent);
-                if (fromParent.getDescription().isOwnershipEnabled()) {
-                    return fromParent;
-                }
-                if (parent instanceof Item) {
-                    Item parentItem = (Item)parent;
-                    parent = parentItem.getParent();
-                    located = OwnershipHelperLocator.locate(parent);
-                } else {
-                    located = null;
-                }
-            }
-        }
-        
-        return OwnershipInfo.DISABLED_INFO;
+
+        return OwnershipInheritance.fromParents(item);
     }
     
     @Override
     public Collection<User> getPossibleOwners(AbstractFolder<?> item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
-            IUserFilter filter = new AccessRightsFilter(item, AbstractFolder.CONFIGURE);
-            return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
-        } else {
-            return User.getAll();
-        }
+        return filterPossibleOwners(item, AbstractFolder.CONFIGURE);
     }
 
     @Override

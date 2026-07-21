@@ -46,6 +46,7 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Node ownership action.
@@ -97,6 +98,7 @@ public class NodeOwnershipAction extends ItemOwnershipAction<Computer> {
         return Util.encode(r+computer.getUrl());
     }
     
+    @RequirePOST
     public HttpResponse doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
         

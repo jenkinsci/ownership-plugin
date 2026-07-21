@@ -53,6 +53,7 @@ import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  * Contains global actions and configurations.
@@ -269,7 +270,9 @@ public class OwnershipPlugin extends Plugin {
         return OwnershipLayoutFormatterProvider.DEFAULT_PROVIDER;
     } 
     
+    @POST
     public FormValidation doCheckUser(@QueryParameter String userId) {
+        Jenkins.get().checkPermission(Jenkins.READ);
         userId = Util.fixEmptyAndTrim(userId);
         if (userId == null) {
             return FormValidation.error("Field is empty. Field will be ignored");

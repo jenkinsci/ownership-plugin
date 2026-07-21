@@ -26,7 +26,8 @@
     xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
     xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
     <f:entry title="${%User ID}" field="selectedUserId">
-        <f:textbox checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+this.value"/> 
+        <f:textbox checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+encodeURIComponent(this.value)"
+                   checkMethod="post"/>
     </f:entry>
     <f:entry title="">
         <div class="jenkins-buttons-row jenkins-buttons-row--invert">

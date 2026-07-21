@@ -71,6 +71,7 @@
                     <f:textbox name="coOwner" value="${_coownerId}" list="${coOwnerDatalistId}"
                                placeholder="${%coOwner.placeholder}"
                                checkUrl="'${rootURL}/plugin/ownership/checkUser?userId='+encodeURIComponent(this.value)"
+                               checkMethod="post"
                     />
                     <f:description>
                         ${%coOwner.description}
