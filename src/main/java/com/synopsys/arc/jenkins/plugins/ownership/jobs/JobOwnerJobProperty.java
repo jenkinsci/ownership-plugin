@@ -37,6 +37,8 @@ import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import hudson.Extension;
 import hudson.model.Descriptor;
@@ -53,7 +55,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.servlet.ServletException;
-import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Ownership job property.
@@ -161,7 +162,9 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
         return bldr.toString();
     }
     
+    @RequirePOST
     public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
+        owner.checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         JSONObject formData = req.getSubmittedForm();
         JSONObject jsonOwnership = formData.getJSONObject("owners");
         setOwnershipDescription(OwnershipDescription.parseJSON(jsonOwnership));
