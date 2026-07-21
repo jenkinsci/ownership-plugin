@@ -145,7 +145,7 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
     @Override
     public boolean hasItemSpecificPermission(@Nonnull Job<?, ?> job, String sid, Permission p) {
         JobOwnerJobProperty prop = getOwnerProperty(job);
-        if (prop != null) {
+        if (prop != null && prop.hasItemSpecificSecurity()) {
             ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
             if (sec != null) {
                 return sec.grants(sid, p);

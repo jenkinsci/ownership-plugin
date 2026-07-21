@@ -154,7 +154,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
     @Override
     public boolean hasItemSpecificPermission(@Nonnull AbstractFolder<?> folder, String sid, Permission p) {
         FolderOwnershipProperty prop = getOwnerProperty(folder);
-        if (prop != null) {
+        if (prop != null && prop.hasItemSpecificSecurity()) {
             FolderSpecificSecurity sec = prop.getItemSpecificSecurity();
             if (sec != null) {
                 return sec.grants(sid, p);

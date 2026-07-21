@@ -12,6 +12,10 @@ See [GitHub Releases](https://github.com/jenkinsci/ownership/releases).
 
 * Add folder-specific access rights (item-specific security matrix for folders), based on [#70](https://github.com/jenkinsci/ownership-plugin/pull/70) by [@SofteqDG](https://github.com/SofteqDG).
 * Extend `@ItemSpecific` Role Strategy macro to folders via OwnershipHelperLocator.
+* Fix item-specific permission checks to use matrix-auth 3.x typed entries (`PermissionEntry`) via `grants()`.
+* **Breaking change:** Global default item-specific security matrices are templates for UI and «Restore default» only.
+  ACL (`@ItemSpecific` / `@ItemSpecificWithUserID`) applies a **locally configured** matrix (`hasItemSpecificSecurity()`).
+  Installations that relied on global defaults applying live ACL without an explicit local matrix must restore defaults onto each item.
 * Migrate ownership plugin UI to Jenkins Design Library components (`l:card`, `l:app-bar`, `jenkins-alert`, modern selects/buttons).
 * Replace the custom ownership summary box (`.ownership-summary-box` / `ownership.css`) with Design Library cards.
   External CSS overrides targeting those legacy classes will no longer apply.

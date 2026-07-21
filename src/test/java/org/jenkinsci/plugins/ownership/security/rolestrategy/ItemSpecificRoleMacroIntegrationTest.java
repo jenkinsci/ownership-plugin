@@ -29,6 +29,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.ItemSpecificRoleMacro;
+import com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.ItemSpecificRoleMacroWithUserID;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
@@ -70,6 +71,8 @@ class ItemSpecificRoleMacroIntegrationTest {
 
     private ItemSpecificRoleMacro macro;
 
+    private ItemSpecificRoleMacroWithUserID macroWithUserId;
+
     private FreeStyleProject job;
 
     private Folder folder;
@@ -81,9 +84,15 @@ class ItemSpecificRoleMacroIntegrationTest {
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
 
         macro = Jenkins.get().getExtensionList(ItemSpecificRoleMacro.class).stream()
+                .filter(m -> m.getClass() == ItemSpecificRoleMacro.class)
                 .findFirst()
                 .orElse(null);
         assertThat("ItemSpecificRoleMacro extension", macro, notNullValue());
+
+        macroWithUserId = Jenkins.get().getExtensionList(ItemSpecificRoleMacroWithUserID.class).stream()
+                .findFirst()
+                .orElse(null);
+        assertThat("ItemSpecificRoleMacroWithUserID extension", macroWithUserId, notNullValue());
 
         User.get("alice", true);
         User.get("bob", true);
@@ -176,6 +185,65 @@ class ItemSpecificRoleMacroIntegrationTest {
 
         assertHasPermission("alice", folder, Item.CONFIGURE);
         assertHasNoPermission("bob", folder, Item.CONFIGURE);
+    }
+
+    @Test
+    void roleStrategy_plainItemSpecific_grantsBuildOnJobWhenUserSidRoleAndMatrixAllow() throws Exception {
+        OwnershipBasedSecurityTestHelper.setupPlainItemSpecificMacroForUser(r.jenkins, "alice");
+        JobOwnerHelper.setProjectSpecificSecurity(job, jobMatrixWithUser(Item.BUILD, "alice"));
+
+        assertHasPermission("alice", job, Item.BUILD);
+        assertHasNoPermission("bob", job, Item.BUILD);
+    }
+
+    @Test
+    void roleStrategy_plainItemSpecific_grantsConfigureOnJobWhenUserSidRoleAndMatrixAllow() throws Exception {
+        OwnershipBasedSecurityTestHelper.setupPlainItemSpecificMacroForUser(r.jenkins, "alice");
+        JobOwnerHelper.setProjectSpecificSecurity(job, jobMatrixWithUser(Item.CONFIGURE, "alice"));
+
+        assertHasPermission("alice", job, Item.CONFIGURE);
+        assertHasNoPermission("bob", job, Item.CONFIGURE);
+    }
+
+    @Test
+    void roleStrategy_plainItemSpecific_grantsBuildOnFolderWhenUserSidRoleAndMatrixAllow() throws Exception {
+        OwnershipBasedSecurityTestHelper.setupPlainItemSpecificMacroForUser(r.jenkins, "alice");
+        FolderOwnershipHelper.setProjectSpecificSecurity(folder, folderMatrixWithUser(Item.BUILD, "alice"));
+
+        assertHasPermission("alice", folder, Item.BUILD);
+        assertHasNoPermission("bob", folder, Item.BUILD);
+    }
+
+    @Test
+    void roleStrategy_plainItemSpecific_grantsConfigureOnFolderWhenUserSidRoleAndMatrixAllow() throws Exception {
+        OwnershipBasedSecurityTestHelper.setupPlainItemSpecificMacroForUser(r.jenkins, "alice");
+        FolderOwnershipHelper.setProjectSpecificSecurity(folder, folderMatrixWithUser(Item.CONFIGURE, "alice"));
+
+        assertHasPermission("alice", folder, Item.CONFIGURE);
+        assertHasNoPermission("bob", folder, Item.CONFIGURE);
+    }
+
+    @Test
+    void plainItemSpecific_doesNotRemapAuthenticatedSid() throws Exception {
+        JobOwnerHelper.setProjectSpecificSecurity(job, jobMatrixWithUser(Item.BUILD, "alice"));
+
+        assertFalse(macro.hasPermission("authenticated", Item.BUILD, RoleType.Project, job, null));
+
+        User alice = User.get("alice");
+        assertTrue(ACL.impersonate(alice.impersonate(), new Callable<Boolean, IllegalStateException>() {
+            @Serial
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Boolean call() {
+                return macroWithUserId.hasPermission("authenticated", Item.BUILD, RoleType.Project, job, null);
+            }
+
+            @Override
+            public void checkRoles(RoleChecker checker) throws SecurityException {
+                // no-op
+            }
+        }));
     }
 
     private static ItemSpecificSecurity jobMatrixWith(Permission permission, String sid) {
