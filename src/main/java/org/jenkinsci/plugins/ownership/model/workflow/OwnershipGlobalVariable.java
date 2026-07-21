@@ -33,7 +33,6 @@ import hudson.model.Run;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.ProxyWhitelist;
@@ -53,32 +52,20 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 @Extension
 public class OwnershipGlobalVariable extends GlobalVariable {
 
-    @Override 
-    public final Object getValue(CpsScript script) throws Exception {   
+    @Override
+    public final Object getValue(CpsScript script) {
         final Binding binding = script.getBinding();
-        final Object loadedObject;
         if (binding.hasVariable(getName())) {
-            loadedObject = binding.getVariable(getName());
-        } else {
-            // Note that if this were a method rather than a constructor, we would need to mark it @NonCPS lest it throw CpsCallableInvocation.
-            loadedObject = script.getClass().getClassLoader()
-                    .loadClass(getClassName())
-                    .getConstructor(CpsScript.class).newInstance(script);
-            binding.setVariable(getName(), loadedObject);
+            return binding.getVariable(getName());
         }
-        return loadedObject;
+        // Pure Java value — avoid loading Groovy via CleanGroovyClassLoader
+        // (duplicate class definition / LinkageError; see issue #84).
+        final Object value = new OwnershipPipelineVar(script);
+        binding.setVariable(getName(), value);
+        return value;
     }
-    
-    /**
-     * Canonical name of the class to be loaded.
-     * @return Canonical class name
-     */
-    @Nonnull
-    private String getClassName() {
-        return getClass().getName() + ".Impl";
-    }
-    
-    @Override 
+
+    @Override
     public String getName() {
         return "ownership";
     }

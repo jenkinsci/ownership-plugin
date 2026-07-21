@@ -26,13 +26,15 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
     <f:entry title="${%Selected ownership:}">
         <j:set var="_userList"  value="${it.possibleUsers}"/>
-        <select name="selectedOwner" class="setting-input">
-            <j:forEach var="user" items="${_userList}">
-                <f:option value="${user.getId()}">
-                    ${it.getDisplayName(user)}
-                </f:option>
-            </j:forEach>
-        </select> 
+        <div class="jenkins-select">
+            <select name="selectedOwner" class="jenkins-select__input">
+                <j:forEach var="user" items="${_userList}">
+                    <f:option value="${user.getId()}">
+                        ${it.getDisplayName(user)}
+                    </f:option>
+                </j:forEach>
+            </select>
+        </div> 
     </f:entry>
                     
     <f:block> 
@@ -45,13 +47,15 @@
                         <f:entry title="${%Selected folder:}">
                             
                             <j:set var="_folderList"  value="${it.allFolders}"/>
-                            <select name="selectedFolder" class="setting-input">
-                            <j:forEach var="folder" items="${_folderList}">
-                                <f:option value="${folder.getId()}">
-                                    ${it.getDisplayName(folder)}
-                                </f:option>
-                            </j:forEach>
-                            </select>  
+                            <div class="jenkins-select">
+                              <select name="selectedFolder" class="jenkins-select__input">
+                                <j:forEach var="folder" items="${_folderList}">
+                                    <f:option value="${folder.getId()}">
+                                        ${it.getDisplayName(folder)}
+                                    </f:option>
+                                </j:forEach>
+                              </select>
+                            </div>  
                         </f:entry>
                     </f:optionalBlock>                              
                                                              

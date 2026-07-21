@@ -1,20 +1,9 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
   <st:documentation>
-    The wrapper will be a `table` tag on Jenkins Core less than ~2.241, and a `div` tag after that
+    Form block wrapper. Baseline Jenkins 2.479+ always uses div-based form layout.
   </st:documentation>
-
-  <j:choose>
-    <j:when test="${divBasedFormLayout}">
-      <div>
-        <d:invokeBody/>
-      </div>
-    </j:when>
-    <j:otherwise>
-      <table>
-        <d:invokeBody/>
-      </table>
-    </j:otherwise>
-  </j:choose>
-
+  <div>
+    <d:invokeBody/>
+  </div>
 </j:jelly>

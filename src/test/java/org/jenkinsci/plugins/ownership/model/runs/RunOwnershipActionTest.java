@@ -24,7 +24,7 @@
 package org.jenkinsci.plugins.ownership.model.runs;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
-import org.htmlunit.html.HtmlDivision;
+import org.htmlunit.html.HtmlElement;
 import org.htmlunit.html.HtmlPage;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
@@ -98,7 +98,7 @@ class RunOwnershipActionTest {
         // Check the Ownership summary box for the Run
         JenkinsRule.WebClient webClient = jenkinsRule.createWebClient();
         HtmlPage res = webClient.goTo(build.getUrl());
-        HtmlDivision summaryBox = res.getFirstByXPath("//div[@class='ownership-summary-box']");
+        HtmlElement summaryBox = res.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat("On the page there should an ownership box", summaryBox, notNullValue());
         assertThat("Ownership box should contain no info about the owner", summaryBox.getTextContent(), 
                 stringContainsInOrder(Arrays.asList("Ownership is not configured for this Run")));
@@ -122,9 +122,9 @@ class RunOwnershipActionTest {
         // Check the Ownership summary box for the Run
         JenkinsRule.WebClient webClient = jenkinsRule.createWebClient();
         HtmlPage res = webClient.goTo(build.getUrl());
-        HtmlDivision summaryBox = res.getFirstByXPath("//div[@class='ownership-summary-box']");
+        HtmlElement summaryBox = res.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat("On the page there should an ownership box", summaryBox, notNullValue());
-        HtmlDivision ownerInfo = summaryBox.getFirstByXPath("//div[@class='ownership-user-info']");
+        HtmlElement ownerInfo = summaryBox.getFirstByXPath(".//*[@data-testid='ownership-user-info']");
         assertThat("Ownership Summary Box should contain the owner info", summaryBox, notNullValue());
         assertThat("Owner info should mention user " + user, ownerInfo.getTextContent(), 
                 stringContainsInOrder(Arrays.asList(user.getId())));
@@ -147,7 +147,7 @@ class RunOwnershipActionTest {
         JenkinsRule.WebClient webClient = jenkinsRule.createWebClient();
         HtmlPage res = webClient.goTo(build.getUrl());
         assertThat("On the page there should not be ownership box", 
-                res.getFirstByXPath("//div[@class='ownership-summary-box']"), nullValue());
+                res.getFirstByXPath("//*[@data-testid='ownership-summary']"), nullValue());
     }
 
     @Test
@@ -167,6 +167,6 @@ class RunOwnershipActionTest {
         JenkinsRule.WebClient webClient = jenkinsRule.createWebClient();
         HtmlPage res = webClient.goTo(build.getUrl());
         assertThat("On the page there should not be ownership box", 
-                res.getFirstByXPath("//div[@class='ownership-summary-box']"), nullValue());
+                res.getFirstByXPath("//*[@data-testid='ownership-summary']"), nullValue());
     }
 }

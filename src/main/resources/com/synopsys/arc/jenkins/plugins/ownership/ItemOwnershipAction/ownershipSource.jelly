@@ -24,32 +24,33 @@
 <!--TODO: Get rid of this file after the refactoring-->
 <!--
 - Display info about the ownership info source.
-- 
+-
 - Parameters:
 -    {it}       - Property instance
 -
 - @author Oleg Nenashev
 - @since TODO
--   
+-
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:o="/lib/ownership">
   <j:set var="_item" value="${it.getDescribedItem()}"/>
   <j:set var="_info" value="${it.helper().getOwnershipInfo(_item)}"/>
   <j:set var="_source" value="${_info.source}"/>
-  
+
   <j:set var="_shouldShowWarning" value="${_item != _source.item and _info.getDescription().isOwnershipEnabled()}"/>
-  
-  <!--No ownership on this level-->
+
   <j:if test="${_shouldShowWarning}">
-    <f:section title="${%Current Ownership info source}">
-      <f:block>
-        <b style="color:red">${%warningHeader}</b> ${%warningText}
-        <br/>
-        <br/>
-        ${%ownershipSource} <st:include page="summary.jelly" optional="false" it="${_source}"/>
-      </f:block>
-    </f:section>
+    <div class="jenkins-!-margin-bottom-3">
+      <o:warningAlert>
+        <strong>${%warningHeader}</strong> ${%warningText}
+      </o:warningAlert>
+      <l:card title="${%Current Ownership info source}">
+        <p class="jenkins-leading-paragraph">
+          ${%ownershipSource} <st:include page="summary.jelly" optional="false" it="${_source}"/>
+        </p>
+      </l:card>
+    </div>
   </j:if>
 </j:jelly>

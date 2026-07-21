@@ -23,16 +23,29 @@ This plugin provides an ownership engine for [Jenkins](https://jenkins.io/) auto
 * [Ownership-Based Security](doc/OwnershipBasedSecurity.md)
 * [AbstractProject Integration](doc/AbstractProjectSupport.md)
 * [Pipeline Integration](doc/PipelineIntegration.md)
+* [Manual UI Testing Checklist](doc/ManualUITesting.md)
 * [Contributing](CONTRIBUTING.md)
 * [Changelog](CHANGELOG.md)
 
 # Examples
 
-Below you can find several Ownership Plugin UI examples.
+Below you can find several Ownership Plugin UI examples (Jenkins Design Library).
 
-Ownership Info Summary box:
+Ownership Info Summary card:
 
-![Ownership Summary box](doc/images/summaryBox.png)
+![Ownership Summary card](doc/images/summaryBox.png)
+
+Ownership hub page:
+
+![Ownership hub](doc/images/ownershipHub.png)
+
+Manage owners page:
+
+![Manage owners](doc/images/manageOwners.png)
+
+Configure specific access rights:
+
+![Configure specific access rights](doc/images/configureSpecifics.png)
 
 Ownership Column:
 

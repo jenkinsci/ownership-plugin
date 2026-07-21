@@ -28,7 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatter;
-import com.synopsys.arc.jenkins.plugins.ownership.wrappers.OwnershipBuildWrapper;;
+import com.synopsys.arc.jenkins.plugins.ownership.wrappers.OwnershipBuildWrapper;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildableItemWithBuildWrappers;

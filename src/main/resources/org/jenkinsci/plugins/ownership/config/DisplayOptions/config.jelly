@@ -34,6 +34,6 @@
             <f:checkbox title="${%Hide ownership summaries on Run pages}"/>
           </f:entry>
         </o:blockWrapper>
-    </f:entry> 
+    </f:entry>
   </f:advanced>
 </j:jelly>

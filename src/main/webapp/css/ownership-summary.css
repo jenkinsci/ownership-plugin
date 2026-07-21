@@ -1,0 +1,114 @@
+/* Collapsible ownership summary card — match Jenkins page rhythm. */
+
+.ownership-summary-card {
+  /* Vertical rhythm vs Edit description / heading above */
+  margin-block: var(--section-padding, 1.5rem);
+  /* Align with standard jenkins-card internal padding */
+  --ownership-summary-inline-padding: var(--section-padding, 1rem);
+  --ownership-summary-block-padding: 0.75rem;
+}
+
+.ownership-summary-card > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  /* Comfortable row height like jenkins-button / card title */
+  min-height: 2.75rem;
+  padding: var(--ownership-summary-block-padding) var(--ownership-summary-inline-padding);
+}
+
+.ownership-summary-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ownership-summary-card > .jenkins-card__content {
+  padding: 0 var(--ownership-summary-inline-padding) var(--ownership-summary-inline-padding);
+}
+
+.ownership-summary__title {
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+.ownership-summary__preview {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-color-secondary, #666);
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+.ownership-summary-card[open] > summary .ownership-summary__preview {
+  display: none;
+}
+
+.ownership-summary__chevron {
+  flex: 0 0 auto;
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+
+.ownership-summary-card[open] > summary .ownership-summary__chevron {
+  transform: rotate(180deg);
+}
+
+.ownership-summary__section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-color-secondary, #666);
+  margin-bottom: 0.25rem;
+}
+
+.ownership-summary__owners-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: baseline;
+}
+
+.ownership-summary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Envelope + small gear: “mail service/admins”, not generic settings */
+.ownership-summary__mail-admin-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-inline-end: 0.15rem;
+}
+
+.ownership-summary__mail-admin-icon > .icon-sm {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.ownership-summary__mail-admin-badge {
+  position: absolute;
+  right: -0.2rem;
+  bottom: -0.15rem;
+  width: 0.7rem !important;
+  height: 0.7rem !important;
+  background: var(--card-background, var(--background, #fff));
+  border-radius: 50%;
+}
+
+/* Empty-state card: same top spacing as collapsible summary */
+.ownership-summary-empty {
+  margin-block: var(--section-padding, 1.5rem);
+}
