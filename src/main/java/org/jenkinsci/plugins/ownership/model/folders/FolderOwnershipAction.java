@@ -33,11 +33,11 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatt
 import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.security.Permission;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jakarta.servlet.ServletException;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.kohsuke.stapler.HttpResponse;
@@ -54,10 +54,10 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  */
 public class FolderOwnershipAction extends ItemOwnershipAction<AbstractFolder<?>> {
 
-    //TODO: May become a problem once we need to make it flexible (not implemented). Move to helper?
-    private static final OwnershipLayoutFormatter<AbstractFolder<?>> DEFAULT_FOLDER_FORMATTER 
-            = new OwnershipLayoutFormatter.DefaultJobFormatter<>();
-    
+    // TODO: May become a problem once we need to make it flexible (not implemented). Move to helper?
+    private static final OwnershipLayoutFormatter<AbstractFolder<?>> DEFAULT_FOLDER_FORMATTER =
+            new OwnershipLayoutFormatter.DefaultJobFormatter<>();
+
     public FolderOwnershipAction(@Nonnull AbstractFolder<?> folder) {
         super(folder);
     }
@@ -83,7 +83,7 @@ public class FolderOwnershipAction extends ItemOwnershipAction<AbstractFolder<?>
     public IOwnershipHelper<AbstractFolder<?>> helper() {
         return FolderOwnershipHelper.getInstance();
     }
-    
+
     public OwnershipLayoutFormatter<AbstractFolder<?>> getLayoutFormatter() {
         return DEFAULT_FOLDER_FORMATTER;
     }
@@ -116,20 +116,22 @@ public class FolderOwnershipAction extends ItemOwnershipAction<AbstractFolder<?>
     public FolderSpecificSecurity.FolderSpecificDescriptor getItemSpecificDescriptor() {
         return FolderSpecificSecurity.DESCRIPTOR;
     }
-    
+
     @RequirePOST
-    public HttpResponse doOwnersSubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
+    public HttpResponse doOwnersSubmit(StaplerRequest2 req, StaplerResponse2 rsp)
+            throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
-        
+
         JSONObject jsonOwnership = req.getSubmittedForm().getJSONObject("owners");
         OwnershipDescription descr = OwnershipDescription.parseJSON(jsonOwnership);
         FolderOwnershipHelper.setOwnership(getDescribedItem(), descr);
-        
+
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());
     }
 
     @RequirePOST
-    public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, Descriptor.FormException {
+    public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp)
+            throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         JSONObject form = req.getSubmittedForm();
 
@@ -145,9 +147,11 @@ public class FolderOwnershipAction extends ItemOwnershipAction<AbstractFolder<?>
     }
 
     @RequirePOST
-    public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, Descriptor.FormException {
+    public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp)
+            throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
-        FolderSpecificSecurity defaultFoldersSecurity = OwnershipPlugin.getInstance().getDefaultFoldersSecurity();
+        FolderSpecificSecurity defaultFoldersSecurity =
+                OwnershipPlugin.getInstance().getDefaultFoldersSecurity();
         FolderSpecificSecurity val = defaultFoldersSecurity != null ? defaultFoldersSecurity.clone() : null;
         FolderOwnershipHelper.setProjectSpecificSecurity(getDescribedItem(), val);
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());

@@ -23,12 +23,13 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
+import static java.util.Collections.singleton;
+
 import hudson.Extension;
 import hudson.matrix.MatrixConfiguration;
 import hudson.model.Action;
 import hudson.model.Job;
 import java.util.Collection;
-import static java.util.Collections.singleton;
 import java.util.LinkedList;
 import jenkins.model.TransientActionFactory;
 import org.kohsuke.accmod.Restricted;
@@ -36,7 +37,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Creates a "Manage Ownership" action for jobs.
- * Action will be available for all top-level job items. 
+ * Action will be available for all top-level job items.
  * Matrix configurations will be ignored.
  * @author Oleg Nenashev
  */
@@ -44,14 +45,12 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 @Restricted(NoExternalUse.class)
 public class OwnershipActionFactory extends TransientActionFactory<Job> {
     /**Empty actions collection for invalid project type*/
-    private static final Collection<? extends Action> EMPTY_ACTIONS 
-            = new LinkedList<>();
-    
+    private static final Collection<? extends Action> EMPTY_ACTIONS = new LinkedList<>();
+
     @Override
     public Collection<? extends Action> createFor(Job target) {
-        return (target instanceof MatrixConfiguration) 
-                ? EMPTY_ACTIONS : singleton(new JobOwnerJobAction(target));
-    }    
+        return (target instanceof MatrixConfiguration) ? EMPTY_ACTIONS : singleton(new JobOwnerJobAction(target));
+    }
 
     @Override
     public Class<Job> type() {

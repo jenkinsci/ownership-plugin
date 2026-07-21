@@ -44,10 +44,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 0.2
  */
 public class OwnershipBuildWrapper extends BuildWrapper {
-    
+
     private @Nonnull EnvSetupOptions envSetupOptions;
+
     @Deprecated
     private static final transient boolean injectNodeOwnership = false;
+
     @Deprecated
     private static final transient boolean injectJobOwnership = false;
 
@@ -59,7 +61,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     public OwnershipBuildWrapper(boolean injectJobOwnership, boolean injectNodeOwnership) {
         this(new EnvSetupOptions(injectJobOwnership, injectNodeOwnership));
     }
-    
+
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Migration of the old data")
     public Object readResolve() {
         if (envSetupOptions == null) {
@@ -69,7 +71,8 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     }
 
     @Override
-    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener)
+            throws IOException, InterruptedException {
         return new Environment() {
             // Empty instantiation. The entire code has been moved to OwnershipRunListener
         };
@@ -78,7 +81,7 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     public @Nonnull EnvSetupOptions getEnvSetupOptions() {
         return envSetupOptions;
     }
-    
+
     public boolean isInjectJobOwnership() {
         return envSetupOptions.isInjectJobOwnership();
     }
@@ -86,12 +89,12 @@ public class OwnershipBuildWrapper extends BuildWrapper {
     public boolean isInjectNodeOwnership() {
         return envSetupOptions.isInjectNodeOwnership();
     }
-        
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
     public static final class DescriptorImpl extends BuildWrapperDescriptor {
-        
+
         public DescriptorImpl() {
             super(OwnershipBuildWrapper.class);
         }
@@ -104,6 +107,6 @@ public class OwnershipBuildWrapper extends BuildWrapper {
         @Override
         public boolean isApplicable(AbstractProject<?, ?> item) {
             return true;
-        } 
+        }
     }
 }

@@ -29,7 +29,6 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-
 import org.jenkinsci.plugins.ownership.model.runs.RunOwnershipAction;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -40,9 +39,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 0.8
  */
 public class DisplayOptions implements Describable<DisplayOptions> {
-       
+
     public static final DisplayOptions DEFAULT = new DisplayOptions(false, false);
-    
+
     private final boolean hideRunOwnership;
     private final boolean hideOwnershipIfNoData;
 
@@ -67,7 +66,7 @@ public class DisplayOptions implements Describable<DisplayOptions> {
     public boolean isHideOwnershipIfNoData() {
         return hideOwnershipIfNoData;
     }
-    
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
@@ -75,9 +74,9 @@ public class DisplayOptions implements Describable<DisplayOptions> {
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }
-  
+
     public static class DescriptorImpl extends Descriptor<DisplayOptions> {
-        
+
         @Override
         public String getDisplayName() {
             return "N/A";

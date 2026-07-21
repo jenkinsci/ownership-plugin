@@ -33,6 +33,6 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  */
 @Restricted(NoExternalUse.class)
 @Deprecated
-public class CopyOwnerPolicy  {
-    //TODO: implement
+public class CopyOwnerPolicy {
+    // TODO: implement
 }

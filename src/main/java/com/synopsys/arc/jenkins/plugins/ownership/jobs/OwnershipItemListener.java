@@ -36,14 +36,14 @@ import java.io.IOException;
  * Listener checks for job configuration changes and
  * applies and modifies its ownership info.
  * By default, the plugin drops initial ownership settings.
- * It can also set the current user as a new owner (can be enabled in global configs). 
+ * It can also set the current user as a new owner (can be enabled in global configs).
  * @author Oleg Nenashev
  */
 @Extension
 public class OwnershipItemListener extends ItemListener {
-    
+
     @Override
-    public void onCopied(Item src, Item item) {      
+    public void onCopied(Item src, Item item) {
         OwnershipDescription d = getPolicy().onCopied(src, item);
         modifyOwnership(item, d);
     }
@@ -53,18 +53,18 @@ public class OwnershipItemListener extends ItemListener {
         OwnershipDescription d = getPolicy().onCreated(item);
         modifyOwnership(item, d);
     }
-    
+
     private ItemOwnershipPolicy getPolicy() {
         return OwnershipPlugin.getInstance().getConfiguration().getItemOwnershipPolicy();
     }
-    
+
     private void modifyOwnership(Item item, OwnershipDescription ownership) {
         if (item instanceof Job) {
             Job job = (Job) item;
             try {
                 JobOwnerHelper.setOwnership(job, ownership);
             } catch (IOException ex) {
-                //TODO: do something
+                // TODO: do something
             }
         }
     }

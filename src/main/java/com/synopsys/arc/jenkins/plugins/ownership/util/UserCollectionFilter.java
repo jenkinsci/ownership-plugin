@@ -23,8 +23,8 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.UserComparator;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
+import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.UserComparator;
 import hudson.model.User;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,21 +43,22 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 public class UserCollectionFilter {
 
     @Nonnull
-    public static Collection<User> filterUsers(@Nonnull Collection<User> input, boolean enableSort, @Nonnull IUserFilter... filters) {
+    public static Collection<User> filterUsers(
+            @Nonnull Collection<User> input, boolean enableSort, @Nonnull IUserFilter... filters) {
         // Sort users
         UserComparator comparator = new UserComparator();
         LinkedList<User> userList = new LinkedList<>(User.getAll());
         if (enableSort) {
             Collections.sort(userList, comparator);
         }
-        
+
         // Prepare new list
         Collection<User> res = new ArrayList<>();
         for (User user : userList) {
             if (user == null) {
                 continue;
             }
-            
+
             boolean meets = true;
             for (int i = 0; meets && i < filters.length; i++) {
                 meets = filters[i].filter(user);

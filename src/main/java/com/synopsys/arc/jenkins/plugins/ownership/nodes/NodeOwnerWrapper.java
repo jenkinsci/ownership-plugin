@@ -36,12 +36,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @see OwnerNodeProperty
  */
 public class NodeOwnerWrapper {
-    
+
     private final OwnershipDescription description;
 
     @DataBoundConstructor
     public NodeOwnerWrapper(@CheckForNull String primaryOwner) {
-        description = StringUtils.isBlank(primaryOwner) 
+        description = StringUtils.isBlank(primaryOwner)
                 ? OwnershipDescription.DISABLED_DESCR
                 : new OwnershipDescription(true, primaryOwner, Collections.<String>emptyList());
     }

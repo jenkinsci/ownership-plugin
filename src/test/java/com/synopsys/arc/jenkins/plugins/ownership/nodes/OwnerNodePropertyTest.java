@@ -23,9 +23,13 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
-import org.htmlunit.FailingHttpStatusCodeException;
-import org.htmlunit.HttpMethod;
-import org.htmlunit.WebRequest;
+import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
+import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import hudson.cli.CLICommandInvoker;
 import hudson.cli.UpdateNodeCommand;
@@ -35,19 +39,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import jenkins.model.Jenkins;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.HttpMethod;
+import org.htmlunit.WebRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
-import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @WithJenkins
 class OwnerNodePropertyTest {
@@ -62,16 +62,15 @@ class OwnerNodePropertyTest {
         mas.grant(Jenkins.ADMINISTER) // Implies MANAGE_SLAVES_OWNERSHIP.
                 .everywhere()
                 .to("admin");
-        mas.grant(Computer.CONFIGURE, Jenkins.READ)
-                .everywhere()
-                .to("non-admin");
+        mas.grant(Computer.CONFIGURE, Jenkins.READ).everywhere().to("non-admin");
         r.jenkins.setAuthorizationStrategy(mas);
     }
 
     @Test
     @Issue("SECURITY-498")
     void changeOwnerViaPost() throws Exception {
-        String nodeName; // Computer#updateByXml replaces the existing node with a new instance, so we always need to look up the current instance.
+        String nodeName; // Computer#updateByXml replaces the existing node with a new instance, so we always need to
+        // look up the current instance.
         String nodeUrl;
         {
             Node n = r.createSlave();
@@ -86,8 +85,10 @@ class OwnerNodePropertyTest {
         req.setAdditionalHeader("Content-Type", "application/xml");
         req.setRequestBody(getNodeXml(nodeName, "admin"));
         wc.getPage(req);
-        assertThat("Users should be able to configure jobs when ownership is unchanged",
-                getPrimaryOwner(nodeName), is(equalTo("admin")));
+        assertThat(
+                "Users should be able to configure jobs when ownership is unchanged",
+                getPrimaryOwner(nodeName),
+                is(equalTo("admin")));
 
         try {
             wc.login("non-admin", "non-admin");
@@ -101,8 +102,10 @@ class OwnerNodePropertyTest {
         wc.login("admin", "admin");
         req.setRequestBody(getNodeXml(nodeName, "non-admin"));
         wc.getPage(req);
-        assertThat("Users with Manage Ownership/Jobs permissions should be able to change ownership",
-                getPrimaryOwner(nodeName), is(equalTo("non-admin")));
+        assertThat(
+                "Users with Manage Ownership/Jobs permissions should be able to change ownership",
+                getPrimaryOwner(nodeName),
+                is(equalTo("non-admin")));
     }
 
     @Test
@@ -119,20 +122,27 @@ class OwnerNodePropertyTest {
                 .asUser("non-admin")
                 .withArgs(nodeName)
                 .withStdin(getNodeXmlAsStream(nodeName, "admin"));
-        assertThat("Users without Overall/Administer permissions should not be able to configure nodes via CLI",
-                command.invoke(), failedWith(1));
+        assertThat(
+                "Users without Overall/Administer permissions should not be able to configure nodes via CLI",
+                command.invoke(),
+                failedWith(1));
         assertThat(getPrimaryOwner(nodeName), is(equalTo("admin")));
 
-        command.asUser("admin")
-                .withArgs(nodeName)
-                .withStdin(getNodeXmlAsStream(nodeName, "non-admin"));
-        assertThat("Users with Overall/Administer permissions should be able to configure jobs via CLI", 
-                command.invoke(), succeededSilently());
+        command.asUser("admin").withArgs(nodeName).withStdin(getNodeXmlAsStream(nodeName, "non-admin"));
+        assertThat(
+                "Users with Overall/Administer permissions should be able to configure jobs via CLI",
+                command.invoke(),
+                succeededSilently());
         assertThat(getPrimaryOwner(nodeName), is(equalTo("non-admin")));
     }
 
     private String getPrimaryOwner(String nodeName) {
-        return r.jenkins.getNode(nodeName).getNodeProperties().get(OwnerNodeProperty.class).getOwnership().getPrimaryOwnerId();
+        return r.jenkins
+                .getNode(nodeName)
+                .getNodeProperties()
+                .get(OwnerNodeProperty.class)
+                .getOwnership()
+                .getPrimaryOwnerId();
     }
 
     private String getNodeXml(String nodeName, String ownerSid) {
@@ -143,27 +153,24 @@ class OwnerNodePropertyTest {
         return new ByteArrayInputStream(getNodeXml(nodeName, ownerSid).getBytes(StandardCharsets.UTF_8));
     }
 
-    private static final String NODE_XML_TEMPLATE =
-            "<?xml version='1.0' encoding='UTF-8'?>" +
-            "<slave>" +
-            "    <name>%s</name>" +
-            "    <description/>" +
-            "    <remoteFS>/tmp/dumbnode</remoteFS>" +
-            "    <numExecutors>1</numExecutors>" +
-            "    <mode>NORMAL</mode>" +
-            "    <retentionStrategy class=\"hudson.slaves.RetentionStrategy$Always\"/>" +
-            "    <launcher/>" +
-            "    <label/>" +
-            "    <nodeProperties>" +
-            "        <com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty plugin=\"ownership@0.10.1-SNAPSHOT\">" +
-            "            <ownership>" +
-            "                <ownershipEnabled>true</ownershipEnabled>" +
-            "                <primaryOwnerId>%s</primaryOwnerId>" +
-            "                <coownersIds class=\"sorted-set\"/>" +
-            "            </ownership>" +
-            "            <nodeName>DumbNode</nodeName>" +
-            "        </com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty>" +
-            "    </nodeProperties>" +
-            "</slave>";
-
+    private static final String NODE_XML_TEMPLATE = "<?xml version='1.0' encoding='UTF-8'?>" + "<slave>"
+            + "    <name>%s</name>"
+            + "    <description/>"
+            + "    <remoteFS>/tmp/dumbnode</remoteFS>"
+            + "    <numExecutors>1</numExecutors>"
+            + "    <mode>NORMAL</mode>"
+            + "    <retentionStrategy class=\"hudson.slaves.RetentionStrategy$Always\"/>"
+            + "    <launcher/>"
+            + "    <label/>"
+            + "    <nodeProperties>"
+            + "        <com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty plugin=\"ownership@0.10.1-SNAPSHOT\">"
+            + "            <ownership>"
+            + "                <ownershipEnabled>true</ownershipEnabled>"
+            + "                <primaryOwnerId>%s</primaryOwnerId>"
+            + "                <coownersIds class=\"sorted-set\"/>"
+            + "            </ownership>"
+            + "            <nodeName>DumbNode</nodeName>"
+            + "        </com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty>"
+            + "    </nodeProperties>"
+            + "</slave>";
 }

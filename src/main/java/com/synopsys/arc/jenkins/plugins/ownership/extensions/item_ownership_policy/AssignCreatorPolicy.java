@@ -41,8 +41,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class AssignCreatorPolicy extends ItemOwnershipPolicy {
 
     @DataBoundConstructor
-    public AssignCreatorPolicy() {
-    }
+    public AssignCreatorPolicy() {}
 
     @Override
     public OwnershipDescription onCreated(Item item) {
@@ -50,16 +49,16 @@ public class AssignCreatorPolicy extends ItemOwnershipPolicy {
         if (creator != null && creator != User.getUnknown()) {
             return new OwnershipDescription(true, creator.getId(), null);
         }
-        
+
         return null;
     }
-    
+
     @Extension
     public static class DescriptorImpl extends ItemOwnershipPolicyDescriptor {
 
         @Override
         public String getDisplayName() {
             return Messages.ItemOwnershipPolicy_AssignCreatorPolicy_displayName();
-        }       
+        }
     }
 }

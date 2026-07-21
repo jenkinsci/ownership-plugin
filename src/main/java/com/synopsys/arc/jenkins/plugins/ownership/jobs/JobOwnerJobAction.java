@@ -27,21 +27,16 @@ import com.synopsys.arc.jenkins.plugins.ownership.ItemOwnershipAction;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
-import hudson.model.Item;
-
 import hudson.model.Descriptor;
+import hudson.model.Item;
 import hudson.model.Job;
 import hudson.security.Permission;
-
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import jakarta.servlet.ServletException;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest2;
@@ -54,10 +49,10 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  * Actually, this action injects {@link JobOwnerJobProperty} into the project.
  * @author Oleg Nenashev
  */
-public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
-     
+public class JobOwnerJobAction extends ItemOwnershipAction<Job<?, ?>> {
+
     public JobOwnerJobAction(Job<?, ?> job) {
-      super(job);
+        super(job);
     }
 
     @Nonnull
@@ -65,8 +60,8 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     public JobOwnerHelper helper() {
         return JobOwnerHelper.Instance;
     }
-       
-    /** 
+
+    /**
      * Gets described job.
      * @deprecated Just for compatibility with 0.0.1
      */
@@ -74,12 +69,12 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     public Job<?, ?> getJob() {
         return getDescribedItem();
     }
-    
+
     @Override
     public Permission getOwnerPermission() {
         return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
     }
-    
+
     @Override
     public Permission getProjectSpecificPermission() {
         return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
@@ -88,22 +83,22 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     @Override
     public OwnershipDescription getOwnership() {
         return helper().getOwnershipDescription(getDescribedItem());
-    } 
-    
+    }
+
     @CheckForNull
     public ItemSpecificSecurity getItemSpecificSecurity() {
         JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(getDescribedItem());
         if (prop != null && prop.hasItemSpecificSecurity()) {
-             return prop.getItemSpecificSecurity();
-        }        
+            return prop.getItemSpecificSecurity();
+        }
         return getGlobalItemSpecificSecurity();
     }
-    
+
     @CheckForNull
     private static ItemSpecificSecurity getGlobalItemSpecificSecurity() {
         return OwnershipPlugin.getInstance().getDefaultJobsSecurity();
     }
-    
+
     /**
      * Checks if the described item has a job-specific security defined.
      * @return true if the item has a job-specific security
@@ -115,7 +110,7 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
     }
 
     /**
-     * Gets descriptor of item-specific security page. 
+     * Gets descriptor of item-specific security page.
      * This method is being used by UI.
      * @return A descriptor of {@link ItemSpecificSecurity}
      */
@@ -129,23 +124,25 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
         // Individual methods will check MANAGE_ITEMS_OWNERSHIP and return 403 if needed
         return getDescribedItem().hasPermission(Item.READ);
     }
-    
+
     @RequirePOST
-    public HttpResponse doOwnersSubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
+    public HttpResponse doOwnersSubmit(StaplerRequest2 req, StaplerResponse2 rsp)
+            throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
-        
+
         JSONObject jsonOwnership = req.getSubmittedForm().getJSONObject("owners");
         OwnershipDescription descr = OwnershipDescription.parseJSON(jsonOwnership);
         JobOwnerHelper.setOwnership(getDescribedItem(), descr);
-        
+
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());
     }
-    
+
     @RequirePOST
-    public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, Descriptor.FormException {
+    public HttpResponse doProjectSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp)
+            throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         JSONObject form = req.getSubmittedForm();
-        
+
         if (form.containsKey("itemSpecificSecurity")) {
             JSONObject jsonSpecificSecurity = req.getSubmittedForm().getJSONObject("itemSpecificSecurity");
             ItemSpecificSecurity specific = ItemSpecificSecurity.DESCRIPTOR.newInstance(req, jsonSpecificSecurity);
@@ -156,14 +153,15 @@ public class JobOwnerJobAction extends ItemOwnershipAction<Job<?,?>> {
 
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());
     }
-    
+
     @RequirePOST
-    public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, Descriptor.FormException {
+    public HttpResponse doRestoreDefaultSpecificSecuritySubmit(StaplerRequest2 req, StaplerResponse2 rsp)
+            throws IOException, ServletException, Descriptor.FormException {
         getDescribedItem().checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         // Get default security
         ItemSpecificSecurity defaultJobsSecurity = OwnershipPlugin.getInstance().getDefaultJobsSecurity();
         ItemSpecificSecurity val = defaultJobsSecurity != null ? defaultJobsSecurity.clone() : null;
-        
+
         JobOwnerHelper.setProjectSpecificSecurity(getDescribedItem(), val);
         return HttpResponses.redirectViaContextPath(getDescribedItem().getUrl());
     }

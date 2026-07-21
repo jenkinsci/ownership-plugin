@@ -52,14 +52,14 @@ import jenkins.model.Jenkins;
  * @author Oleg Nenashev
  */
 public class OwnershipBasedSecurityTestHelper {
-    
+
     public static void setup(@Nonnull Jenkins jenkins) throws AssertionError, IOException {
-        
-        Map<String,RoleMap> grantedRoles = new HashMap<>();
+
+        Map<String, RoleMap> grantedRoles = new HashMap<>();
         grantedRoles.put(RoleType.Project.getStringType(), getProjectRoleMap());
         grantedRoles.put(RoleType.Slave.getStringType(), getComputerRoleMap());
         grantedRoles.put(RoleType.Global.getStringType(), getGlobalAdminAndAnonymousRoles());
-        
+
         RoleBasedAuthorizationStrategy strategy = new RoleBasedAuthorizationStrategy(grantedRoles);
         jenkins.setAuthorizationStrategy(strategy);
         jenkins.save();
@@ -126,42 +126,42 @@ public class OwnershipBasedSecurityTestHelper {
         grantedRoles.put(authenticatedRole, singleSid("authenticated"));
         return createRoleMap(grantedRoles);
     }
-    
+
     private static RoleMap getGlobalAdminAndAnonymousRoles() {
         Set<Permission> adminPermissions = new HashSet<>();
         adminPermissions.add(Jenkins.ADMINISTER);
         Role adminRole = createRole("administrator", ".*", adminPermissions);
-        
+
         Set<Permission> anonymousPermissions = new HashSet<>();
         anonymousPermissions.add(Jenkins.READ);
         anonymousPermissions.add(Item.READ);
         anonymousPermissions.add(Item.DISCOVER);
         Role anonymousRole = createRole("anonymous", ".*", anonymousPermissions);
-        
-        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<>();
+
+        final SortedMap<Role, Set<PermissionEntry>> grantedRoles = new TreeMap<>();
         grantedRoles.put(adminRole, singleSid("admin"));
         grantedRoles.put(anonymousRole, singleSid("anonymous"));
-        
+
         return createRoleMap(grantedRoles);
     }
-    
+
     private static RoleMap getProjectRoleMap() {
         Set<Permission> ownerPermissions = new HashSet<>();
         ownerPermissions.add(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         ownerPermissions.addAll(Item.PERMISSIONS.getPermissions());
         ownerPermissions.addAll(Run.PERMISSIONS.getPermissions());
         Role ownerRole = createRole("@OwnerNoSid", ".*", ownerPermissions);
-        
+
         Set<Permission> coownerPermissions = new HashSet<>();
         coownerPermissions.addAll(Item.PERMISSIONS.getPermissions());
         coownerPermissions.addAll(Run.PERMISSIONS.getPermissions());
         coownerPermissions.remove(Item.DELETE);
         coownerPermissions.remove(Run.DELETE);
         Role coOwnerRole = createRole("@CoOwnerNoSid", ".*", coownerPermissions);
-        
+
         return createRoleMapForSid("authenticated", ownerRole, coOwnerRole);
     }
-    
+
     private static RoleMap getComputerRoleMap() {
         Set<Permission> ownerPermissions = new HashSet<>();
         ownerPermissions.add(OwnershipPlugin.MANAGE_SLAVES_OWNERSHIP);
@@ -172,23 +172,23 @@ public class OwnershipBasedSecurityTestHelper {
         coownerPermissions.remove(Computer.DELETE);
         coownerPermissions.remove(Computer.CONFIGURE);
         Role coOwnerRole = createRole("@CoOwnerNoSid", ".*", coownerPermissions);
-        
+
         return createRoleMapForSid("authenticated", ownerRole, coOwnerRole);
     }
-    
-    private static Role createRole(String name, String pattern, Permission ... permissions) {
+
+    private static Role createRole(String name, String pattern, Permission... permissions) {
         Set<Permission> permSet = new HashSet<>(Arrays.asList(permissions));
         return createRole(name, pattern, permSet);
     }
-    
-    private static RoleMap createRoleMapForSid(String sid, Role ... roles) {
-        final SortedMap<Role,Set<PermissionEntry>> grantedRoles = new TreeMap<>();
+
+    private static RoleMap createRoleMapForSid(String sid, Role... roles) {
+        final SortedMap<Role, Set<PermissionEntry>> grantedRoles = new TreeMap<>();
         for (Role role : roles) {
             grantedRoles.put(role, singleSid(sid));
         }
         return createRoleMap(grantedRoles);
     }
-    
+
     private static Set<PermissionEntry> singleSid(String sid) {
         if (sid == null) {
             throw new IllegalArgumentException("SID cannot be null");
@@ -204,7 +204,7 @@ public class OwnershipBasedSecurityTestHelper {
         }
         return sids;
     }
-    
+
     // TODO: Methods below should be burned with fire when RoleStrategy gets better API
     private static Role createRole(String name, String pattern, Set<Permission> permissions) {
         try {
@@ -219,17 +219,17 @@ public class OwnershipBasedSecurityTestHelper {
             throw new AssertionError("Cannot create role", ex);
         }
     }
-    
+
     @Nonnull
     @SuppressWarnings("unchecked")
-    private static <T> Constructor<T> locateConstructor(Class<T> itemClass, Class<?> ... parameters) {
+    private static <T> Constructor<T> locateConstructor(Class<T> itemClass, Class<?>... parameters) {
         Constructor<?>[] constructors = itemClass.getDeclaredConstructors();
         for (Constructor<?> c : constructors) {
             Class<?>[] parameterTypes = c.getParameterTypes();
             if (parameterTypes.length != parameters.length) {
                 continue;
             }
-            
+
             boolean matches = true;
             for (int i = 0; i < parameters.length; ++i) {
                 if (!parameterTypes[i].isAssignableFrom(parameters[i])) {
@@ -237,16 +237,16 @@ public class OwnershipBasedSecurityTestHelper {
                     break;
                 }
             }
-            
+
             if (matches) {
-                return (Constructor<T>)c;
+                return (Constructor<T>) c;
             }
         }
-        
+
         throw new IllegalStateException("Cannot locate a constructor for " + itemClass);
     }
-    
-    private static RoleMap createRoleMap(SortedMap<Role,Set<PermissionEntry>> grantedRoles) {
+
+    private static RoleMap createRoleMap(SortedMap<Role, Set<PermissionEntry>> grantedRoles) {
         try {
             Constructor<RoleMap> constructor = locateConstructor(RoleMap.class, SortedMap.class);
             try {
@@ -259,5 +259,4 @@ public class OwnershipBasedSecurityTestHelper {
             throw new AssertionError("Cannot create role map", ex);
         }
     }
-    
 }

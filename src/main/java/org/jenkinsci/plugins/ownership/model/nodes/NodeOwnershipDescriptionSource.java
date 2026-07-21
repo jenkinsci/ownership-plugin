@@ -33,9 +33,8 @@ import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
  * @since 0.9
  */
 public class NodeOwnershipDescriptionSource extends OwnershipDescriptionSource<Node> {
-    
+
     public NodeOwnershipDescriptionSource(Node node) {
         super(node);
     }
-    
 }

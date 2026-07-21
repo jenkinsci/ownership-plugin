@@ -1,19 +1,18 @@
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import hudson.model.User;
 import hudson.security.HudsonPrivateSecurityRealm;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import jenkins.model.IdStrategy;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
 
 @WithJenkins
 class OwnershipDescriptionTest {
@@ -48,16 +47,28 @@ class OwnershipDescriptionTest {
         User user = User.get("owner");
 
         OwnershipDescription description = new OwnershipDescription(true, "owner", Collections.emptyList());
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(true));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, false),
+                equalTo(true));
 
         description = new OwnershipDescription(true, "OWNER", Collections.emptyList());
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(false));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, false),
+                equalTo(false));
 
         description = new OwnershipDescription(true, "another.owner", Arrays.asList("owner"));
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, true), equalTo(true));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, true),
+                equalTo(true));
 
         description = new OwnershipDescription(true, "ANOTHER.OWNER", Arrays.asList("OWNER"));
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, true), equalTo(false));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, true),
+                equalTo(false));
     }
 
     @Test
@@ -66,17 +77,27 @@ class OwnershipDescriptionTest {
         User user = User.get("owner");
 
         OwnershipDescription description = new OwnershipDescription(true, "owner", Collections.emptyList());
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(true));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, false),
+                equalTo(true));
 
         description = new OwnershipDescription(true, "OWNER", Collections.emptyList());
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, false), equalTo(true));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, false),
+                equalTo(true));
 
         description = new OwnershipDescription(true, "another.owner", Arrays.asList("owner"));
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, true), equalTo(true));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, true),
+                equalTo(true));
 
         description = new OwnershipDescription(true, "ANOTHER.OWNER", Arrays.asList("OWNER"));
-        assertThat("OwnershipDescription doesn't respect case sensitive strategy", description.isOwner(user, true), equalTo(true));
+        assertThat(
+                "OwnershipDescription doesn't respect case sensitive strategy",
+                description.isOwner(user, true),
+                equalTo(true));
     }
-
-
 }

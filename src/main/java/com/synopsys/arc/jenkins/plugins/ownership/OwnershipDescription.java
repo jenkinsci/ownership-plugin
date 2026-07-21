@@ -23,10 +23,10 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.IdStrategyComparator;
 import com.synopsys.arc.jenkins.plugins.ownership.util.OwnershipDescriptionHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnerNodeProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.model.Descriptor;
@@ -57,7 +57,7 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Contains description of item's ownership. 
+ * Contains description of item's ownership.
  * This class is a main information entry for all ownership features.
  * @author Oleg Nenashev
  * @since 0.0.3
@@ -70,21 +70,21 @@ public class OwnershipDescription implements Serializable {
      * Disabled description, which means that ownership is disabled
      */
     public static final OwnershipDescription DISABLED_DESCR = new OwnershipDescription(false, "");
-    
+
     /**
      * Indicates if ownership is enabled
      */
     @Whitelisted
     boolean ownershipEnabled;
-    
+
     /**
      * UserId of primary user
      */
     String primaryOwnerId;
-    
+
     /**
      * Sids of the secondary owners (fka co-owners).
-     * Sids can include users and groups.  
+     * Sids can include users and groups.
      */
     @Whitelisted
     Set<String> coownersIds;
@@ -104,15 +104,16 @@ public class OwnershipDescription implements Serializable {
      * Constructor.
      * Class is being used as DataBound in {@link OwnerNodeProperty}.
      * @param ownershipEnabled Indicates that the ownership is enabled.
-     * @param primaryOwnerId userId of primary owner. Use null if there is no owner 
+     * @param primaryOwnerId userId of primary owner. Use null if there is no owner
      * @param secondaryOwnerIds userIds of secondary owners. Use {@code null} if there is no secondary owners.
      */
-    public OwnershipDescription(boolean ownershipEnabled, @Nullable String primaryOwnerId, @Nullable Collection<String> secondaryOwnerIds) {
+    public OwnershipDescription(
+            boolean ownershipEnabled, @Nullable String primaryOwnerId, @Nullable Collection<String> secondaryOwnerIds) {
         this.ownershipEnabled = ownershipEnabled;
         this.primaryOwnerId = primaryOwnerId;
-        this.coownersIds =  secondaryOwnerIds != null ? new TreeSet<>(secondaryOwnerIds) : new TreeSet<String>();
+        this.coownersIds = secondaryOwnerIds != null ? new TreeSet<>(secondaryOwnerIds) : new TreeSet<String>();
     }
-    
+
     public void assign(@Nonnull OwnershipDescription descr) {
         this.ownershipEnabled = descr.ownershipEnabled;
         this.primaryOwnerId = descr.primaryOwnerId;
@@ -124,7 +125,7 @@ public class OwnershipDescription implements Serializable {
         if (!ownershipEnabled) {
             return "ownership:disabled";
         }
-           
+
         StringBuilder builder = new StringBuilder();
         builder.append("primary owner=");
         builder.append(primaryOwnerId);
@@ -138,7 +139,7 @@ public class OwnershipDescription implements Serializable {
         }
         return builder.toString();
     }
-    
+
     /**
      * Check if ownership is enabled.
      * @return true if ownership is enabled
@@ -147,17 +148,17 @@ public class OwnershipDescription implements Serializable {
     public boolean isOwnershipEnabled() {
         return ownershipEnabled;
     }
-   
+
     /**
      * Gets id of primary owner.
      * @return userId of the primary owner. The result will be "unknown" if the
      * user is not specified.
      */
     @Whitelisted
-    public @Nonnull String getPrimaryOwnerId() {        
-        return ownershipEnabled ? primaryOwnerId :  User.getUnknown().getId();
+    public @Nonnull String getPrimaryOwnerId() {
+        return ownershipEnabled ? primaryOwnerId : User.getUnknown().getId();
     }
-    
+
     /**
      * Get primary owner.
      * @return Primary owner's user. The result may be null if someone deletes
@@ -178,7 +179,7 @@ public class OwnershipDescription implements Serializable {
     public Set<String> getCoownersIds() {
         return getSecondaryOwnerIds();
     }
-    
+
     /**
      * Gets list of secondary owners.
      * @return Collection of secondary owners
@@ -189,55 +190,52 @@ public class OwnershipDescription implements Serializable {
     public Set<String> getSecondaryOwnerIds() {
         return coownersIds;
     }
-    
+
     /**
      * @deprecated Use {@link #parseJSON(net.sf.json.JSONObject)} instead.
      */
     @Nonnull
     @Deprecated
     @SuppressFBWarnings(value = "NM_METHOD_NAMING_CONVENTION", justification = "deprecated")
-    public static OwnershipDescription Parse(JSONObject formData)
-            throws Descriptor.FormException {
+    public static OwnershipDescription Parse(JSONObject formData) throws Descriptor.FormException {
         return parseJSON(formData);
     }
-    
+
     /**
      * Parse a JSON input to construct the ownership description.
      * @param formData Object with a data
-     * @return Ownership Description 
+     * @return Ownership Description
      * @throws hudson.model.Descriptor.FormException Parsing error
      */
     @Nonnull
-    public static OwnershipDescription parseJSON(JSONObject formData)
-            throws Descriptor.FormException
-    {
+    public static OwnershipDescription parseJSON(JSONObject formData) throws Descriptor.FormException {
         // Read primary owner
-        String primaryOwnerId = formData.getString( "primaryOwner" );
+        String primaryOwnerId = formData.getString("primaryOwner");
 
         // Read coowners
         Set<String> secondaryOwnerIds = new TreeSet<>();
         if (formData.has("coOwners")) {
             JSONObject coOwners = formData.optJSONObject("coOwners");
-            if (coOwners == null) {         
+            if (coOwners == null) {
                 for (Object obj : formData.getJSONArray("coOwners")) {
-                   addUser(secondaryOwnerIds, (JSONObject)obj);
+                    addUser(secondaryOwnerIds, (JSONObject) obj);
                 }
             } else {
                 addUser(secondaryOwnerIds, coOwners);
             }
-        }   
+        }
         return new OwnershipDescription(true, primaryOwnerId, secondaryOwnerIds);
     }
-    
+
     private static void addUser(Set<String> target, JSONObject userObj) throws Descriptor.FormException {
         String userId = Util.fixEmptyAndTrim(userObj.getString("coOwner"));
-        
-        //TODO: validate user string
+
+        // TODO: validate user string
         if (userId != null) {
             target.add(userId);
         }
     }
-              
+
     /**
      * Check if User is an owner.
      * @param user User to be checked
@@ -258,7 +256,7 @@ public class OwnershipDescription implements Serializable {
         }
         return false;
     }
-    
+
     @Whitelisted
     public boolean hasPrimaryOwner() {
         return ownershipEnabled && getPrimaryOwner() != null;
@@ -271,7 +269,7 @@ public class OwnershipDescription implements Serializable {
     public boolean isPrimaryOwner(@CheckForNull User user) {
         return user != null && user == getPrimaryOwner();
     }
-    
+
     /**
      * Gets ID of the primary owner.
      * @return userId of the primary owner. The result will be "unknown" if the
@@ -283,20 +281,20 @@ public class OwnershipDescription implements Serializable {
     public @Nonnull String getOwnerId() {
         return getPrimaryOwnerId();
     }
-    
+
     /**
      * Gets primary owner's e-mail.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
      * @return Primary owner's e-mail or empty string if it is not available
      * @since 0.9
-     * @deprecated Use {@link #getPrimaryOwnerEmail()} 
+     * @deprecated Use {@link #getPrimaryOwnerEmail()}
      */
     @Nonnull
     @Deprecated
     public String getOwnerEmail() {
         return getPrimaryOwnerEmail();
     }
-    
+
     /**
      * Gets primary owner's e-mail.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
@@ -308,7 +306,7 @@ public class OwnershipDescription implements Serializable {
     public String getPrimaryOwnerEmail() {
         return OwnershipDescriptionHelper.getOwnerEmail(this);
     }
-    
+
     /**
      * Gets a comma-separated list of co-owners.
      * @return List of co-owner user IDs
@@ -318,7 +316,7 @@ public class OwnershipDescription implements Serializable {
     public @Nonnull Set<String> getCoOwnerIds() {
         return coownersIds;
     }
-    
+
     /**
      * Gets e-mails of secondary owners.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
@@ -329,7 +327,7 @@ public class OwnershipDescription implements Serializable {
     public @Nonnull Set<String> getCoOwnerEmails() {
         return OwnershipDescriptionHelper.getSecondaryOwnerEmails(this, false);
     }
-    
+
     /**
      * Gets e-mails of secondary owners.
      * This method utilizes {@link OwnershipPlugin} global configuration to resolve emails.
@@ -368,16 +366,19 @@ public class OwnershipDescription implements Serializable {
             // Treat disabled ownership configurations as equal ones
             return true;
         }
-        
-        if ((this.primaryOwnerId == null) ? (other.primaryOwnerId != null) : !this.primaryOwnerId.equals(other.primaryOwnerId)) {
+
+        if ((this.primaryOwnerId == null)
+                ? (other.primaryOwnerId != null)
+                : !this.primaryOwnerId.equals(other.primaryOwnerId)) {
             return false;
         }
-        if (this.coownersIds != other.coownersIds && (this.coownersIds == null || !this.coownersIds.equals(other.coownersIds))) {
+        if (this.coownersIds != other.coownersIds
+                && (this.coownersIds == null || !this.coownersIds.equals(other.coownersIds))) {
             return false;
         }
         return true;
     }
-    
+
     protected Object readResolve() throws ObjectStreamException {
         checkUnsecuredConfiguration();
         return this;
@@ -405,13 +406,18 @@ public class OwnershipDescription implements Serializable {
                     }
                     return;
                 } else {
-                    LOGGER.log(Level.WARNING, "Cannot locate OwnershipHelperClass for object {0}. " +
-                            "Jenkins.ADMINISTER permissions will be required to change ownership", context);
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Cannot locate OwnershipHelperClass for object {0}. "
+                                    + "Jenkins.ADMINISTER permissions will be required to change ownership",
+                            context);
                 }
             } else {
-                //TODO: maybe it should rejected, because there is no use-cases for it so far AFAIK
-                LOGGER.log(Level.WARNING, "Ownership Description is used outside the object context. " +
-                        "Jenkins.ADMINISTER permissions will be required to change ownership");
+                // TODO: maybe it should rejected, because there is no use-cases for it so far AFAIK
+                LOGGER.log(
+                        Level.WARNING,
+                        "Ownership Description is used outside the object context. "
+                                + "Jenkins.ADMINISTER permissions will be required to change ownership");
             }
         }
         // We don't know what object this OwnershipDescription belongs to, so we require Overall/Administer permissions.
@@ -419,20 +425,20 @@ public class OwnershipDescription implements Serializable {
         throwIfMissingPermission(Jenkins.get(), Jenkins.ADMINISTER);
     }
 
-    private void throwIfMissingPermission(@Nonnull AccessControlled context, Permission permission) throws ObjectStreamException {
+    private void throwIfMissingPermission(@Nonnull AccessControlled context, Permission permission)
+            throws ObjectStreamException {
         try {
             context.checkPermission(permission);
         } catch (AccessDeniedException e) {
             final String name;
             if (context instanceof ModelObject) {
-                name = ((ModelObject)context).getDisplayName();
+                name = ((ModelObject) context).getDisplayName();
             } else {
                 name = context.toString();
             }
 
-            InvalidObjectException ex = new InvalidObjectException(
-                    String.format("Cannot modify permissions of %s of type %s: %s", name,
-                            context.getClass(), e.getMessage()));
+            InvalidObjectException ex = new InvalidObjectException(String.format(
+                    "Cannot modify permissions of %s of type %s: %s", name, context.getClass(), e.getMessage()));
             ex.addSuppressed(e);
             throw ex;
         }
@@ -446,5 +452,5 @@ public class OwnershipDescription implements Serializable {
      */
     public static boolean isEnabled(OwnershipDescription descr) {
         return descr != null && descr.ownershipEnabled;
-    }   
+    }
 }

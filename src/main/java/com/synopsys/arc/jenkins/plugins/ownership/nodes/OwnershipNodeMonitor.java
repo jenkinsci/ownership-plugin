@@ -45,23 +45,24 @@ public class OwnershipNodeMonitor extends NodeMonitor {
     public AbstractNodeMonitorDescriptor<?> getDescriptor() {
         return DESCRIPTOR;
     }
-    
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
     public static class DescriptorImpl extends AbstractNodeMonitorDescriptor<Data> {
-        
-        //TODO: no need to use AsyncNodeMonitor from the performance PoV, but there is no supported sync option in the core
+
+        // TODO: no need to use AsyncNodeMonitor from the performance PoV, but there is no supported sync option in the
+        // core
         DescriptorImpl() {
             // Check every 10 minutes
-            super(1000*60*10L);
+            super(1000 * 60 * 10L);
         }
-        
+
         @Override
         protected Data monitor(Computer c) throws IOException, InterruptedException {
             OwnershipDescription ownership = ComputerOwnerHelper.getInstance().getOwnershipDescription(c);
             return new Data(ownership);
-        }      
+        }
 
         @Override
         public String getDisplayName() {
@@ -71,12 +72,12 @@ public class OwnershipNodeMonitor extends NodeMonitor {
         @Override
         public NodeMonitor newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             return new OwnershipNodeMonitor();
-        }      
+        }
     }
     /**
      * Immutable representation of the monitoring data.
      */
-    @ExportedBean  
+    @ExportedBean
     public static class Data extends OfflineCause {
         private final OwnershipDescription ownershipDescription;
 
@@ -87,10 +88,10 @@ public class OwnershipNodeMonitor extends NodeMonitor {
         public OwnershipDescription getOwnershipDescription() {
             return ownershipDescription;
         }
-                
+
         @Override
         public String toString() {
             return ownershipDescription.getPrimaryOwnerId();
-        }        
+        }
     }
 }

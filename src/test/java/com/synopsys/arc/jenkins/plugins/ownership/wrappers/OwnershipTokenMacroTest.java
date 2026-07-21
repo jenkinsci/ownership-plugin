@@ -23,6 +23,12 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.wrappers;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
@@ -40,12 +46,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link OwnershipTokenMacro}.
@@ -73,8 +73,8 @@ class OwnershipTokenMacroTest {
 
         project = j.createFreeStyleProject();
         project.setAssignedNode(node);
-        JobOwnerHelper.setOwnership(project,
-                new OwnershipDescription(true, "alice", Collections.singletonList("carol")));
+        JobOwnerHelper.setOwnership(
+                project, new OwnershipDescription(true, "alice", Collections.singletonList("carol")));
     }
 
     @Test
@@ -116,8 +116,8 @@ class OwnershipTokenMacroTest {
     void evaluate_requiresVar() throws Exception {
         FreeStyleBuild build = j.buildAndAssertSuccess(project);
         OwnershipTokenMacro macro = new OwnershipTokenMacro();
-        MacroEvaluationException ex = assertThrows(MacroEvaluationException.class,
-                () -> macro.evaluate(build, TaskListener.NULL, "OWNERSHIP"));
+        MacroEvaluationException ex = assertThrows(
+                MacroEvaluationException.class, () -> macro.evaluate(build, TaskListener.NULL, "OWNERSHIP"));
         assertThat(ex.getMessage(), containsString("var"));
     }
 
@@ -126,8 +126,8 @@ class OwnershipTokenMacroTest {
         FreeStyleBuild build = j.buildAndAssertSuccess(project);
         OwnershipTokenMacro macro = new OwnershipTokenMacro();
         macro.var = "NOT_A_THING";
-        MacroEvaluationException ex = assertThrows(MacroEvaluationException.class,
-                () -> macro.evaluate(build, TaskListener.NULL, "OWNERSHIP"));
+        MacroEvaluationException ex = assertThrows(
+                MacroEvaluationException.class, () -> macro.evaluate(build, TaskListener.NULL, "OWNERSHIP"));
         assertThat(ex.getMessage(), containsString("NOT_A_THING"));
     }
 }

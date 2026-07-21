@@ -42,11 +42,11 @@ import jenkins.model.Jenkins;
  */
 @Extension(optional = true)
 public class FolderItemListener extends ItemListener {
-    
+
     private static final Logger LOGGER = Logger.getLogger(FolderItemListener.class.getName());
-    
+
     @Override
-    public void onCopied(Item src, Item item) {     
+    public void onCopied(Item src, Item item) {
         if (!isFoldersPluginEnabled()) {
             return;
         }
@@ -62,24 +62,25 @@ public class FolderItemListener extends ItemListener {
         OwnershipDescription d = getPolicy().onCreated(item);
         modifyOwnership(item, d);
     }
-    
+
     private ItemOwnershipPolicy getPolicy() {
         return OwnershipPlugin.getInstance().getConfiguration().getItemOwnershipPolicy();
     }
-    
+
     private boolean isFoldersPluginEnabled() {
         final Plugin plugin = Jenkins.get().getPlugin("cloudbees-folder");
         return plugin != null && plugin.getWrapper().isActive();
     }
-    
+
     private void modifyOwnership(Item item, OwnershipDescription ownership) {
         if (item instanceof AbstractFolder) {
             AbstractFolder<?> folder = (AbstractFolder) item;
             try {
                 FolderOwnershipHelper.setOwnership(folder, ownership);
             } catch (IOException ex) {
-                LOGGER.log(Level.WARNING, "Cannot change ownership of {0} to [{1}]. {2}",
-                        new Object[] {item, ownership, ex});
+                LOGGER.log(
+                        Level.WARNING, "Cannot change ownership of {0} to [{1}]. {2}", new Object[] {item, ownership, ex
+                        });
             }
         }
     }

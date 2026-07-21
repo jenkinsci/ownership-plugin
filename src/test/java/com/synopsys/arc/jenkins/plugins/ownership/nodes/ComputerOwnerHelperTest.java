@@ -23,6 +23,12 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import hudson.model.Computer;
 import hudson.model.Slave;
@@ -35,12 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link ComputerOwnerHelper} delegation to {@link NodeOwnerHelper}.
@@ -88,8 +88,8 @@ class ComputerOwnerHelperTest {
         Computer computer = node.toComputer();
         assertNotNull(computer);
         OwnershipInfo info = ComputerOwnerHelper.getInstance().getOwnershipInfo(computer);
-        assertThat(info.getDescription(),
-                equalTo(ComputerOwnerHelper.getInstance().getOwnershipDescription(computer)));
+        assertThat(
+                info.getDescription(), equalTo(ComputerOwnerHelper.getInstance().getOwnershipDescription(computer)));
         assertTrue(info.getDescription().isOwnershipEnabled());
         assertThat(info.getDescription().getPrimaryOwnerId(), equalTo("alice"));
     }

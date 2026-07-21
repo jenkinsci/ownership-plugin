@@ -33,10 +33,9 @@ import org.jenkinsci.plugins.ownership.model.OwnershipDescriptionSource;
  * @author Oleg Nenashev
  * @since 0.9
  */
-public class JobOwnershipDescriptionSource extends OwnershipDescriptionSource<Job<?,?>> {
-    
-    public JobOwnershipDescriptionSource(@CheckForNull Job<?,?> item) {
+public class JobOwnershipDescriptionSource extends OwnershipDescriptionSource<Job<?, ?>> {
+
+    public JobOwnershipDescriptionSource(@CheckForNull Job<?, ?> item) {
         super(item);
     }
-    
 }

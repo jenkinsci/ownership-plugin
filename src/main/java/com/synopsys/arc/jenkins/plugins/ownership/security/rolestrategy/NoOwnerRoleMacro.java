@@ -43,7 +43,7 @@ public class NoOwnerRoleMacro extends AbstractOwnershipRoleMacro {
     public String getName() {
         return Messages.Security_RoleStrategy_NoOwnerRoleMacro_Name();
     }
-       
+
     @Override
     public String getDescription() {
         return Messages.Security_RoleStrategy_NoOwnerRoleMacro_Description();

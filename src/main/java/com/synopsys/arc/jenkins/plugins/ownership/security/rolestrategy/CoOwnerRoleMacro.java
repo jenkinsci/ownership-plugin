@@ -23,8 +23,9 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
-import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import static com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro.hasPermission;
+
+import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.Extension;
@@ -39,12 +40,12 @@ import hudson.security.Permission;
  */
 @Extension(optional = true, ordinal = -1000)
 public class CoOwnerRoleMacro extends AbstractOwnershipRoleMacro {
-    
+
     @Override
     public String getName() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Name(); 
+        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Name();
     }
-    
+
     @Override
     public String getDescription() {
         return Messages.OwnershipPlugin_ManagePermissions_SlaveDescription();
@@ -59,7 +60,7 @@ public class CoOwnerRoleMacro extends AbstractOwnershipRoleMacro {
         if (sid.trim().isEmpty()) {
             return false;
         }
-        
+
         User user = User.getById(sid, false);
         return hasPermission(user, type, item, macro, true);
     }

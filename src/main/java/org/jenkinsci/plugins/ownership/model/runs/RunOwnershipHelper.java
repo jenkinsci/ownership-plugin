@@ -35,11 +35,10 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Node;
 import hudson.model.Run;
+import hudson.security.Permission;
 import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.kohsuke.accmod.Restricted;
@@ -62,7 +61,7 @@ public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {
     public String getItemTypeName(Run item) {
         return "run";
     }
-    
+
     @Override
     public String getItemDisplayName(Run item) {
         return item.getFullDisplayName();
@@ -76,7 +75,7 @@ public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {
     @Override
     public OwnershipDescription getOwnershipDescription(Run item) {
         return JobOwnerHelper.Instance.getOwnershipDescription(item.getParent());
-    }    
+    }
 
     @Override
     public OwnershipInfo getOwnershipInfo(Run item) {
@@ -98,14 +97,17 @@ public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {
      * @param injectNodeOwnership Injects Node ownership info
      * @since 0.6 Method is public
      */
-    public static void setUp (@Nonnull AbstractBuild build, @Nonnull Map<String, String> target, 
-            @CheckForNull BuildListener listener, 
-            boolean injectJobOwnership, boolean injectNodeOwnership) {
-        if (injectJobOwnership) { 
+    public static void setUp(
+            @Nonnull AbstractBuild build,
+            @Nonnull Map<String, String> target,
+            @CheckForNull BuildListener listener,
+            boolean injectJobOwnership,
+            boolean injectNodeOwnership) {
+        if (injectJobOwnership) {
             OwnershipDescription descr = JobOwnerHelper.Instance.getOwnershipDescription(build.getParent());
             getVariables(descr, target, "JOB");
         }
-             
+
         if (injectNodeOwnership) {
             Node node = build.getBuiltOn();
             if (node == null) {
@@ -116,44 +118,47 @@ public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {
                 }
                 return; // Ignore the error
             }
-            
+
             OwnerNodeProperty prop = node.getNodeProperties().get(OwnerNodeProperty.class);
-            OwnershipDescription descr = prop!=null ? prop.getOwnership() : OwnershipDescription.DISABLED_DESCR;
+            OwnershipDescription descr = prop != null ? prop.getOwnership() : OwnershipDescription.DISABLED_DESCR;
             getVariables(descr, target, "NODE");
         }
     }
-    
-    //TODO: Replace by OwnershipDescriptionHelper
-    private static void getVariables(OwnershipDescription descr, Map<String, String> target, String prefix) {      
-        target.put(prefix+"_OWNER", descr.hasPrimaryOwner() ? descr.getPrimaryOwnerId() : "");
-        String ownerEmail = UserStringFormatter.formatEmail(descr.getPrimaryOwnerId());  
-        target.put(prefix+"_OWNER_EMAIL", ownerEmail != null ? ownerEmail : "");
-        
-        StringBuilder coowners=new StringBuilder(target.get(prefix+"_OWNER"));   
-        StringBuilder coownerEmails= new StringBuilder(target.get(prefix+"_OWNER_EMAIL"));
+
+    // TODO: Replace by OwnershipDescriptionHelper
+    private static void getVariables(OwnershipDescription descr, Map<String, String> target, String prefix) {
+        target.put(prefix + "_OWNER", descr.hasPrimaryOwner() ? descr.getPrimaryOwnerId() : "");
+        String ownerEmail = UserStringFormatter.formatEmail(descr.getPrimaryOwnerId());
+        target.put(prefix + "_OWNER_EMAIL", ownerEmail != null ? ownerEmail : "");
+
+        StringBuilder coowners = new StringBuilder(target.get(prefix + "_OWNER"));
+        StringBuilder coownerEmails = new StringBuilder(target.get(prefix + "_OWNER_EMAIL"));
         for (String userId : descr.getCoownersIds()) {
             if (coowners.length() != 0) {
                 coowners.append(",");
             }
             coowners.append(userId);
-            
+
             String coownerEmail = UserStringFormatter.formatEmail(userId);
             if (coownerEmail != null) {
-                //TODO: may corrupt logic on empty owner
+                // TODO: may corrupt logic on empty owner
                 if (coownerEmails.length() != 0) {
                     coownerEmails.append(",");
                 }
                 coownerEmails.append(coownerEmail);
-            }       
+            }
         }
-        target.put(prefix+"_COOWNERS", coowners.toString());
-        target.put(prefix+"_COOWNERS_EMAILS", coownerEmails.toString());     
+        target.put(prefix + "_COOWNERS", coowners.toString());
+        target.put(prefix + "_COOWNERS_EMAILS", coownerEmails.toString());
     }
 
     @Override
     public boolean isDisplayOwnershipSummaryBox(Run item) {
-        return super.isDisplayOwnershipSummaryBox(item) &&
-               !OwnershipPlugin.getInstance().getConfiguration().getDisplayOptions().isHideRunOwnership();
+        return super.isDisplayOwnershipSummaryBox(item)
+                && !OwnershipPlugin.getInstance()
+                        .getConfiguration()
+                        .getDisplayOptions()
+                        .isHideRunOwnership();
     }
 
     @Extension

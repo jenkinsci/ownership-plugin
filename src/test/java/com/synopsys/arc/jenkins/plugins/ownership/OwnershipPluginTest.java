@@ -23,6 +23,17 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.OwnershipLayoutFormatterProvider;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.AssignCreatorPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.DropOwnershipPolicy;
@@ -43,17 +54,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.StaplerRequest2;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Coverage for OwnershipPlugin APIs outside the defaultJobsSecurity binding path.
@@ -108,8 +108,7 @@ class OwnershipPluginTest {
         alice.addProperty(new hudson.tasks.Mailer.UserProperty("alice-fast@example.com"));
 
         assertTrue(OwnershipPlugin.getInstance().hasMailResolverRestriction());
-        assertThat(OwnershipPlugin.getInstance().getMailResolverClassName(),
-                is(OwnershipPlugin.FAST_RESOLVER_ID));
+        assertThat(OwnershipPlugin.getInstance().getMailResolverClassName(), is(OwnershipPlugin.FAST_RESOLVER_ID));
         assertThat(OwnershipPlugin.getInstance().resolveEmail(alice), is("alice-fast@example.com"));
     }
 
@@ -166,11 +165,11 @@ class OwnershipPluginTest {
         assertTrue(plugin.isRequiresConfigureRights());
         assertTrue(plugin.isAssignOnCreate());
         assertThat(plugin.getItemSpecificDescriptor(), sameInstance(ItemSpecificSecurity.DESCRIPTOR));
-        assertThat(plugin.getOwnershipLayoutFormatterProvider(),
+        assertThat(
+                plugin.getOwnershipLayoutFormatterProvider(),
                 sameInstance(OwnershipLayoutFormatterProvider.DEFAULT_PROVIDER));
         assertThat(OwnershipPlugin.getLogger(), notNullValue());
-        assertThat(plugin.getConfiguration().getItemOwnershipPolicy(),
-                instanceOf(AssignCreatorPolicy.class));
+        assertThat(plugin.getConfiguration().getItemOwnershipPolicy(), instanceOf(AssignCreatorPolicy.class));
 
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .requireConfigurePermissions(false)
@@ -229,7 +228,8 @@ class OwnershipPluginTest {
 
     @Test
     void getFolderSpecificDescriptor() {
-        assertThat(OwnershipPlugin.getInstance().getFolderSpecificDescriptor(),
+        assertThat(
+                OwnershipPlugin.getInstance().getFolderSpecificDescriptor(),
                 sameInstance(FolderSpecificSecurity.DESCRIPTOR));
     }
 

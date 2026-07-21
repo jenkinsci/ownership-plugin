@@ -23,6 +23,9 @@
  */
 package org.jenkinsci.plugins.ownership.integrations.securityinspector;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
@@ -42,9 +45,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,20 +57,21 @@ import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
  */
 @WithJenkins
 class PermissionsForOwnerReportBuilderTest {
-    
+
     private JenkinsRule j;
 
     @BeforeEach
     void beforeEach(JenkinsRule rule) {
         j = rule;
     }
-    
+
     private void initializeDefaultMatrixAuthSecurity() throws Exception {
         // Initialize plugin before using it
-        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(j).configure();
-        
+        org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer.forJenkinsRule(j)
+                .configure();
+
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        
+
         // Create users
         User.get("admin");
         User.get("user1");
@@ -78,13 +79,13 @@ class PermissionsForOwnerReportBuilderTest {
         User user = User.get("user3");
         j.jenkins.save();
         user.save();
-        
+
         // Create items (jobs & folder)
         FreeStyleProject project1 = j.createFreeStyleProject("project1");
         FreeStyleProject project2 = j.createFreeStyleProject("project2");
         final Folder f = j.createProject(Folder.class, "folder");
         FreeStyleProject projectInFolder = f.createProject(FreeStyleProject.class, "projectInFolder");
-                
+
         // Initialize global security
         final ProjectMatrixAuthorizationStrategy strategy = new ProjectMatrixAuthorizationStrategy();
         strategy.add(Jenkins.ADMINISTER, "admin");
@@ -99,14 +100,17 @@ class PermissionsForOwnerReportBuilderTest {
         strategy.add(Computer.CONNECT, "user2");
         strategy.add(Computer.CREATE, "user2");
         j.jenkins.setAuthorizationStrategy(strategy);
-        
+
         JobOwnerHelper.Instance.setOwnership(project1, new OwnershipDescription(true, "user1", Arrays.asList("admin")));
-        JobOwnerHelper.Instance.setOwnership(project2, new OwnershipDescription(true, "user1", Arrays.asList("user2", "admin")));
-        JobOwnerHelper.Instance.setOwnership(projectInFolder, new OwnershipDescription(true, "user2", Arrays.asList("admin")));
-        FolderOwnershipHelper.getInstance().setOwnership(f, new OwnershipDescription(true, "user2", Arrays.asList("admin", "user1")));
-        
+        JobOwnerHelper.Instance.setOwnership(
+                project2, new OwnershipDescription(true, "user1", Arrays.asList("user2", "admin")));
+        JobOwnerHelper.Instance.setOwnership(
+                projectInFolder, new OwnershipDescription(true, "user2", Arrays.asList("admin")));
+        FolderOwnershipHelper.getInstance()
+                .setOwnership(f, new OwnershipDescription(true, "user2", Arrays.asList("admin", "user1")));
+
         j.jenkins.save();
-        
+
         // Setup local security for project 1
         {
             final Set<String> user1 = Collections.singleton("user1");
@@ -116,7 +120,7 @@ class PermissionsForOwnerReportBuilderTest {
             final JobProperty prop = new AuthorizationMatrixProperty(permissions);
             project1.addProperty(prop);
         }
-        
+
         // Setup local security for project 2
         {
             final Set<String> user2 = Collections.singleton("user2");
@@ -126,7 +130,7 @@ class PermissionsForOwnerReportBuilderTest {
             final JobProperty prop = new AuthorizationMatrixProperty(permissions);
             project2.addProperty(prop);
         }
-        
+
         // Setup local security for projectInFolder
         {
             final Set<String> user3 = Collections.singleton("user3");
@@ -143,149 +147,180 @@ class PermissionsForOwnerReportBuilderTest {
 
     @Test
     void shouldReportAdminProperly() throws Exception {
-        
+
         initializeDefaultMatrixAuthSecurity();
         User usr = j.jenkins.getUser("admin");
-        final PermissionsForOwnerReportBuilder.ReportImpl report = 
-                new PermissionsForOwnerReportBuilder.ReportImpl(usr);
+        final PermissionsForOwnerReportBuilder.ReportImpl report = new PermissionsForOwnerReportBuilder.ReportImpl(usr);
         assertNotNull(report);
 
         final OwnerFilter filter = new OwnerFilter();
-        final Set<TopLevelItem> items4Report =new HashSet<>(filter.doFilter(usr));
+        final Set<TopLevelItem> items4Report = new HashSet<>(filter.doFilter(usr));
         assertNotNull(items4Report);
         report.generateReport(items4Report);
-        
+
         // Items:
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
         TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
-        
+
         PermissionReportAssert.assertHasRow(report, project1);
         PermissionReportAssert.assertHasRow(report, project2);
         PermissionReportAssert.assertHasRow(report, folder);
         PermissionReportAssert.assertHasRow(report, projectInFolder);
-        
-        PermissionReportAssert.assertHasPermissions(report, project1, 
-                Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
-                Item.DISCOVER, Item.READ, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, project2, 
-                Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
-                Item.DISCOVER, Item.READ, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, folder, 
-                Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
-                Item.DISCOVER, Item.READ, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, projectInFolder, 
-                Item.BUILD, Item.CANCEL, Item.CONFIGURE, Item.CREATE, Item.DELETE, 
-                Item.DISCOVER, Item.READ, Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(
+                report,
+                project1,
+                Item.BUILD,
+                Item.CANCEL,
+                Item.CONFIGURE,
+                Item.CREATE,
+                Item.DELETE,
+                Item.DISCOVER,
+                Item.READ,
+                Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(
+                report,
+                project2,
+                Item.BUILD,
+                Item.CANCEL,
+                Item.CONFIGURE,
+                Item.CREATE,
+                Item.DELETE,
+                Item.DISCOVER,
+                Item.READ,
+                Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(
+                report,
+                folder,
+                Item.BUILD,
+                Item.CANCEL,
+                Item.CONFIGURE,
+                Item.CREATE,
+                Item.DELETE,
+                Item.DISCOVER,
+                Item.READ,
+                Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(
+                report,
+                projectInFolder,
+                Item.BUILD,
+                Item.CANCEL,
+                Item.CONFIGURE,
+                Item.CREATE,
+                Item.DELETE,
+                Item.DISCOVER,
+                Item.READ,
+                Item.WORKSPACE);
     }
 
     @Test
     void shouldReportUser1Properly() throws Exception {
-        
+
         initializeDefaultMatrixAuthSecurity();
-        
+
         User usr = User.get("user1");
-        final PermissionsForOwnerReportBuilder.ReportImpl report = 
-                new PermissionsForOwnerReportBuilder.ReportImpl(usr);
+        final PermissionsForOwnerReportBuilder.ReportImpl report = new PermissionsForOwnerReportBuilder.ReportImpl(usr);
         assertNotNull(report);
-        
+
         final OwnerFilter filter = new OwnerFilter();
-        final Set<TopLevelItem> items4Report =new HashSet<>(filter.doFilter(usr));
+        final Set<TopLevelItem> items4Report = new HashSet<>(filter.doFilter(usr));
         assertNotNull(items4Report);
         report.generateReport(items4Report);
-        
+
         // Items:
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
         TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
-       
+
         PermissionReportAssert.assertHasRow(report, project1);
         PermissionReportAssert.assertHasRow(report, project2);
         PermissionReportAssert.assertHasRow(report, j.jenkins.getItem("folder"));
         PermissionReportAssert.assertHasNotRow(report, projectInFolder);
 
-        PermissionReportAssert.assertHasPermissions(report, project1, 
-                Item.READ, Item.CONFIGURE, Item.BUILD, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, project1, 
-                Item.CREATE, Item.DELETE, Item.CANCEL, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, project2, 
-                Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, project2, 
-                Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, folder, 
-                Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, folder, 
-                Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
+        PermissionReportAssert.assertHasPermissions(
+                report, project1, Item.READ, Item.CONFIGURE, Item.BUILD, Item.DISCOVER);
+        PermissionReportAssert.assertHasNotPermissions(
+                report, project1, Item.CREATE, Item.DELETE, Item.CANCEL, Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(report, project2, Item.READ, Item.DISCOVER);
+        PermissionReportAssert.assertHasNotPermissions(
+                report, project2, Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(report, folder, Item.READ, Item.DISCOVER);
+        PermissionReportAssert.assertHasNotPermissions(
+                report, folder, Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
     }
 
     @Test
     void shouldReportUser2Properly() throws Exception {
-        
+
         initializeDefaultMatrixAuthSecurity();
         User usr = User.get("user2");
-        final PermissionsForOwnerReportBuilder.ReportImpl report = 
-                new PermissionsForOwnerReportBuilder.ReportImpl(usr);
+        final PermissionsForOwnerReportBuilder.ReportImpl report = new PermissionsForOwnerReportBuilder.ReportImpl(usr);
         assertNotNull(report);
-        
+
         final OwnerFilter filter = new OwnerFilter();
-        final Set<TopLevelItem> items4Report =new HashSet<>(filter.doFilter(usr));
+        final Set<TopLevelItem> items4Report = new HashSet<>(filter.doFilter(usr));
         assertNotNull(items4Report);
         report.generateReport(items4Report);
-        
+
         // Items:
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
         TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
-        
+
         PermissionReportAssert.assertHasNotRow(report, project1);
         PermissionReportAssert.assertHasRow(report, project2);
         PermissionReportAssert.assertHasRow(report, folder);
         PermissionReportAssert.assertHasRow(report, projectInFolder);
-        
-        PermissionReportAssert.assertHasPermissions(report, project2, 
-                Item.READ, Item.DELETE, Item.BUILD, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, project2, 
-                Item.CREATE, Item.CONFIGURE, Item.CANCEL, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, folder, 
-                Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, folder, 
-                Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
-        
-        PermissionReportAssert.assertHasPermissions(report, projectInFolder, 
-                Item.READ, Item.DISCOVER);
-        PermissionReportAssert.assertHasNotPermissions(report, projectInFolder, 
-                Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(
+                report, project2, Item.READ, Item.DELETE, Item.BUILD, Item.DISCOVER);
+        PermissionReportAssert.assertHasNotPermissions(
+                report, project2, Item.CREATE, Item.CONFIGURE, Item.CANCEL, Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(report, folder, Item.READ, Item.DISCOVER);
+        PermissionReportAssert.assertHasNotPermissions(
+                report, folder, Item.CONFIGURE, Item.CREATE, Item.DELETE, Item.BUILD, Item.CANCEL, Item.WORKSPACE);
+
+        PermissionReportAssert.assertHasPermissions(report, projectInFolder, Item.READ, Item.DISCOVER);
+        PermissionReportAssert.assertHasNotPermissions(
+                report,
+                projectInFolder,
+                Item.CONFIGURE,
+                Item.CREATE,
+                Item.DELETE,
+                Item.BUILD,
+                Item.CANCEL,
+                Item.WORKSPACE);
     }
 
     @Test
     void shouldReportUser3Properly() throws Exception {
-        
+
         initializeDefaultMatrixAuthSecurity();
         User usr = User.get("user3");
-        final PermissionsForOwnerReportBuilder.ReportImpl report = 
-                new PermissionsForOwnerReportBuilder.ReportImpl(usr);
+        final PermissionsForOwnerReportBuilder.ReportImpl report = new PermissionsForOwnerReportBuilder.ReportImpl(usr);
         assertNotNull(report);
-        
+
         final OwnerFilter filter = new OwnerFilter();
-        final Set<TopLevelItem> items4Report =new HashSet<>(filter.doFilter(usr));
+        final Set<TopLevelItem> items4Report = new HashSet<>(filter.doFilter(usr));
         assertNotNull(items4Report);
         report.generateReport(items4Report);
-        
+
         // Items:
         TopLevelItem project1 = j.jenkins.getItem("project1");
         TopLevelItem project2 = j.jenkins.getItem("project2");
         TopLevelItem folder = j.jenkins.getItem("folder");
         TopLevelItem projectInFolder = j.jenkins.getItemByFullName("folder/projectInFolder", TopLevelItem.class);
-        
+
         PermissionReportAssert.assertHasNotRow(report, project1);
         PermissionReportAssert.assertHasNotRow(report, project2);
         PermissionReportAssert.assertHasNotRow(report, folder);
@@ -294,24 +329,25 @@ class PermissionsForOwnerReportBuilderTest {
 
     @Test
     void shouldDownloadReport4User1() throws Exception {
-        
+
         initializeDefaultMatrixAuthSecurity();
-        
+
         User usr = User.get("user1");
-        final PermissionsForOwnerReportBuilder.ReportImpl report = 
-                new PermissionsForOwnerReportBuilder.ReportImpl(usr);
+        final PermissionsForOwnerReportBuilder.ReportImpl report = new PermissionsForOwnerReportBuilder.ReportImpl(usr);
         assertNotNull(report);
-        
+
         final OwnerFilter filter = new OwnerFilter();
-        final Set<TopLevelItem> items4Report =new HashSet<>(filter.doFilter(usr));
+        final Set<TopLevelItem> items4Report = new HashSet<>(filter.doFilter(usr));
         assertNotNull(items4Report);
         report.generateReport(items4Report);
-        
-        assertThat("Report target name must be equal to 'user1'", report.getReportTargetName().equals("user1")); 
+
+        assertThat(
+                "Report target name must be equal to 'user1'",
+                report.getReportTargetName().equals("user1"));
 
         String reportInCSV = report.getReportInCSV();
         assertNotNull(reportInCSV);
-        
+
         for (TopLevelItem item : items4Report) {
             assertThat("CSV Report must had row " + item, reportInCSV.contains(item.getFullDisplayName()));
         }

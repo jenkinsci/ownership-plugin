@@ -32,9 +32,8 @@ import javax.annotation.Nonnull;
  * @author Oleg Nenashev
  * @since 0.1
  */
-public class UserComparator implements java.util.Comparator<User>, Serializable
-{
-    
+public class UserComparator implements java.util.Comparator<User>, Serializable {
+
     @Override
     public int compare(@Nonnull User o1, @Nonnull User o2) {
         return o1.getFullName().compareTo(o2.getFullName());

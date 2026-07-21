@@ -23,8 +23,9 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
-import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import static com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy.AbstractOwnershipRoleMacro.NO_SID_SUFFIX;
+
+import com.synopsys.arc.jenkins.plugins.ownership.Messages;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.Extension;
@@ -41,20 +42,21 @@ import org.jenkinsci.plugins.ownership.integrations.rolestrategy.macros.CurrentU
  */
 @Deprecated
 @Extension(optional = true, ordinal = -1000)
-public class CoOwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro{
-    
+public class CoOwnerRoleMacroNoSid extends AbstractOwnershipRoleMacro {
+
     @Override
     public String getName() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Name()+NO_SID_SUFFIX; 
-    }
-    
-    @Override
-    public String getDescription() {
-        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Description()+Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Name() + NO_SID_SUFFIX;
     }
 
     @Override
-    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
+    public String getDescription() {
+        return Messages.Security_RoleStrategy_CoOwnerRoleMacro_Description()
+                + Messages.Security_RoleStrategy_IgnoreSidDescriptionSuffix();
+    }
+
+    @Override
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
         User user = User.current();
         return hasPermission(user, type, item, macro, true);
     }

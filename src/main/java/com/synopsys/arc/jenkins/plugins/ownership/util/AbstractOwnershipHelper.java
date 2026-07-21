@@ -44,36 +44,35 @@ import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
  * @since 0.0.4
  * @author Oleg Nenashev
  */
-public abstract class AbstractOwnershipHelper<TObjectType>  
-    implements IOwnershipHelper<TObjectType> {
-    
+public abstract class AbstractOwnershipHelper<TObjectType> implements IOwnershipHelper<TObjectType> {
+
     @Override
     public final @Nonnull String getDisplayName(@CheckForNull User usr) {
         return UserStringFormatter.format(usr);
-    } 
-    
+    }
+
     @Override
     public final @CheckForNull String getOwnerEmail(@Nonnull TObjectType item) {
         OwnershipDescription descr = getOwnershipDescription(item);
-        return  UserStringFormatter.formatEmail(descr.getPrimaryOwner());      
+        return UserStringFormatter.formatEmail(descr.getPrimaryOwner());
     }
-      
+
     @Override
     public final @Nonnull String getOwnerLongString(@Nonnull TObjectType item) {
-        OwnershipDescription descr = getOwnershipDescription(item);     
-        return descr.isOwnershipEnabled() 
-                ? UserStringFormatter.format(descr.getPrimaryOwner()) 
+        OwnershipDescription descr = getOwnershipDescription(item);
+        return descr.isOwnershipEnabled()
+                ? UserStringFormatter.format(descr.getPrimaryOwner())
                 : UserStringFormatter.UNKNOWN_USER_STRING;
     }
-       
+
     @Override
-    public final @Nonnull  String getOwner(@Nonnull TObjectType item) {
+    public final @Nonnull String getOwner(@Nonnull TObjectType item) {
         OwnershipDescription descr = getOwnershipDescription(item);
-        return (descr.isOwnershipEnabled()) 
+        return (descr.isOwnershipEnabled())
                 ? UserStringFormatter.formatShort(descr.getPrimaryOwnerId())
                 : UserStringFormatter.UNKNOWN_USER_STRING;
-    }    
-    
+    }
+
     @Override
     public final boolean isOwnerExists(@Nonnull TObjectType item) {
         OwnershipDescription descr = getOwnershipDescription(item);
@@ -93,35 +92,38 @@ public abstract class AbstractOwnershipHelper<TObjectType>
      * @return candidate owners
      */
     @Nonnull
-    protected Collection<User> filterPossibleOwners(@Nonnull AccessControlled item,
-                                                    @Nonnull Permission configurePermission) {
+    protected Collection<User> filterPossibleOwners(
+            @Nonnull AccessControlled item, @Nonnull Permission configurePermission) {
         if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
             IUserFilter filter = new AccessRightsFilter(item, configurePermission);
             return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         }
         return User.getAll();
     }
-    
-    //TODO: promote to interface
+
+    // TODO: promote to interface
     /**
      * Checks if the summary box should be displayed.
      * @param item Current item
-     * @return {@code true} if the summary box should be displayed (even if there is no data); 
+     * @return {@code true} if the summary box should be displayed (even if there is no data);
      * @since 0.8
      */
     public boolean isDisplayOwnershipSummaryBox(@Nonnull TObjectType item) {
         // If there is no data, check global options
         if (!getOwnershipDescription(item).isOwnershipEnabled()) {
-            return !OwnershipPlugin.getInstance().getConfiguration().getDisplayOptions().isHideOwnershipIfNoData();
+            return !OwnershipPlugin.getInstance()
+                    .getConfiguration()
+                    .getDisplayOptions()
+                    .isHideOwnershipIfNoData();
         }
-        
+
         return true;
     }
- 
+
     /**
      * Gets ownership info of the requested item.
      * @param item Item to be described
-     * @return Ownership description. The method returns a 
+     * @return Ownership description. The method returns a
      * {@link OwnershipDescription#DISABLED_DESCR}
      * @since 0.9
      */
@@ -146,7 +148,9 @@ public abstract class AbstractOwnershipHelper<TObjectType>
      *         {@code false} will be returned otherwise, even if ownership is inherited.
      * @since TODO
      */
-    public boolean hasLocallyDefinedOwnership(@Nonnull TObjectType item) { return false; }
+    public boolean hasLocallyDefinedOwnership(@Nonnull TObjectType item) {
+        return false;
+    }
 
     /**
      * Checks whether item-specific security grants {@code sid} the given permission.

@@ -33,13 +33,6 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.ui.OwnershipLayoutFormatter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
 import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
-import net.sf.json.JSONObject;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.interceptor.RequirePOST;
-
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Items;
@@ -55,6 +48,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.servlet.ServletException;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Ownership job property.
@@ -62,9 +60,7 @@ import javax.servlet.ServletException;
  * @author Oleg Nenashev
  * @since 0.0.1
  */
-public class JobOwnerJobProperty extends JobProperty<Job<?, ?>> 
-    implements IOwnershipItem<Job<?, ?>>
-{
+public class JobOwnerJobProperty extends JobProperty<Job<?, ?>> implements IOwnershipItem<Job<?, ?>> {
     @CheckForNull
     OwnershipDescription ownership;
 
@@ -73,33 +69,33 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
      */
     @CheckForNull
     ItemSpecificSecurity itemSpecificSecurity;
-        
+
     @DataBoundConstructor
-    public JobOwnerJobProperty( OwnershipDescription ownershipDescription, ItemSpecificSecurity security) {
+    public JobOwnerJobProperty(OwnershipDescription ownershipDescription, ItemSpecificSecurity security) {
         this.ownership = ownershipDescription;
         this.itemSpecificSecurity = security;
     }
 
     @Override
     public OwnershipDescription getOwnership() {
-        return (ownership!=null) ? ownership : OwnershipDescription.DISABLED_DESCR;
+        return (ownership != null) ? ownership : OwnershipDescription.DISABLED_DESCR;
     }
 
     /**
      * Gets current configuration of item-specific security.
      * The function returns a default configuration if security is not
-     * configured. Use {@link #hasItemSpecificSecurity() hasItemSpecificSecurity} 
+     * configured. Use {@link #hasItemSpecificSecurity() hasItemSpecificSecurity}
      * to check an origin of permissions.
      * @return ItemSpecific security or {@code null} if it is not configured
      * @since 0.3
      */
     @CheckForNull
     public ItemSpecificSecurity getItemSpecificSecurity() {
-        return itemSpecificSecurity != null 
-                ? itemSpecificSecurity 
+        return itemSpecificSecurity != null
+                ? itemSpecificSecurity
                 : OwnershipPlugin.getInstance().getDefaultJobsSecurity();
     }
-    
+
     /**
      * Checks if job-specific security is configured.
      * @return true if job-specific security is configured
@@ -108,14 +104,13 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
     public boolean hasItemSpecificSecurity() {
         return itemSpecificSecurity != null;
     }
-    
+
     public String getDisplayName(User usr) {
         return JobOwnerHelper.Instance.getDisplayName(usr);
     }
-      
-    public Collection<User> getUsers()
-    {     
-        //TODO: Sort users
+
+    public Collection<User> getUsers() {
+        // TODO: Sort users
         IUserFilter filter = new AccessRightsFilter(owner, Job.CONFIGURE);
         Collection<User> res = UserCollectionFilter.filterUsers(User.getAll(), true, filter);
         return res;
@@ -128,18 +123,20 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
 
     @Override
     public Job<?, ?> getDescribedItem() {
-        return owner;   
+        return owner;
     }
 
     @Override
     public JobProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
         return new JobOwnerJobProperty(ownership, itemSpecificSecurity);
     }
-    
+
     public OwnershipLayoutFormatter<Job<?, ?>> getLayoutFormatter() {
-        return OwnershipPlugin.getInstance().getOwnershipLayoutFormatterProvider().getLayoutFormatter(getDescribedItem());
-    }   
-    
+        return OwnershipPlugin.getInstance()
+                .getOwnershipLayoutFormatterProvider()
+                .getLayoutFormatter(getDescribedItem());
+    }
+
     @Extension
     public static class DescriptorImpl extends JobPropertyDescriptor {
         @Override
@@ -150,7 +147,7 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
         @Override
         public boolean isApplicable(Class<? extends Job> jobType) {
             return true;
-        }          
+        }
     }
 
     @Override
@@ -161,20 +158,21 @@ public class JobOwnerJobProperty extends JobProperty<Job<?, ?>>
         bldr.append(itemSpecificSecurity != null ? "with specific permissions" : "without specific permissions");
         return bldr.toString();
     }
-    
+
     @RequirePOST
-    public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
+    public void doOwnersSubmit(StaplerRequest req, StaplerResponse rsp)
+            throws IOException, UnsupportedEncodingException, ServletException, Descriptor.FormException {
         owner.checkPermission(OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP);
         JSONObject formData = req.getSubmittedForm();
         JSONObject jsonOwnership = formData.getJSONObject("owners");
         setOwnershipDescription(OwnershipDescription.parseJSON(jsonOwnership));
     }
-    
+
     public void setOwnershipDescription(@CheckForNull OwnershipDescription descr) throws IOException {
         ownership = descr;
         owner.save();
     }
-    
+
     public void setItemSpecificSecurity(@CheckForNull ItemSpecificSecurity security) throws IOException {
         itemSpecificSecurity = security;
         owner.save();

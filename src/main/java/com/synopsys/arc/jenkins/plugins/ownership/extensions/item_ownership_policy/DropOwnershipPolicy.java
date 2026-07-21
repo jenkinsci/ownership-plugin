@@ -40,9 +40,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class DropOwnershipPolicy extends ItemOwnershipPolicy {
 
     @DataBoundConstructor
-    public DropOwnershipPolicy() {
-    }
-    
+    public DropOwnershipPolicy() {}
+
     @Override
     public OwnershipDescription onCreated(Item item) {
         return null;
@@ -52,7 +51,7 @@ public class DropOwnershipPolicy extends ItemOwnershipPolicy {
     public OwnershipDescription onCopied(Item src, Item item) {
         return null;
     }
-        
+
     @Extension
     public static class DescriptorImpl extends ItemOwnershipPolicyDescriptor {
 

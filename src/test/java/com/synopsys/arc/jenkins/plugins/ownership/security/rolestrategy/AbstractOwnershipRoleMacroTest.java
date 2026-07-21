@@ -23,6 +23,9 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import com.michelin.cio.hudson.plugins.rolestrategy.PermissionEntry;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
@@ -34,15 +37,12 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 /**
  * Tests for {@link AbstractOwnershipRoleMacro} focusing on null and empty SID validation.
  */
 @WithJenkins
 class AbstractOwnershipRoleMacroTest {
-    
+
     private JenkinsRule j;
 
     @BeforeEach
@@ -60,9 +60,9 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the null check logic
-        
+
         boolean result = macro.hasPermission((PermissionEntry) null, permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when PermissionEntry is null", result, equalTo(false));
     }
 
@@ -76,11 +76,11 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the null check logic
-        
+
         PermissionEntry entry = createTestPermissionEntry(null);
-        
+
         boolean result = macro.hasPermission(entry, permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when SID is null", result, equalTo(false));
     }
 
@@ -94,11 +94,11 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the empty check logic
-        
+
         PermissionEntry entry = createTestPermissionEntry("");
-        
+
         boolean result = macro.hasPermission(entry, permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when SID is empty", result, equalTo(false));
     }
 
@@ -112,11 +112,11 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the whitespace check logic
-        
+
         PermissionEntry entry = createTestPermissionEntry("   ");
-        
+
         boolean result = macro.hasPermission(entry, permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when SID contains only whitespace", result, equalTo(false));
     }
 
@@ -130,9 +130,9 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the null check logic
-        
+
         boolean result = macro.hasPermission((String) null, permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when SID string is null", result, equalTo(false));
     }
 
@@ -146,9 +146,9 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the empty check logic
-        
+
         boolean result = macro.hasPermission("", permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when SID string is empty", result, equalTo(false));
     }
 
@@ -162,9 +162,9 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the whitespace check logic
-        
+
         boolean result = macro.hasPermission("   ", permission, type, project, macroParam);
-        
+
         assertThat("Access should be denied when SID string contains only whitespace", result, equalTo(false));
     }
 
@@ -179,18 +179,18 @@ class AbstractOwnershipRoleMacroTest {
         Permission permission = Item.READ;
         RoleType type = RoleType.Project;
         Macro macroParam = null; // Macro is not used in the validation logic
-        
+
         PermissionEntry entry = createTestPermissionEntry("validUser");
-        
+
         // Should not throw exception and should process normally
         // (may return false if user doesn't exist, but that's expected behavior)
         boolean result = macro.hasPermission(entry, permission, type, project, macroParam);
-        
+
         // Just verify it doesn't crash and returns a boolean
         // The actual permission check depends on ownership setup, which is tested elsewhere
         assertThat("Method should return a boolean value", result, equalTo(result));
     }
-    
+
     /**
      * Creates a test PermissionEntry using reflection to handle the required constructor parameters.
      * Uses the same approach as OwnershipBasedSecurityTestHelper for consistency.
@@ -201,10 +201,10 @@ class AbstractOwnershipRoleMacroTest {
             // We'll use reflection to create it with default AuthorizationType
             Class<?> authTypeClass = Class.forName("com.michelin.cio.hudson.plugins.rolestrategy.AuthorizationType");
             Object authType = authTypeClass.getEnumConstants()[0]; // Use first enum value as default
-            
+
             // Use getDeclaredConstructor and setAccessible, similar to OwnershipBasedSecurityTestHelper
-            java.lang.reflect.Constructor<PermissionEntry> constructor = 
-                PermissionEntry.class.getDeclaredConstructor(authTypeClass, String.class);
+            java.lang.reflect.Constructor<PermissionEntry> constructor =
+                    PermissionEntry.class.getDeclaredConstructor(authTypeClass, String.class);
             try {
                 constructor.setAccessible(true);
                 return constructor.newInstance(authType, sid);
@@ -216,4 +216,3 @@ class AbstractOwnershipRoleMacroTest {
         }
     }
 }
-

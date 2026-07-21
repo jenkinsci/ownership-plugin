@@ -39,19 +39,19 @@ import org.jenkinsci.plugins.ownership.integrations.rolestrategy.Messages;
  */
 @Extension(optional = true)
 public class CurrentUserIsPrimaryOwnerMacro extends AbstractOwnershipRoleMacro {
-    
+
     @Override
     public String getName() {
-        return "CurrentUserIsPrimaryOwner"; 
+        return "CurrentUserIsPrimaryOwner";
     }
-    
+
     @Override
     public String getDescription() {
         return Messages.CurrentUserIsPrimaryOwnerMacro_description();
     }
 
     @Override
-    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {    
+    public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
         User user = User.current();
         return hasPermission(user, type, item, macro, false);
     }

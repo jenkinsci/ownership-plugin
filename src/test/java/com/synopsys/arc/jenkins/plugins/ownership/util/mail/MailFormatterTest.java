@@ -24,16 +24,15 @@
 
 package com.synopsys.arc.jenkins.plugins.ownership.util.mail;
 
-import org.jenkinsci.plugins.ownership.util.mail.MailFormatter;
-import org.junit.jupiter.api.Test;
-import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.jenkinsci.plugins.ownership.util.mail.MailFormatter;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Tests for {@link MailFormatter}.
@@ -41,9 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @WithJenkins
 class MailFormatterTest {
-    
+
     private final MailFormatter formatter = new MailFormatter();
-    
+
     /**
      * Just checks if nothing breaks horribly.
      * @throws UnsupportedEncodingException Issues with the default encoding
@@ -52,12 +51,13 @@ class MailFormatterTest {
     @Test
     void spotCheck() throws UnsupportedEncodingException, MalformedURLException {
         String res = formatter.createMailToString(
-                Arrays.asList("test@foo.bar"), 
-                Arrays.asList("test1@foo.bar", "test2@foo.bar"), null, 
-                "[Jenkins] - Test subject", 
+                Arrays.asList("test@foo.bar"),
+                Arrays.asList("test1@foo.bar", "test2@foo.bar"),
+                null,
+                "[Jenkins] - Test subject",
                 "Test body \n with multiple \r\n lines");
         assertTrue(res.startsWith("mailto:"));
-        //TODO: check contents
+        // TODO: check contents
         final URL url = new URL(res);
     }
 }

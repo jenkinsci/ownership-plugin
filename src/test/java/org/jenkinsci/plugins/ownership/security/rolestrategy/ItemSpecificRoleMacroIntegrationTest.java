@@ -23,6 +23,12 @@
  */
 package org.jenkinsci.plugins.ownership.security.rolestrategy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
@@ -34,18 +40,18 @@ import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
 import hudson.model.User;
+import hudson.model.queue.QueueTaskFuture;
 import hudson.remoting.Callable;
 import hudson.security.ACL;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
-import hudson.model.queue.QueueTaskFuture;
 import java.io.Serial;
-import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
@@ -54,12 +60,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * End-to-end coverage for {@link ItemSpecificRoleMacro} on jobs and folders.
@@ -136,20 +136,21 @@ class ItemSpecificRoleMacroIntegrationTest {
         JobOwnerHelper.setProjectSpecificSecurity(job, jobMatrixWithUser(Item.BUILD, "alice"));
         r.jenkins.setQuietPeriod(0);
 
-        QueueTaskFuture<?> future = ACL.impersonate(User.get("alice").impersonate(), new Callable<QueueTaskFuture<?>, IllegalStateException>() {
-            @Serial
-            private static final long serialVersionUID = 1L;
+        QueueTaskFuture<?> future = ACL.impersonate(
+                User.get("alice").impersonate(), new Callable<QueueTaskFuture<?>, IllegalStateException>() {
+                    @Serial
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public QueueTaskFuture<?> call() throws IllegalStateException {
-                return job.scheduleBuild2(0);
-            }
+                    @Override
+                    public QueueTaskFuture<?> call() throws IllegalStateException {
+                        return job.scheduleBuild2(0);
+                    }
 
-            @Override
-            public void checkRoles(RoleChecker checker) throws SecurityException {
-                // no-op
-            }
-        });
+                    @Override
+                    public void checkRoles(RoleChecker checker) throws SecurityException {
+                        // no-op
+                    }
+                });
         assertThat(future, notNullValue());
     }
 

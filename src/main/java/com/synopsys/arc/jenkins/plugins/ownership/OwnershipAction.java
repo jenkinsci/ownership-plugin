@@ -30,17 +30,17 @@ import hudson.model.Action;
  * Provides Floating box with ownership description.
  * @author Oleg Nenashev
  * @see ItemOwnershipAction
- * @see NodeOwnershipAction 
+ * @see NodeOwnershipAction
  */
 public abstract class OwnershipAction implements Action {
     public static final String ICON_FILENAME = "user.png";
     public static final String URL_NAME = "ownership";
-    
+
     @Override
     public String getIconFileName() {
-         return actionIsAvailable() ? ICON_FILENAME : null; 
+        return actionIsAvailable() ? ICON_FILENAME : null;
     }
-     
+
     @Override
     public String getUrlName() {
         return actionIsAvailable() ? URL_NAME : null;
@@ -50,14 +50,14 @@ public abstract class OwnershipAction implements Action {
     public String getDisplayName() {
         return actionIsAvailable() ? Messages.OwnershipAction_ManageOwnership_DisplayName() : null;
     }
-       
+
     public String getManageOwnershipTitle() {
         return Messages.OwnershipAction_ManageOwners_DisplayName();
     }
-    
+
     public String getConfigureSpecificAccessTitle() {
         return Messages.OwnershipAction_ConfigureSpecificAccess_DisplayName();
     }
-   
+
     public abstract boolean actionIsAvailable();
 }

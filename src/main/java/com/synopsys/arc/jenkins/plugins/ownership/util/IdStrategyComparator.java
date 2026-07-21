@@ -5,7 +5,6 @@ import java.util.Comparator;
 import jenkins.model.IdStrategy;
 import jenkins.model.Jenkins;
 
-
 public class IdStrategyComparator implements Comparator<String> {
 
     private final SecurityRealm securityRealm;

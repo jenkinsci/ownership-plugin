@@ -38,14 +38,14 @@ public interface IOwnershipItem<TObjectType> {
      */
     @Nonnull
     public abstract IOwnershipHelper<TObjectType> helper();
-    
+
     /**
      * Gets item, which is being described by action.
      * @return Described item
      */
     @Nonnull
     public TObjectType getDescribedItem();
-    
+
     /**
      * Gets ownership description.
      * By default, returns {@link OwnershipDescription#DISABLED_DESCR}

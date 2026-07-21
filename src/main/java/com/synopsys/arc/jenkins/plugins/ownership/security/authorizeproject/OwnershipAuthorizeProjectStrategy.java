@@ -32,11 +32,11 @@ import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.User;
 import jenkins.model.Jenkins;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.jenkinsci.plugins.authorizeproject.AuthorizeProjectStrategy;
 import org.jenkinsci.plugins.authorizeproject.AuthorizeProjectStrategyDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * Provides support of the ownership {@link AuthorizeProjectStrategy}.
@@ -48,15 +48,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class OwnershipAuthorizeProjectStrategy extends AuthorizeProjectStrategy {
 
     @DataBoundConstructor
-    public OwnershipAuthorizeProjectStrategy() {
-    }
+    public OwnershipAuthorizeProjectStrategy() {}
 
     @Override
-    public Authentication authenticate(Job<?, ?> job, Queue.Item item) {    
+    public Authentication authenticate(Job<?, ?> job, Queue.Item item) {
         OwnershipDescription d = JobOwnerHelper.Instance.getOwnershipDescription(job);
         if (!d.hasPrimaryOwner()) { // fallback to anonymous
             return Jenkins.ANONYMOUS2;
-        }    
+        }
         User owner = User.getById(d.getPrimaryOwnerId(), false);
         if (owner == null) { // fallback to anonymous
             return Jenkins.ANONYMOUS2;
@@ -67,10 +66,10 @@ public class OwnershipAuthorizeProjectStrategy extends AuthorizeProjectStrategy 
             return Jenkins.ANONYMOUS2;
         }
     }
-      
+
     @Extension(optional = true)
     public static class DescriptorImpl extends AuthorizeProjectStrategyDescriptor {
-        
+
         @Override
         public String getDisplayName() {
             return Messages.Security_AuthorizeProject_OwnershipAuthorizeProjectStrategy_DisplayName();

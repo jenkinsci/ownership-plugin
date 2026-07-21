@@ -23,10 +23,13 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific;
 
-import org.htmlunit.html.HtmlCheckBoxInput;
-import org.htmlunit.html.HtmlForm;
-import org.htmlunit.html.HtmlPage;
-import org.htmlunit.html.HtmlTableRow;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
@@ -36,6 +39,10 @@ import hudson.model.Item;
 import hudson.security.AuthorizationMatrixProperty;
 import java.util.Set;
 import jenkins.model.Jenkins;
+import org.htmlunit.html.HtmlCheckBoxInput;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlTableRow;
 import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,13 +50,6 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies ItemSpecificSecurity form binding goes through matrix-auth's
@@ -141,8 +141,8 @@ class ItemSpecificSecurityBindingTest {
     private static void grantAnonymousRead(HtmlForm form) {
         HtmlTableRow row = form.getFirstByXPath(".//tr[@name='[USER:anonymous]']");
         assertThat("anonymous permission row", row, notNullValue());
-        HtmlCheckBoxInput read = row.getFirstByXPath(
-                ".//input[@type='checkbox' and @name='[" + Item.READ.getId() + "]']");
+        HtmlCheckBoxInput read =
+                row.getFirstByXPath(".//input[@type='checkbox' and @name='[" + Item.READ.getId() + "]']");
         assertThat("Item.Read checkbox for anonymous", read, notNullValue());
         if (!read.isChecked()) {
             read.setChecked(true);

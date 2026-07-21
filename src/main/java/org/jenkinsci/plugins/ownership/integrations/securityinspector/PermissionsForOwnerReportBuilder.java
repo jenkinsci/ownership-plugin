@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.ownership.integrations.securityinspector;
 
+import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
+
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
@@ -35,7 +37,6 @@ import hudson.security.PermissionGroup;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -47,9 +48,8 @@ import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.jenkinsci.plugins.securityinspector.Messages;
-import static org.jenkinsci.plugins.securityinspector.SecurityInspectorAction.getSessionId;
-import org.jenkinsci.plugins.securityinspector.UserContextCache;
 import org.jenkinsci.plugins.securityinspector.UserContext;
+import org.jenkinsci.plugins.securityinspector.UserContextCache;
 import org.jenkinsci.plugins.securityinspector.impl.users.UserReportBuilder;
 import org.jenkinsci.plugins.securityinspector.model.PermissionReport;
 import org.jenkinsci.plugins.securityinspector.model.SecurityInspectorReport;
@@ -62,6 +62,7 @@ import org.kohsuke.stapler.StaplerRequest;
 @Extension(optional = true)
 public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
     private static final Logger LOGGER = Logger.getLogger(PermissionsForOwnerReportBuilder.class.getName());
+
     @Override
     public String getIcon() {
         return "fingerprint.png";
@@ -98,7 +99,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         List<TopLevelItem> selectedJobs = filters.doFilter(owner);
         UserContextCache.updateSearchCache(selectedJobs, null, null, selectedItem);
     }
-    
+
     @Override
     public SecurityInspectorReport getReport() {
         Set<TopLevelItem> items = getRequestedJobs();
@@ -113,7 +114,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             return new PermissionsForOwnerReportBuilder.ReportImpl(user);
         }
 
-        //TODO: rework the logic to guarantee that report is initialized
+        // TODO: rework the logic to guarantee that report is initialized
         SecurityContext initialContext = null;
         try {
             initialContext = hudson.security.ACL.impersonate(auth);
@@ -125,7 +126,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         }
         return report;
     }
-    
+
     @Nonnull
     @Restricted(NoExternalUse.class)
     @SuppressRestrictedWarnings({UserContextCache.class, UserContext.class})
@@ -133,7 +134,7 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
         try {
             UserContextCache cacheInstance = UserContextCache.getInstance();
             UserContext context = cacheInstance.get(getSessionId());
-            
+
             if (context == null) {
                 throw HttpResponses.error(404, "Context has not been found");
             }
@@ -155,31 +156,32 @@ public class PermissionsForOwnerReportBuilder extends UserReportBuilder {
             throw HttpResponses.error(500, "Failed to retrieve context: " + e.getMessage());
         }
     }
-    
+
     public static class ReportImpl extends PermissionReport<TopLevelItem, Boolean> {
 
         @Nonnull
         final User user4report;
 
-        /**package*/ ReportImpl(@Nonnull User user) {
+        /**package*/
+        ReportImpl(@Nonnull User user) {
             this.user4report = user;
         }
-        
+
         @Override
         public String getReportTargetName() {
             return user4report.getDisplayName();
         }
-        
+
         @Override
         protected Boolean getEntryReport(TopLevelItem column, Permission item) {
-                        
+
             final Authentication auth;
             try {
                 auth = user4report.impersonate();
             } catch (UsernameNotFoundException ex) {
                 return Boolean.FALSE;
             }
-            
+
             SecurityContext initialContext = null;
             Item i = Jenkins.get().getItemByFullName(column.getFullName());
             if (i == null) {

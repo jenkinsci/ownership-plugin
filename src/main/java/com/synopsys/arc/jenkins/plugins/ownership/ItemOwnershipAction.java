@@ -33,32 +33,32 @@ import javax.annotation.Nonnull;
  * @param <TObjectType> A class, for which action is being created
  * @since 0.0.2
  */
-public abstract class ItemOwnershipAction<TObjectType extends Actionable> 
-    extends OwnershipAction implements IOwnershipItem<TObjectType> {
-    
+public abstract class ItemOwnershipAction<TObjectType extends Actionable> extends OwnershipAction
+        implements IOwnershipItem<TObjectType> {
+
     private final @Nonnull TObjectType describedItem;
-        
+
     /**
      * Constructor.
      * @param describedItem Item, which is related to the action
      */
-    public ItemOwnershipAction(@Nonnull TObjectType describedItem)  {
+    public ItemOwnershipAction(@Nonnull TObjectType describedItem) {
         this.describedItem = describedItem;
     }
-     
+
     @Nonnull
     @Override
     public final TObjectType getDescribedItem() {
         return describedItem;
-    } 
-    
+    }
+
     /**
      * Gets a permission for "Manage Ownership" action.
      * @return A permission to be checked
      */
     @Nonnull
     public abstract Permission getOwnerPermission();
-    
+
     /**
      * Gets a permission for "Configure project-specific security" action.
      * @return A permission to be checked
@@ -69,5 +69,5 @@ public abstract class ItemOwnershipAction<TObjectType extends Actionable>
     @Override
     public OwnershipDescription getOwnership() {
         return helper().getOwnershipDescription(describedItem);
-    } 
+    }
 }

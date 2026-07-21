@@ -23,6 +23,12 @@
  */
 package org.jenkinsci.plugins.ownership.security.rolestrategy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
@@ -38,7 +44,6 @@ import hudson.security.ACL;
 import hudson.security.Permission;
 import java.io.Serial;
 import java.util.HashMap;
-import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipAction;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
@@ -49,12 +54,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Global defaults are templates for UI/restore; ACL applies only a locally configured matrix.

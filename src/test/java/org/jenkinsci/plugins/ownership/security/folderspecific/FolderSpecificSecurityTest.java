@@ -23,6 +23,14 @@
  */
 package org.jenkinsci.plugins.ownership.security.folderspecific;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
 import hudson.model.Item;
 import hudson.security.Permission;
@@ -35,14 +43,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit-style coverage for {@link FolderSpecificSecurity}.
@@ -80,8 +80,8 @@ class FolderSpecificSecurityTest {
         assertThat(copy, not(sameInstance(original)));
         assertThat(copy.getPermissionsMatrix(), not(sameInstance(original.getPermissionsMatrix())));
 
-        assertTrue(copy.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ)
-                .stream().anyMatch(e -> "alice".equals(e.getSid())));
+        assertTrue(copy.getPermissionsMatrix().getGrantedPermissionEntries().get(Item.READ).stream()
+                .anyMatch(e -> "alice".equals(e.getSid())));
     }
 
     @Test

@@ -7,10 +7,9 @@ import com.synopsys.arc.jenkins.plugins.ownership.extensions.ItemOwnershipPolicy
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.Extension;
 import hudson.model.Item;
+import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.kohsuke.stapler.DataBoundConstructor;
-
-import javax.annotation.Nonnull;
 
 /**
  * A policy, which keeps the previous job's ownership.
@@ -20,8 +19,7 @@ import javax.annotation.Nonnull;
 public class PreserveOwnershipPolicy extends ItemOwnershipPolicy {
 
     @DataBoundConstructor
-    public PreserveOwnershipPolicy() {
-    }
+    public PreserveOwnershipPolicy() {}
 
     @Override
     public OwnershipDescription onCreated(@Nonnull Item item) {

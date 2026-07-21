@@ -36,38 +36,39 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  */
 @Restricted(NoExternalUse.class)
 public class UserStringFormatter {
-    
-    public static final String UNKNOWN_USER_STRING="N/A";
-    
+
+    public static final String UNKNOWN_USER_STRING = "N/A";
+
     /**
      * Formats string to be displayed.
      * @param user User
      * @return Formatted string
      */
     public static @Nonnull String format(@CheckForNull User user) {
-        return user !=null ? user.getFullName()+" ("+user.getId()+")" : UNKNOWN_USER_STRING;
+        return user != null ? user.getFullName() + " (" + user.getId() + ")" : UNKNOWN_USER_STRING;
     }
-    
+
     public static @Nonnull String format(@Nonnull String userId) {
         return format(User.getById(userId, false));
     }
-    
+
     public static @Nonnull String formatShort(@CheckForNull String userId) {
         return (userId != null && !userId.isEmpty()) ? userId : UNKNOWN_USER_STRING;
-    } 
-        
+    }
+
     /**
      * Formats e-mail from a user Id.
      * @param userId User identifier
      * @return e-mail
      * @since 0.2
      */
-    public static  @CheckForNull String formatEmail(@Nonnull String userId) {
+    public static @CheckForNull String formatEmail(@Nonnull String userId) {
         return formatEmail(User.getById(userId, false));
     }
-    
+
     public static @CheckForNull String formatEmail(@CheckForNull User user) {
-        return (user != null && user != User.getUnknown()) 
-            ? OwnershipPlugin.getInstance().resolveEmail(user) : null;
+        return (user != null && user != User.getUnknown())
+                ? OwnershipPlugin.getInstance().resolveEmail(user)
+                : null;
     }
 }

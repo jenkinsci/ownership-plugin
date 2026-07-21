@@ -23,6 +23,14 @@
  */
 package com.synopsys.arc.jenkins.plugins.ownership.nodes;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import hudson.model.Node;
 import hudson.model.Slave;
@@ -37,14 +45,6 @@ import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link NodeOwnerHelper}.
@@ -98,8 +98,8 @@ class NodeOwnerHelperTest {
     void getOwnershipInfo_nullNode_isDisabled() {
         OwnershipInfo info = NodeOwnerHelper.Instance.getOwnershipInfo(null);
         assertThat(info.getDescription(), equalTo(OwnershipDescription.DISABLED_DESCR));
-        assertThat(NodeOwnerHelper.Instance.getOwnershipDescription(null),
-                equalTo(OwnershipDescription.DISABLED_DESCR));
+        assertThat(
+                NodeOwnerHelper.Instance.getOwnershipDescription(null), equalTo(OwnershipDescription.DISABLED_DESCR));
     }
 
     @Test

@@ -53,8 +53,7 @@ public final class OwnershipPipelineVar implements Serializable {
 
     @Whitelisted
     public OwnershipDescription getJob() throws Exception {
-        return OwnershipGlobalVariable.getJobOwnershipDescription(
-                (RunWrapper) script.getProperty("currentBuild"));
+        return OwnershipGlobalVariable.getJobOwnershipDescription((RunWrapper) script.getProperty("currentBuild"));
     }
 
     @CheckForNull

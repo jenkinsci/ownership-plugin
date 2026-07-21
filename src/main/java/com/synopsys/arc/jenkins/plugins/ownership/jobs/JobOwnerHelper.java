@@ -33,12 +33,11 @@ import hudson.matrix.MatrixConfiguration;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.User;
+import hudson.security.Permission;
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 import org.jenkinsci.plugins.ownership.model.OwnershipInheritance;
@@ -51,43 +50,43 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * @since 0.0.3
  * @author Oleg Nenashev
  */
-public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
-    
-    public final static JobOwnerHelper Instance = new JobOwnerHelper();
-      
+public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?, ?>> {
+
+    public static final JobOwnerHelper Instance = new JobOwnerHelper();
+
     /**
      * Gets {@link JobOwnerJobProperty} from the job if possible.
-     * The function also handles multi-configuration jobs, so it should be used 
+     * The function also handles multi-configuration jobs, so it should be used
      * wherever it is possible.
-     * This method should not be used to retrieve Ownership descriptions, 
+     * This method should not be used to retrieve Ownership descriptions,
      * because it does not take inheritance into account.
      * @param job Job
      * @return JobOwnerJobProperty or {@code null} if it is not configured
      */
     @CheckForNull
-    public static JobOwnerJobProperty getOwnerProperty(@Nonnull Job<?,?> job) {
+    public static JobOwnerJobProperty getOwnerProperty(@Nonnull Job<?, ?> job) {
         // Get property from the main job
         JobProperty prop = job.getProperty(JobOwnerJobProperty.class);
         if (prop != null) {
-            return (JobOwnerJobProperty)prop;
+            return (JobOwnerJobProperty) prop;
         }
-        
+
         // Handle matrix prject
         if (job instanceof MatrixConfiguration) {
-            return getOwnerProperty(((MatrixConfiguration)job).getParent());
-        } 
+            return getOwnerProperty(((MatrixConfiguration) job).getParent());
+        }
         return null;
     }
-    
+
     public static boolean isUserExists(@Nonnull User user) {
         assert (user != null);
         return isUserExists(user.getId());
     }
-    
+
     public static boolean isUserExists(@Nonnull String userIdOrFullName) {
         return User.getById(userIdOrFullName, false) != null;
     }
-     
+
     @Override
     public @Nonnull OwnershipDescription getOwnershipDescription(@Nonnull Job<?, ?> job) {
         // TODO: Maybe makes sense to unwrap the method to get a better performance (esp. for Security)
@@ -106,7 +105,7 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
 
     @Override
     public OwnershipInfo getOwnershipInfo(Job<?, ?> job) {
-        JobOwnerJobProperty prop = getOwnerProperty(job);     
+        JobOwnerJobProperty prop = getOwnerProperty(job);
         if (prop != null) {
             OwnershipDescription d = prop.getOwnership();
             if (d.isOwnershipEnabled()) {
@@ -134,10 +133,10 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
      * Sets the ownership information.
      * @param job A job to be modified
      * @param descr A description to be set. Use null to drop settings.
-     * @throws IOException 
+     * @throws IOException
      */
-    public static void setOwnership(@Nonnull Job<?, ?> job, 
-            @CheckForNull OwnershipDescription descr) throws IOException {
+    public static void setOwnership(@Nonnull Job<?, ?> job, @CheckForNull OwnershipDescription descr)
+            throws IOException {
         JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(job);
         if (prop == null) {
             prop = new JobOwnerJobProperty(descr, null);
@@ -146,18 +145,18 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
             prop.setOwnershipDescription(descr);
         }
     }
-        
+
     /**
      * Sets the project-specific security.
      * @param job A job to be modified
-     * @param security Security settings to be set. Use null to drop settings 
-     * @throws IOException 
+     * @param security Security settings to be set. Use null to drop settings
+     * @throws IOException
      */
-    public static void setProjectSpecificSecurity(@Nonnull Job<?, ?> job, 
-            @CheckForNull ItemSpecificSecurity security) throws IOException {
+    public static void setProjectSpecificSecurity(@Nonnull Job<?, ?> job, @CheckForNull ItemSpecificSecurity security)
+            throws IOException {
         JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(job);
         if (prop == null) {
-            throw new IOException("Ownership is not configured for "+job);
+            throw new IOException("Ownership is not configured for " + job);
         } else {
             prop.setItemSpecificSecurity(security);
         }
@@ -166,13 +165,13 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
     @Override
     public @Nonnull Collection<User> getPossibleOwners(@Nonnull Job<?, ?> item) {
         return filterPossibleOwners(item, Job.CONFIGURE);
-    }  
-   
+    }
+
     @Override
     public String getItemTypeName(Job<?, ?> item) {
         return "job";
     }
-    
+
     @Override
     public String getItemDisplayName(Job<?, ?> item) {
         return item.getFullDisplayName();
@@ -181,17 +180,17 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
     public String getItemURL(Job<?, ?> item) {
         return item.getUrl();
     }
-    
+
     @Extension
     @Restricted(NoExternalUse.class)
-    public static class LocatorImpl extends OwnershipHelperLocator<Job<?,?>> {
-        
+    public static class LocatorImpl extends OwnershipHelperLocator<Job<?, ?>> {
+
         @Override
-        public AbstractOwnershipHelper<Job<?,?>> findHelper(Object item) {
-            if (item instanceof Job<?,?>) {
+        public AbstractOwnershipHelper<Job<?, ?>> findHelper(Object item) {
+            if (item instanceof Job<?, ?>) {
                 return Instance;
             }
             return null;
-        }      
+        }
     }
 }

@@ -38,94 +38,116 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @since 0.6
  */
 public class MailOptions implements Describable<MailOptions> {
-    
+
     private final @CheckForNull String contactOwnersSubjectTemplate;
     private final @CheckForNull String contactOwnersBodyTemplate;
     private final boolean contactOwnersLinkDisabled;
-    
+
     private final @CheckForNull String contactAdminsSubjectTemplate;
     private final @CheckForNull String contactAdminsBodyTemplate;
-    private final boolean contactAdminsLinkDisabled;   
-    
+    private final boolean contactAdminsLinkDisabled;
+
     private final @CheckForNull String emailListSeparator;
     private final @CheckForNull String adminsContactEmail;
     private final boolean hideOwnerAndCoOwnerEmails;
 
     private static final String DEFAULT_LIST_SEPARATOR = ";";
-     
+
     public static final MailOptions DEFAULT = new MailOptions();
 
     private MailOptions() {
-        this(null,null,null,null,null,DEFAULT_LIST_SEPARATOR);
+        this(null, null, null, null, null, DEFAULT_LIST_SEPARATOR);
     }
-    
+
     @DataBoundConstructor
     public MailOptions(
-            String contactOwnersSubjectTemplate, String contactOwnersBodyTemplate, 
-            boolean contactOwnersLinkDisabled, 
-            String contactAdminsSubjectTemplate, String contactAdminsBodyTemplate, 
+            String contactOwnersSubjectTemplate,
+            String contactOwnersBodyTemplate,
+            boolean contactOwnersLinkDisabled,
+            String contactAdminsSubjectTemplate,
+            String contactAdminsBodyTemplate,
             boolean contactAdminsLinkDisabled,
-            String adminsContactEmail, String emailListSeparator,
+            String adminsContactEmail,
+            String emailListSeparator,
             boolean hideOwnerAndCoOwnerEmails) {
         this.contactOwnersSubjectTemplate = contactOwnersSubjectTemplate;
         this.contactOwnersBodyTemplate = contactOwnersBodyTemplate;
         this.contactOwnersLinkDisabled = contactOwnersLinkDisabled;
-        
+
         this.contactAdminsSubjectTemplate = contactAdminsSubjectTemplate;
         this.contactAdminsBodyTemplate = contactAdminsBodyTemplate;
         this.contactAdminsLinkDisabled = contactAdminsLinkDisabled;
-        
+
         this.emailListSeparator = emailListSeparator;
-        this.adminsContactEmail = adminsContactEmail;   
+        this.adminsContactEmail = adminsContactEmail;
         this.hideOwnerAndCoOwnerEmails = hideOwnerAndCoOwnerEmails;
     }
-    
+
     @Deprecated
     public MailOptions(
-            String contactOwnersSubjectTemplate, String contactOwnersBodyTemplate, 
-            boolean contactOwnersLinkDisabled, 
-            String contactAdminsSubjectTemplate, String contactAdminsBodyTemplate, 
+            String contactOwnersSubjectTemplate,
+            String contactOwnersBodyTemplate,
+            boolean contactOwnersLinkDisabled,
+            String contactAdminsSubjectTemplate,
+            String contactAdminsBodyTemplate,
             boolean contactAdminsLinkDisabled,
-            String adminsContactEmail, String emailListSeparator) {
-        this(contactOwnersSubjectTemplate, contactOwnersBodyTemplate, contactOwnersLinkDisabled, 
-             contactAdminsSubjectTemplate, contactAdminsBodyTemplate, contactAdminsLinkDisabled, 
-             adminsContactEmail, emailListSeparator, false);
+            String adminsContactEmail,
+            String emailListSeparator) {
+        this(
+                contactOwnersSubjectTemplate,
+                contactOwnersBodyTemplate,
+                contactOwnersLinkDisabled,
+                contactAdminsSubjectTemplate,
+                contactAdminsBodyTemplate,
+                contactAdminsLinkDisabled,
+                adminsContactEmail,
+                emailListSeparator,
+                false);
     }
-  
+
     @Deprecated
     public MailOptions(
-            String contactOwnersSubjectTemplate, String contactOwnersBodyTemplate, 
-            String contactAdminsSubjectTemplate, String contactAdminsBodyTemplate, 
-             String adminsContactEmail, String emailListSeparator) {
-        this(contactOwnersSubjectTemplate, contactOwnersBodyTemplate, false, 
-             contactAdminsSubjectTemplate, contactAdminsBodyTemplate, false, 
-             adminsContactEmail, emailListSeparator);
+            String contactOwnersSubjectTemplate,
+            String contactOwnersBodyTemplate,
+            String contactAdminsSubjectTemplate,
+            String contactAdminsBodyTemplate,
+            String adminsContactEmail,
+            String emailListSeparator) {
+        this(
+                contactOwnersSubjectTemplate,
+                contactOwnersBodyTemplate,
+                false,
+                contactAdminsSubjectTemplate,
+                contactAdminsBodyTemplate,
+                false,
+                adminsContactEmail,
+                emailListSeparator);
     }
-    
+
     public @Nonnull String getContactOwnersSubjectTemplate() {
-        return contactOwnersSubjectTemplate != null 
-                ? contactOwnersSubjectTemplate 
+        return contactOwnersSubjectTemplate != null
+                ? contactOwnersSubjectTemplate
                 : Messages.contactOwnersSubjectTemplate_default();
     }
-    
+
     public @Nonnull String getContactOwnersBodyTemplate() {
-        return contactOwnersBodyTemplate != null 
-                ? contactOwnersBodyTemplate 
+        return contactOwnersBodyTemplate != null
+                ? contactOwnersBodyTemplate
                 : Messages.contactOwnersBodyTemplate_default();
     }
 
     public @Nonnull String getContactAdminsSubjectTemplate() {
-        return contactAdminsSubjectTemplate != null 
-                ? contactAdminsSubjectTemplate 
+        return contactAdminsSubjectTemplate != null
+                ? contactAdminsSubjectTemplate
                 : Messages.contactAdminsSubjectTemplate_default();
     }
-    
+
     public @Nonnull String getContactAdminsBodyTemplate() {
-        return contactAdminsBodyTemplate != null 
-                ? contactAdminsBodyTemplate 
+        return contactAdminsBodyTemplate != null
+                ? contactAdminsBodyTemplate
                 : Messages.contactAdminsBodyTemplate_default();
     }
-  
+
     public @Nonnull String getEmailListSeparator() {
         return emailListSeparator != null ? emailListSeparator : DEFAULT_LIST_SEPARATOR;
     }
@@ -136,7 +158,7 @@ public class MailOptions implements Describable<MailOptions> {
 
     /**
      * @return Indicates that contact admins link should not be displayed
-     * @since 0.7 
+     * @since 0.7
      */
     public boolean isContactAdminsLinkDisabled() {
         return contactAdminsLinkDisabled;
@@ -144,7 +166,7 @@ public class MailOptions implements Describable<MailOptions> {
 
     /**
      * @return Indicates that contact owners link should not be displayed
-     * @since 0.7 
+     * @since 0.7
      */
     public boolean isContactOwnersLinkDisabled() {
         return contactOwnersLinkDisabled;
@@ -158,7 +180,7 @@ public class MailOptions implements Describable<MailOptions> {
     public boolean isHideOwnerAndCoOwnerEmails() {
         return hideOwnerAndCoOwnerEmails;
     }
-   
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
@@ -166,9 +188,9 @@ public class MailOptions implements Describable<MailOptions> {
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }
-  
+
     public static class DescriptorImpl extends Descriptor<MailOptions> {
-        
+
         @Override
         public String getDisplayName() {
             return "N/A";

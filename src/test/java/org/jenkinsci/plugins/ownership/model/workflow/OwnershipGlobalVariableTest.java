@@ -23,6 +23,9 @@
  */
 package org.jenkinsci.plugins.ownership.model.workflow;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper;
@@ -34,15 +37,12 @@ import hudson.slaves.DumbSlave;
 import hudson.tasks.Mailer;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
-import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.Parameter;
@@ -57,7 +57,7 @@ import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
  * @author Oleg Nenashev
  */
 @ParameterizedClass(name = "{index}: sandbox={0}")
-@ValueSource(booleans =  {true, false})
+@ValueSource(booleans = {true, false})
 @WithJenkins
 class OwnershipGlobalVariableTest {
 
@@ -73,7 +73,7 @@ class OwnershipGlobalVariableTest {
         // Initialize Mail Suffix
         Descriptor<?> mailerDescriptor = j.jenkins.getDescriptor(Mailer.class);
         assertThat(mailerDescriptor, instanceOf(Mailer.DescriptorImpl.class));
-        ((Mailer.DescriptorImpl)mailerDescriptor).setDefaultSuffix("mailsuff.ix");
+        ((Mailer.DescriptorImpl) mailerDescriptor).setDefaultSuffix("mailsuff.ix");
 
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
@@ -90,8 +90,7 @@ class OwnershipGlobalVariableTest {
 
     @Test
     void jobOwnershipSnippet_withOwner() throws Exception {
-        OwnershipDescription d = new OwnershipDescription(true, "owner",
-                Arrays.asList("coowner1", "coowner2"));
+        OwnershipDescription d = new OwnershipDescription(true, "owner", Arrays.asList("coowner1", "coowner2"));
         WorkflowRun run = buildSnippetAndAssertSuccess("printJobOwnershipInfo", d);
         assertThat(run.getLog(), containsString("owner"));
     }
@@ -99,8 +98,8 @@ class OwnershipGlobalVariableTest {
     @Test
     void nodeOwnershipSnippet_onSlave() throws Exception {
         DumbSlave slave = j.createOnlineSlave(new LabelAtom("requiredLabel"));
-        NodeOwnerHelper.setOwnership(slave, new OwnershipDescription(true, "ownerOfJenkins",
-                Arrays.asList("coowner1", "coowner2")));
+        NodeOwnerHelper.setOwnership(
+                slave, new OwnershipDescription(true, "ownerOfJenkins", Arrays.asList("coowner1", "coowner2")));
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
         WorkflowRun run = buildSnippetAndAssertSuccess("printNodeOwnershipInfo", d);
         assertThat(run.getLog(), containsString("ownerOfJenkins"));
@@ -108,8 +107,8 @@ class OwnershipGlobalVariableTest {
 
     @Test
     void nodeOwnershipSnippet_onMaster() throws Exception {
-        NodeOwnerHelper.setOwnership(j.jenkins, new OwnershipDescription(true, "ownerOfJenkins",
-                Arrays.asList("coowner1", "coowner2")));
+        NodeOwnerHelper.setOwnership(
+                j.jenkins, new OwnershipDescription(true, "ownerOfJenkins", Arrays.asList("coowner1", "coowner2")));
         OwnershipDescription d = OwnershipDescription.DISABLED_DESCR;
         // Use node() without parameters - it will use master node by default
         // The issue is that env.NODE_NAME might be null or empty for master, so we need to handle it
@@ -129,26 +128,28 @@ class OwnershipGlobalVariableTest {
         WorkflowRun run = buildAndAssertSuccess(script, d, "printNodeOwnershipInfo");
         assertThat(run.getLog(), containsString("ownerOfJenkins"));
     }
-    
-    private WorkflowRun buildSnippetAndAssertSuccess(@Nonnull String snippetName,
-            @Nonnull OwnershipDescription ownershipDescription) throws Exception {
-        return buildAndAssertSuccess(OwnershipGlobalVariable.getSampleSnippet(snippetName),
-                ownershipDescription, snippetName);
+
+    private WorkflowRun buildSnippetAndAssertSuccess(
+            @Nonnull String snippetName, @Nonnull OwnershipDescription ownershipDescription) throws Exception {
+        return buildAndAssertSuccess(
+                OwnershipGlobalVariable.getSampleSnippet(snippetName), ownershipDescription, snippetName);
     }
 
-    private WorkflowRun buildAndAssertSuccess(@Nonnull String pipelineScript,
+    private WorkflowRun buildAndAssertSuccess(
+            @Nonnull String pipelineScript,
             @Nonnull OwnershipDescription ownershipDescription,
-            @Nonnull String projectName) throws Exception {
+            @Nonnull String projectName)
+            throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, projectName);
         job.setDefinition(new CpsFlowDefinition(pipelineScript, useSandbox));
         JobOwnerHelper.setOwnership(job, ownershipDescription);
-        
+
         // We are going to run Pipeline as System, and the script won't be automatically approved in such case.
         // So we approve the script.
         if (!useSandbox) {
             ScriptApproval.get().preapprove(pipelineScript, GroovyLanguage.get());
         }
-        
+
         return buildAndAssertSuccess(job);
     }
 

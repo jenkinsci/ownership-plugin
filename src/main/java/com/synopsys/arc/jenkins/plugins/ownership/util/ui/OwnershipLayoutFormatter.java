@@ -28,8 +28,8 @@ import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import com.synopsys.arc.jenkins.plugins.ownership.util.HTMLFormatter;
-import org.jenkinsci.plugins.ownership.util.mail.OwnershipMailHelper;
 import javax.annotation.Nonnull;
+import org.jenkinsci.plugins.ownership.util.mail.OwnershipMailHelper;
 
 /**
  * Formats layouts for UI interfaces.
@@ -38,10 +38,10 @@ import javax.annotation.Nonnull;
  * @author Oleg Nenashev
  */
 public abstract class OwnershipLayoutFormatter<TObjectType> {
-    
-    @Nonnull 
+
+    @Nonnull
     public abstract String formatUser(@Nonnull TObjectType item, @Nonnull String userId);
-    
+
     /**
      * Formats primary owner.
      * @param item Item, for which the formatting is being performed
@@ -49,20 +49,20 @@ public abstract class OwnershipLayoutFormatter<TObjectType> {
      * @return Raw HTML with user format
      * @since 0.9
      */
-    @Nonnull 
+    @Nonnull
     public String formatPrimaryOwner(@Nonnull TObjectType item, @Nonnull String userId) {
         return formatOwner(item, userId);
     }
-    
+
     /**
      * @deprecated Use {@link #formatPrimaryOwner(java.lang.Object, java.lang.String)}
      */
     @Deprecated
-    @Nonnull 
+    @Nonnull
     public String formatOwner(@Nonnull TObjectType item, @Nonnull String userId) {
         return formatUser(item, userId);
     }
-    
+
     /**
      * Formats secondary owner.
      * @param item Item, for which the formatting is being performed
@@ -70,41 +70,41 @@ public abstract class OwnershipLayoutFormatter<TObjectType> {
      * @return Raw HTML with user format
      * @since 0.9
      */
-    @Nonnull 
+    @Nonnull
     public String formatSecondaryOwner(@Nonnull TObjectType item, @Nonnull String userId) {
         return formatCoOwner(item, userId);
     }
-    
+
     /**
      * @deprecated Use {@link #formatSecondaryOwner(java.lang.Object, java.lang.String)}
      */
     @Deprecated
-    @Nonnull 
+    @Nonnull
     public String formatCoOwner(@Nonnull TObjectType item, @Nonnull String userId) {
         return formatUser(item, userId);
     }
-    
+
     /**
      * Formats URL, which allows to contact item owners
      * @param item
-     * @param helper 
+     * @param helper
      * @return HTML-formatted link or empty string
      * @since 0.6
      */
     public abstract String formatContactOwnersLink(@Nonnull TObjectType item, IOwnershipHelper helper);
-    
+
     /**
      * Formats URL, which allows to contact Jenkins admins.
      * @param item
-     * @param helper 
+     * @param helper
      * @return HTML-formatted link or empty string
      * @since 0.6
      */
     public abstract String formatContactAdminsLink(@Nonnull TObjectType item, IOwnershipHelper helper);
-    
+
     /**
      * Default user formatter for {@link OwnershipPlugin}.
-     * @param <TObjectType> 
+     * @param <TObjectType>
      */
     public static class DefaultJobFormatter<TObjectType> extends OwnershipLayoutFormatter<TObjectType> {
 
@@ -112,7 +112,7 @@ public abstract class OwnershipLayoutFormatter<TObjectType> {
         public String formatUser(TObjectType item, String userId) {
             StringBuilder rawHtmlBuilder = new StringBuilder();
             rawHtmlBuilder.append(HTMLFormatter.formatUserURI(userId, true));
-            
+
             // Append e-mail to the output if it is not prohibited.
             if (!OwnershipPluginConfiguration.get().getMailOptions().isHideOwnerAndCoOwnerEmails()) {
                 final String userEmail = HTMLFormatter.formatEmailURI(userId);
@@ -121,15 +121,15 @@ public abstract class OwnershipLayoutFormatter<TObjectType> {
                     rawHtmlBuilder.append(userEmail);
                 }
             }
-            
+
             return rawHtmlBuilder.toString();
         }
 
         @Override
         public String formatContactOwnersLink(TObjectType item, IOwnershipHelper helper) {
-            return OwnershipMailHelper.getContactOwnersMailToURL(item, helper);   
+            return OwnershipMailHelper.getContactOwnersMailToURL(item, helper);
         }
-        
+
         @Override
         public String formatContactAdminsLink(TObjectType item, IOwnershipHelper helper) {
             return OwnershipMailHelper.getContactAdminsMailToURL(item, helper);

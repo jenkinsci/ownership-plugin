@@ -30,8 +30,8 @@ import javax.annotation.Nonnull;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-//TODO: Do we really need this helper class now?
-//TODO co-owners have not been renamed to secondary owners, but it's an internal-only class
+// TODO: Do we really need this helper class now?
+// TODO co-owners have not been renamed to secondary owners, but it's an internal-only class
 /**
  * Provides handlers for ownership description.
  * @author Oleg Nenashev
@@ -41,25 +41,25 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  */
 @Restricted(NoExternalUse.class)
 public class OwnershipDescriptionHelper {
-    
+
     private OwnershipDescriptionHelper() {}
-    
+
     /**
      * Gets ID of the primary owner.
-     * @param descr Ownership description 
+     * @param descr Ownership description
      * @return userId of the primary owner. The result will be "unknown" if the
      * user is not specified.
      * @deprecated Use {@link #getPrimaryOwnerId(com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription)}
      */
-    @Nonnull 
+    @Nonnull
     @Deprecated
     public static String getOwnerID(@Nonnull OwnershipDescription descr) {
         return getPrimaryOwnerId(descr);
     }
-    
+
     /**
      * Gets id of the primary owner.
-     * @param descr Ownership description 
+     * @param descr Ownership description
      * @return userId of the primary owner. The result will be "unknown" if the
      * user is not specified.
      */
@@ -67,7 +67,7 @@ public class OwnershipDescriptionHelper {
     public static String getPrimaryOwnerId(@Nonnull OwnershipDescription descr) {
         return descr.getPrimaryOwnerId();
     }
-    
+
     /**
      * Gets owner's e-mail.
      * @param descr Ownership description
@@ -79,7 +79,7 @@ public class OwnershipDescriptionHelper {
     public static String getOwnerEmail(@Nonnull OwnershipDescription descr) {
         return getPrimaryOwnerEmail(descr);
     }
-    
+
     /**
      * Gets e-mail of the primary owner.
      * @param descr Ownership description
@@ -91,7 +91,7 @@ public class OwnershipDescriptionHelper {
         String ownerEmail = UserStringFormatter.formatEmail(descr.getPrimaryOwnerId());
         return ownerEmail != null ? ownerEmail : "";
     }
-    
+
     /**
      * Gets a comma-separated list of co-owners.
      * @param descr Ownership description
@@ -106,11 +106,11 @@ public class OwnershipDescriptionHelper {
             res.add(getPrimaryOwnerId(descr));
         }
         for (String userId : descr.getSecondaryOwnerIds()) {
-            res.add(userId);      
+            res.add(userId);
         }
         return res;
     }
-    
+
     /**
      * Gets a comma-separated list of co-owners.
      * Owner will be also considered as co-owner.
@@ -123,25 +123,25 @@ public class OwnershipDescriptionHelper {
     public static String getCoOwnerIDs(@Nonnull OwnershipDescription descr) {
         return getAllOwnerEmailsString(descr);
     }
-    
+
     /**
      * Gets a comma-separated list of primary and secondary owners.
      * @param descr Ownership description
      * @return String containing comma-separated list of owner user IDs
      * @since 0.9
      */
-    @Nonnull 
+    @Nonnull
     public static String getAllOwnerIdsString(@Nonnull OwnershipDescription descr) {
-        StringBuilder coowners= new StringBuilder();
+        StringBuilder coowners = new StringBuilder();
         for (String userId : getSecondaryOwnerIds(descr, true)) {
             if (coowners.length() != 0) {
                 coowners.append(",");
             }
-            coowners.append(userId);      
+            coowners.append(userId);
         }
         return coowners.toString();
     }
-    
+
     /**
      * Gets e-mails of secondary owners (including owner if required).
      * @param descr Ownership description
@@ -151,19 +151,19 @@ public class OwnershipDescriptionHelper {
      */
     public static Set<String> getSecondaryOwnerEmails(@Nonnull OwnershipDescription descr, boolean includeOwner) {
         Set<String> res = new TreeSet<>();
-        
+
         if (includeOwner) {
             res.add(getOwnerEmail(descr));
         }
-        for (String userId : descr.getSecondaryOwnerIds()) {          
+        for (String userId : descr.getSecondaryOwnerIds()) {
             String coownerEmail = UserStringFormatter.formatEmail(userId);
             if (coownerEmail != null) {
                 res.add(coownerEmail);
-            }       
+            }
         }
         return res;
     }
-    
+
     /**
      * Gets e-mails of secondary owners (including primary owner).
      * @param descr Ownership description
@@ -171,12 +171,12 @@ public class OwnershipDescriptionHelper {
      * @since 0.9
      */
     public static String getAllOwnerEmailsString(@Nonnull OwnershipDescription descr) {
-        StringBuilder coownerEmails=new StringBuilder();
-        for (String coownerEmail : getSecondaryOwnerEmails(descr, true)) {          
+        StringBuilder coownerEmails = new StringBuilder();
+        for (String coownerEmail : getSecondaryOwnerEmails(descr, true)) {
             if (coownerEmails.length() != 0) {
                 coownerEmails.append(",");
             }
-            coownerEmails.append(coownerEmail);    
+            coownerEmails.append(coownerEmail);
         }
         return coownerEmails.toString();
     }

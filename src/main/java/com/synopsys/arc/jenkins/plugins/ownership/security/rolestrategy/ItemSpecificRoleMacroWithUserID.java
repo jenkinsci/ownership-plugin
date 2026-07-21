@@ -43,22 +43,22 @@ public class ItemSpecificRoleMacroWithUserID extends ItemSpecificRoleMacro {
     public String getName() {
         return super.getName() + "WithUserID";
     }
-    
+
     @Override
     public String getDescription() {
-        return super.getDescription()+Messages.Security_RoleStrategy_WithUserDescriptionSuffix();
+        return super.getDescription() + Messages.Security_RoleStrategy_WithUserDescriptionSuffix();
     }
 
     @Override
     public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
         boolean res = super.hasPermission(sid, p, type, item, macro);
         if (res) return true;
-        
+
         // Specific handler for the current user
-        if (sid.equals(AUTHENTICATED_SID)) { 
+        if (sid.equals(AUTHENTICATED_SID)) {
             User usr = User.current();
-            return usr != null ? super.hasPermission(usr.getId(), p, type, item, macro) : false; 
+            return usr != null ? super.hasPermission(usr.getId(), p, type, item, macro) : false;
         }
         return false;
-    }    
+    }
 }

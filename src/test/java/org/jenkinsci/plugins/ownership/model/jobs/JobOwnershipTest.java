@@ -1,10 +1,16 @@
 package org.jenkinsci.plugins.ownership.model.jobs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+
 import com.synopsys.arc.jenkins.plugins.ownership.extensions.item_ownership_policy.DropOwnershipPolicy;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
 import hudson.model.Job;
 import hudson.model.User;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.ownership.config.PreserveOwnershipPolicy;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
@@ -12,13 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author cpuydebois
@@ -77,15 +76,18 @@ class JobOwnershipTest {
             Job job = j.jenkins.getItemByFullName("job-dsl-generated", Job.class);
             assertThat("Cannot locate job 'job-dsl-generated'", job, notNullValue());
             JobOwnerJobProperty ownerProperty = JobOwnerHelper.getOwnerProperty(job);
-            assertThat("Property should still be herer",  ownerProperty, notNullValue());
-            assertThat("Ownership should be disabled according to DropOwnershipPolicy",
-                    ownerProperty.getOwnership().isOwnershipEnabled(), equalTo(false));
-            assertThat("There should be no Owner",
-                    ownerProperty.getOwnership().getPrimaryOwnerId(), equalTo(User.getUnknown().getId()));
+            assertThat("Property should still be herer", ownerProperty, notNullValue());
+            assertThat(
+                    "Ownership should be disabled according to DropOwnershipPolicy",
+                    ownerProperty.getOwnership().isOwnershipEnabled(),
+                    equalTo(false));
+            assertThat(
+                    "There should be no Owner",
+                    ownerProperty.getOwnership().getPrimaryOwnerId(),
+                    equalTo(User.getUnknown().getId()));
         } finally {
             IOUtils.closeQuietly(jobConfigIS);
         }
-
     }
 
     @Test
@@ -103,14 +105,17 @@ class JobOwnershipTest {
             Job job = j.jenkins.getItemByFullName("job-dsl-generated", Job.class);
             assertThat("Cannot locate job 'job-dsl-generated'", job, notNullValue());
             JobOwnerJobProperty ownerProperty = JobOwnerHelper.getOwnerProperty(job);
-            assertThat("Property should be preserved by PreserveJobOwnershipPolicy",  ownerProperty, notNullValue());
-            assertThat("Ownership should still be enabled according to PreserveJobOwnershipPolicy",
-                    ownerProperty.getOwnership().isOwnershipEnabled(), equalTo(true));
-            assertThat("Owner should still be 'the.owner'",
-                    ownerProperty.getOwnership().getPrimaryOwnerId(), equalTo("the.owner"));
+            assertThat("Property should be preserved by PreserveJobOwnershipPolicy", ownerProperty, notNullValue());
+            assertThat(
+                    "Ownership should still be enabled according to PreserveJobOwnershipPolicy",
+                    ownerProperty.getOwnership().isOwnershipEnabled(),
+                    equalTo(true));
+            assertThat(
+                    "Owner should still be 'the.owner'",
+                    ownerProperty.getOwnership().getPrimaryOwnerId(),
+                    equalTo("the.owner"));
         } finally {
             IOUtils.closeQuietly(jobConfigIS);
         }
-
     }
 }

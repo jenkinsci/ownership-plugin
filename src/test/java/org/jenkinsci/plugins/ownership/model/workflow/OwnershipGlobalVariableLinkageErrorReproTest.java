@@ -23,6 +23,12 @@
  */
 package org.jenkinsci.plugins.ownership.model.workflow;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
 import hudson.model.Action;
@@ -31,17 +37,12 @@ import hudson.model.Result;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.tasks.Mailer;
 import java.util.Arrays;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.notNullValue;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -116,18 +117,16 @@ class OwnershipGlobalVariableLinkageErrorReproTest {
 
     @Test
     void secondGetValueWithoutBindingCache_mustNotLinkageError() throws Exception {
-        ReproStats stats = runBuilds("issue84-scripted-binding-clear",
-                SCRIPTED_RELOAD_VIA_BINDING_CLEAR, false);
+        ReproStats stats = runBuilds("issue84-scripted-binding-clear", SCRIPTED_RELOAD_VIA_BINDING_CLEAR, false);
         assertNoLinkageError(stats);
         assertThat(stats.lastResult, equalTo(Result.SUCCESS));
     }
 
-    private ReproStats runBuilds(String jobName, String pipelineScript, boolean sandbox)
-            throws Exception {
+    private ReproStats runBuilds(String jobName, String pipelineScript, boolean sandbox) throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, jobName);
         job.setDefinition(new CpsFlowDefinition(pipelineScript, sandbox));
-        JobOwnerHelper.setOwnership(job, new OwnershipDescription(true, "owner",
-                Arrays.asList("coowner1", "coowner2")));
+        JobOwnerHelper.setOwnership(
+                job, new OwnershipDescription(true, "owner", Arrays.asList("coowner1", "coowner2")));
         if (!sandbox) {
             ScriptApproval.get().preapprove(pipelineScript, GroovyLanguage.get());
         }
@@ -151,14 +150,14 @@ class OwnershipGlobalVariableLinkageErrorReproTest {
                 }
             } else if (lastResult != Result.SUCCESS) {
                 otherFailures++;
-                System.err.println("[" + jobName + "] Build #" + run.getNumber()
-                        + " failed without LinkageError. Log:");
+                System.err.println(
+                        "[" + jobName + "] Build #" + run.getNumber() + " failed without LinkageError. Log:");
                 System.err.println(log);
             }
         }
 
-        System.out.println("issue #84 regression [" + jobName + "]: linkageErrors="
-                + linkageErrors + "/" + ITERATIONS + ", otherFailures=" + otherFailures);
+        System.out.println("issue #84 regression [" + jobName + "]: linkageErrors=" + linkageErrors + "/" + ITERATIONS
+                + ", otherFailures=" + otherFailures);
         if (firstLinkageLog != null) {
             System.out.println("First LinkageError build log (truncated):");
             System.out.println(truncate(firstLinkageLog, 4000));
@@ -167,18 +166,19 @@ class OwnershipGlobalVariableLinkageErrorReproTest {
     }
 
     private static void assertNoLinkageError(ReproStats stats) {
-        assertFalse(stats.linkageErrors > 0,
+        assertFalse(
+                stats.linkageErrors > 0,
                 "expected 0 LinkageError in " + ITERATIONS
-                + " runs, got " + stats.linkageErrors
-                + " (otherFailures=" + stats.otherFailures + ")");
+                        + " runs, got " + stats.linkageErrors
+                        + " (otherFailures=" + stats.otherFailures + ")");
     }
 
     private static boolean isLinkageError(String log) {
         return log != null
                 && log.contains("LinkageError")
                 && (log.contains("OwnershipGlobalVariableImpl")
-                || log.contains("duplicate class definition")
-                || log.contains("OwnershipPipelineVar"));
+                        || log.contains("duplicate class definition")
+                        || log.contains("OwnershipPipelineVar"));
     }
 
     private static String truncate(String text, int max) {
