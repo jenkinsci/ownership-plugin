@@ -64,6 +64,68 @@ public class OwnershipBasedSecurityTestHelper {
         jenkins.setAuthorizationStrategy(strategy);
         jenkins.save();
     }
+
+    /**
+     * Role Strategy setup: {@code @ItemSpecificWithUserID} assigned to {@code authenticated}.
+     * RS passes sid {@code authenticated}; the macro remaps to {@code User.current().getId()}.
+     */
+    public static void setupItemSpecificMacro(@Nonnull Jenkins jenkins) throws AssertionError, IOException {
+        Map<String, RoleMap> grantedRoles = new HashMap<>();
+        grantedRoles.put(RoleType.Project.getStringType(), getItemSpecificWithUserIdProjectRoleMap());
+        grantedRoles.put(RoleType.Global.getStringType(), getGlobalRolesForItemSpecificMacro());
+
+        RoleBasedAuthorizationStrategy strategy = new RoleBasedAuthorizationStrategy(grantedRoles);
+        jenkins.setAuthorizationStrategy(strategy);
+        jenkins.save();
+    }
+
+    /**
+     * Role Strategy: {@code @ItemSpecific} (NOT WithUserID), role assigned to a concrete user SID.
+     * RS passes sid {@code userSid} into the macro with no authenticated remapping.
+     */
+    public static void setupPlainItemSpecificMacroForUser(@Nonnull Jenkins jenkins, String userSid)
+            throws AssertionError, IOException {
+        Map<String, RoleMap> grantedRoles = new HashMap<>();
+        grantedRoles.put(RoleType.Project.getStringType(), getPlainItemSpecificProjectRoleMap(userSid));
+        grantedRoles.put(RoleType.Global.getStringType(), getGlobalRolesForItemSpecificMacro());
+
+        RoleBasedAuthorizationStrategy strategy = new RoleBasedAuthorizationStrategy(grantedRoles);
+        jenkins.setAuthorizationStrategy(strategy);
+        jenkins.save();
+    }
+
+    private static RoleMap getItemSpecificWithUserIdProjectRoleMap() {
+        Set<Permission> itemSpecificPermissions = new HashSet<>();
+        itemSpecificPermissions.add(Item.CONFIGURE);
+        itemSpecificPermissions.add(Item.BUILD);
+        Role itemSpecificRole = createRole("@ItemSpecificWithUserID", ".*", itemSpecificPermissions);
+        return createRoleMapForSid("authenticated", itemSpecificRole);
+    }
+
+    private static RoleMap getPlainItemSpecificProjectRoleMap(String userSid) {
+        Set<Permission> itemSpecificPermissions = new HashSet<>();
+        itemSpecificPermissions.add(Item.CONFIGURE);
+        itemSpecificPermissions.add(Item.BUILD);
+        Role itemSpecificRole = createRole("@ItemSpecific", ".*", itemSpecificPermissions);
+        return createRoleMapForSid(userSid, itemSpecificRole);
+    }
+
+    private static RoleMap getGlobalRolesForItemSpecificMacro() {
+        Set<Permission> adminPermissions = new HashSet<>();
+        adminPermissions.add(Jenkins.ADMINISTER);
+        Role adminRole = createRole("administrator", ".*", adminPermissions);
+
+        Set<Permission> authenticatedPermissions = new HashSet<>();
+        authenticatedPermissions.add(Jenkins.READ);
+        authenticatedPermissions.add(Item.READ);
+        authenticatedPermissions.add(Item.DISCOVER);
+        Role authenticatedRole = createRole("authenticated-reader", ".*", authenticatedPermissions);
+
+        final SortedMap<Role, Set<PermissionEntry>> grantedRoles = new TreeMap<>();
+        grantedRoles.put(adminRole, singleSid("admin"));
+        grantedRoles.put(authenticatedRole, singleSid("authenticated"));
+        return createRoleMap(grantedRoles);
+    }
     
     private static RoleMap getGlobalAdminAndAnonymousRoles() {
         Set<Permission> adminPermissions = new HashSet<>();

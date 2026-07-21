@@ -33,6 +33,9 @@
               <o:featureCard title="${it.manageOwnershipTitle}" href="manage-owners">
                 ${%Manage primary and secondary owners}
               </o:featureCard>
+              <o:featureCard title="${it.configureSpecificAccessTitle}" href="configure-project-specifics">
+                ${%Configure folder-specific access rights}.
+              </o:featureCard>
             </o:hubCards>
         </l:main-panel>
     </l:layout>

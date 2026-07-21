@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev, Synopsys Inc.
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,6 +68,16 @@ public class ItemSpecificSecurity implements Describable<ItemSpecificSecurity>, 
     @Nonnull
     public AuthorizationMatrixProperty getPermissionsMatrix() {
          return permissionsMatrix;
+    }
+
+    /**
+     * Checks whether the stored matrix grants {@code sid} the given permission.
+     * Uses matrix-auth 3.x typed entries (USER/GROUP/EITHER), not the deprecated
+     * two-argument {@code hasPermission(String, Permission)}.
+     */
+    public boolean grants(@Nonnull String sid, @Nonnull Permission p) {
+        return permissionsMatrix.hasPermission(sid, p, true)
+                || permissionsMatrix.hasPermission(sid, p, false);
     }
 
     @Override

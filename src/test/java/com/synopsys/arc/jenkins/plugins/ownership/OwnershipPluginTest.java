@@ -35,6 +35,7 @@ import java.lang.reflect.Proxy;
 import java.util.Collection;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -224,6 +225,27 @@ class OwnershipPluginTest {
         OwnershipPlugin.getInstance().configure(stubRequestKeepingConfiguration(), form);
 
         assertThat(OwnershipPlugin.getInstance().getDefaultJobsSecurity(), sameInstance(defaults));
+    }
+
+    @Test
+    void getFolderSpecificDescriptor() {
+        assertThat(OwnershipPlugin.getInstance().getFolderSpecificDescriptor(),
+                sameInstance(FolderSpecificSecurity.DESCRIPTOR));
+    }
+
+    @Test
+    void configure_withoutDefaultFoldersSecurity_keepsExistingDefaults() throws Exception {
+        FolderSpecificSecurity defaults = new FolderSpecificSecurity(null);
+        OwnershipPluginConfigurer.forJenkinsRule(r)
+                .withDefaultFoldersSecurity(defaults)
+                .configure();
+        assertThat(OwnershipPlugin.getInstance().getDefaultFoldersSecurity(), sameInstance(defaults));
+
+        JSONObject form = new JSONObject();
+        form.put("requiresConfigureRights", false);
+        OwnershipPlugin.getInstance().configure(stubRequestKeepingConfiguration(), form);
+
+        assertThat(OwnershipPlugin.getInstance().getDefaultFoldersSecurity(), sameInstance(defaults));
     }
 
     @Test

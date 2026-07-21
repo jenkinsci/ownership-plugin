@@ -29,6 +29,7 @@ the plugin will be using only a limited set of email resolvers to determine the 
  * `Fast UI resolver` uses built-in routines of the [Mailer plugin](https://plugins.jenkins.io/mailer) => user e-mails will be resolved by user properties and e-mail suffixes
 * `Setup default permissions for item-specific security` - If enabled, 
  [Ownership-Based Security](OwnershipBasedSecurity.md) will have a custom default settings when the job owner specifies or resets _Item-specific security_ .
+ These defaults are a **template** for the configure form and «Restore default settings»; they are **not** applied as live ACL until restored (or otherwise saved) onto the item.
 
 ## Advanced e-mail options
 

@@ -28,15 +28,23 @@ import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import hudson.cli.CLICommandInvoker;
 import hudson.cli.UpdateJobCommand;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.security.AuthorizationMatrixProperty;
+import hudson.security.Permission;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
@@ -48,8 +56,11 @@ import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @WithJenkins
@@ -122,6 +133,31 @@ class JobOwnerJobPropertyTest {
         assertThat("Users with Overall/Administer permissions should be able to configure jobs via CLI", 
                 command.invoke(), succeededSilently());
         assertThat(getPrimaryOwner(p), is(equalTo("non-admin")));
+    }
+
+    @Test
+    void itemSpecificSecurity_survivesReload() throws Exception {
+        OwnershipPluginConfigurer.forJenkinsRule(r).configure();
+        FreeStyleProject p = r.createFreeStyleProject("secured-job");
+        JobOwnerHelper.setOwnership(p, new OwnershipDescription(true, "admin", null));
+        JobOwnerHelper.setProjectSpecificSecurity(p, matrixWith(Item.READ, "alice"));
+
+        r.jenkins.reload();
+
+        FreeStyleProject reloaded = r.jenkins.getItemByFullName(p.getFullName(), FreeStyleProject.class);
+        JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(reloaded);
+        assertThat(prop, notNullValue());
+        assertTrue(prop.hasItemSpecificSecurity());
+
+        AuthorizationMatrixProperty matrix = prop.getItemSpecificSecurity().getPermissionsMatrix();
+        Set<String> readers = matrix.getGrantedPermissions().get(Item.READ);
+        assertThat(readers, hasItem("alice"));
+    }
+
+    private static ItemSpecificSecurity matrixWith(Permission permission, String sid) {
+        Map<Permission, Set<String>> permissions = new HashMap<>();
+        permissions.put(permission, Collections.singleton(sid));
+        return new ItemSpecificSecurity(new AuthorizationMatrixProperty(permissions));
     }
 
     private String getPrimaryOwner(Job<?,?> job) {

@@ -25,6 +25,7 @@
 package org.jenkinsci.plugins.ownership.folders;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty;
 import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
@@ -33,10 +34,12 @@ import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import hudson.cli.CLICommandInvoker;
 import hudson.cli.UpdateJobCommand;
 import hudson.model.Item;
+import hudson.security.Permission;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipProperty;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.For;
@@ -49,12 +52,18 @@ import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // TODO: DRY, merge with JobOwnerJobHelper once helper#setOwnership() is a non-static method
 @For(FolderOwnershipProperty.class)
@@ -156,6 +165,29 @@ class FolderOwnershipPropertyTest {
         assertThat("Users with Overall/Administer permissions should be able to configure jobs via CLI", 
                 command.invoke(), succeededSilently());
         assertThat(ownershipHelper.getOwner(p), is(equalTo("non-admin")));
+    }
+
+    @Test
+    void itemSpecificSecurity_survivesReload() throws Exception {
+        FolderOwnershipHelper.setOwnership(p, new OwnershipDescription(true, "admin", null));
+        FolderOwnershipHelper.setProjectSpecificSecurity(p, matrixWith(Item.READ, "alice"));
+
+        r.jenkins.reload();
+
+        Folder reloaded = r.jenkins.getItemByFullName(p.getFullName(), Folder.class);
+        FolderOwnershipProperty prop = FolderOwnershipHelper.getOwnerProperty(reloaded);
+        assertThat(prop, notNullValue());
+        assertTrue(prop.hasItemSpecificSecurity());
+
+        AuthorizationMatrixProperty matrix = prop.getItemSpecificSecurity().getPermissionsMatrix();
+        Set<String> readers = matrix.getGrantedPermissions().get(Item.READ);
+        assertThat(readers, hasItem("alice"));
+    }
+
+    private static FolderSpecificSecurity matrixWith(Permission permission, String sid) {
+        Map<Permission, Set<String>> permissions = new HashMap<>();
+        permissions.put(permission, Collections.singleton(sid));
+        return new FolderSpecificSecurity(new AuthorizationMatrixProperty(permissions));
     }
 
     private String getItemXml(String ownerSid) {

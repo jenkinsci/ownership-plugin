@@ -68,6 +68,18 @@
           </f:optionalBlock>
         </l:card>
       </div>
+
+      <div class="jenkins-!-margin-top-3">
+        <l:card title="${%defaultFoldersSecurity.title}">
+          <f:optionalBlock name="defaultFoldersSecurity"
+                           title="${%defaultFoldersSecurity.title}"
+                           checked="${it.defaultFoldersSecurity != null}">
+              <j:set var="descriptor" value="${it.folderSpecificDescriptor}"/>
+              <j:set var="instance" value="${it.defaultFoldersSecurity}"/>
+              <st:include from="${descriptor}" page="${descriptor.configPage}"/>
+          </f:optionalBlock>
+        </l:card>
+      </div>
     </div>
   </f:section>
 </j:jelly>
