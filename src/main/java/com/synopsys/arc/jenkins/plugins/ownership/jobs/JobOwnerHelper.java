@@ -25,16 +25,10 @@ package com.synopsys.arc.jenkins.plugins.ownership.jobs;
 
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
-import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPluginConfiguration;
 import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
-import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
 import hudson.Extension;
 import hudson.matrix.MatrixConfiguration;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.User;
@@ -46,6 +40,7 @@ import javax.annotation.Nonnull;
 import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
+import org.jenkinsci.plugins.ownership.model.OwnershipInheritance;
 import org.jenkinsci.plugins.ownership.model.jobs.JobOwnershipDescriptionSource;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -118,28 +113,8 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
                 return new OwnershipInfo(d, new JobOwnershipDescriptionSource(job));
             }
         }
-        
-        // We go to upper items in order to get the ownership description
-        if (!OwnershipPluginConfiguration.get().getInheritanceOptions().isBlockInheritanceFromItemGroups()) {
-            ItemGroup parent = job.getParent();
-            AbstractOwnershipHelper<ItemGroup> located = OwnershipHelperLocator.locate(parent);
-            while (located != null) {
-                OwnershipInfo fromParent = located.getOwnershipInfo(parent);
-                if (fromParent.getDescription().isOwnershipEnabled()) {
-                    return fromParent;
-                }
-                if (parent instanceof Item) {
-                    Item parentItem = (Item)parent;
-                    parent = parentItem.getParent();
-                    located = OwnershipHelperLocator.locate(parent);
-                } else {
-                    located = null;
-                }
-            }
-        }
-        
-        // Fallback: we have not found the Ownership using known approaches
-        return OwnershipInfo.DISABLED_INFO;
+
+        return OwnershipInheritance.fromParents(job);
     }
 
     /**
@@ -177,12 +152,7 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
 
     @Override
     public @Nonnull Collection<User> getPossibleOwners(@Nonnull Job<?, ?> item) {
-        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
-            IUserFilter filter = new AccessRightsFilter(item, Job.CONFIGURE);
-            return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
-        } else {
-            return User.getAll();
-        }
+        return filterPossibleOwners(item, Job.CONFIGURE);
     }  
    
     @Override

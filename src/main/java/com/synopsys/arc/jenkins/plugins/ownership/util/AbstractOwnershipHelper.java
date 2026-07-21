@@ -26,13 +26,15 @@ package com.synopsys.arc.jenkins.plugins.ownership.util;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
+import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.AccessRightsFilter;
+import com.synopsys.arc.jenkins.plugins.ownership.util.userFilters.IUserFilter;
 import hudson.model.User;
+import hudson.security.AccessControlled;
+import hudson.security.Permission;
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.security.Permission;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
 
@@ -81,6 +83,23 @@ public abstract class AbstractOwnershipHelper<TObjectType>
     @Override
     public Collection<User> getPossibleOwners(TObjectType item) {
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns users who may be assigned as owners, optionally filtered by configure rights.
+     *
+     * @param item access-controlled item used for the permission check
+     * @param configurePermission permission required when configure-rights filtering is enabled
+     * @return candidate owners
+     */
+    @Nonnull
+    protected Collection<User> filterPossibleOwners(@Nonnull AccessControlled item,
+                                                    @Nonnull Permission configurePermission) {
+        if (OwnershipPlugin.getInstance().isRequiresConfigureRights()) {
+            IUserFilter filter = new AccessRightsFilter(item, configurePermission);
+            return UserCollectionFilter.filterUsers(User.getAll(), true, filter);
+        }
+        return User.getAll();
     }
     
     //TODO: promote to interface
