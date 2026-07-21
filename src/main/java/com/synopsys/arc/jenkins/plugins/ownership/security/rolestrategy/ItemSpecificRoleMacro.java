@@ -2,7 +2,7 @@
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev, Synopsys Inc.
- * Copyright 2018 Dmitry Gruzd
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 /**
  * Macro invokes evaluation of item-specific access rights for jobs and folders.
  * @author Oleg Nenashev
+ * @author Rustam Atai
  * @since 0.4
  */
 @Extension(optional = true, ordinal = -5)

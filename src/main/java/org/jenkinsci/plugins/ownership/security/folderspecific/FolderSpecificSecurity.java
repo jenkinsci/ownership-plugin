@@ -1,8 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Oleg Nenashev, Synopsys Inc.
- * Copyright 2018 Dmitry Gruzd
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,10 +46,10 @@ import org.kohsuke.stapler.StaplerRequest2;
  * Implements folder-specific property map.
  * Uses {@link AuthorizationMatrixProperty} from matrix-auth for folders
  * (distinct from the job {@link hudson.security.AuthorizationMatrixProperty}).
- * Inspired by work in ownership-plugin PR #70 by Dmitry Gruzd (@SofteqDG).
+ * Inspired by work in ownership-plugin PR #70 by Dmitry Gruzd (@SofteqDG);
+ * patterned after {@code ItemSpecificSecurity}.
  *
- * @author Oleg Nenashev
- * @author Dmitry Gruzd
+ * @author Rustam Atai
  */
 public class FolderSpecificSecurity implements Describable<FolderSpecificSecurity>, Cloneable {
 

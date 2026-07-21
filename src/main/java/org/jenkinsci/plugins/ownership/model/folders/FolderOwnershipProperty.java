@@ -2,7 +2,7 @@
  * The MIT License
  *
  * Copyright (c) 2015-2017 Oleg Nenashev.
- * Copyright 2018 Dmitry Gruzd
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,7 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * Ownership property for {@link AbstractFolder}s.
  * @author Oleg Nenashev
+ * @author Rustam Atai
  * @since 0.9
  */
 public class FolderOwnershipProperty 

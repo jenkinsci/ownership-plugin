@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright (c) 2015-2017 Oleg Nenashev.
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
