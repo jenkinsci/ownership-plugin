@@ -132,6 +132,7 @@ class OwnershipUiDesignLibraryTest {
         HtmlPage hub = j.createWebClient().goTo(folder.getUrl() + "ownership/");
         assertThat(hub.getFirstByXPath("//*[@data-testid='ownership-hub']"), notNullValue());
         assertThat(hub.getAnchorByHref("manage-owners"), notNullValue());
+        assertThat(hub.getAnchorByHref("configure-project-specifics"), notNullValue());
     }
 
     @Test

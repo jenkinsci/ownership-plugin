@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev, Synopsys Inc.
+ * Copyright 2018 Dmitry Gruzd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +25,17 @@
 package com.synopsys.arc.jenkins.plugins.ownership.security.rolestrategy;
 
 import com.synopsys.arc.jenkins.plugins.ownership.Messages;
-import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerHelper;
-import com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty;
-import com.synopsys.arc.jenkins.plugins.ownership.security.itemspecific.ItemSpecificSecurity;
+import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.Macro;
 import com.synopsys.arc.jenkins.plugins.rolestrategy.RoleType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
-import hudson.model.Job;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
+import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 
 /**
- * Macro invokes evaluation of item-specific access rights.
+ * Macro invokes evaluation of item-specific access rights for jobs and folders.
  * @author Oleg Nenashev
  * @since 0.4
  */
@@ -61,18 +60,12 @@ public class ItemSpecificRoleMacro extends AbstractOwnershipRoleMacro {
    
     @Override
     public boolean hasPermission(String sid, Permission p, RoleType type, AccessControlled item, Macro macro) {
-        if (type == RoleType.Project && item instanceof Job) { 
-            Job prj = (Job)item;       
-            JobOwnerJobProperty prop = JobOwnerHelper.getOwnerProperty(prj);
-
-            if (prop != null) {
-                ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
-                if (sec != null) {
-                    return sec.getPermissionsMatrix().hasPermission(sid, p);
-                }
+        if (type == RoleType.Project) {
+            AbstractOwnershipHelper helper = OwnershipHelperLocator.locate(item);
+            if (helper != null) {
+                return helper.hasItemSpecificPermission(item, sid, p);
             }
         }
-        
         return false;
     }
     

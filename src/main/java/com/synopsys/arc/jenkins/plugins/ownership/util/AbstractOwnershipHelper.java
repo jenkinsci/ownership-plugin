@@ -128,4 +128,17 @@ public abstract class AbstractOwnershipHelper<TObjectType>
      * @since TODO
      */
     public boolean hasLocallyDefinedOwnership(@Nonnull TObjectType item) { return false; }
+
+    /**
+     * Checks whether item-specific security grants {@code sid} the given permission.
+     * Default implementation returns {@code false}; helpers that store a permission matrix override this.
+     *
+     * @param item item being checked
+     * @param sid  security identity
+     * @param p    permission
+     * @return {@code true} if item-specific security grants the permission
+     */
+    public boolean hasItemSpecificPermission(@Nonnull TObjectType item, String sid, Permission p) {
+        return false;
+    }
 }

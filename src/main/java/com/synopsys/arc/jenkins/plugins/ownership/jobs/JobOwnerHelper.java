@@ -142,6 +142,18 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
         return OwnershipInfo.DISABLED_INFO;
     }
 
+    @Override
+    public boolean hasItemSpecificPermission(@Nonnull Job<?, ?> job, String sid, Permission p) {
+        JobOwnerJobProperty prop = getOwnerProperty(job);
+        if (prop != null) {
+            ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
+            if (sec != null) {
+                return sec.getPermissionsMatrix().hasPermission(sid, p);
+            }
+        }
+        return false;
+    }
+
     /**
      * Sets the ownership information.
      * @param job A job to be modified

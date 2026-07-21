@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import hudson.security.Permission;
 import org.jenkinsci.plugins.ownership.model.OwnershipHelperLocator;
 import org.jenkinsci.plugins.ownership.model.OwnershipInfo;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -149,6 +150,18 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
             return User.getAll();
         }
     }
+
+    @Override
+    public boolean hasItemSpecificPermission(@Nonnull AbstractFolder<?> folder, String sid, Permission p) {
+        FolderOwnershipProperty prop = getOwnerProperty(folder);
+        if (prop != null) {
+            FolderSpecificSecurity sec = prop.getItemSpecificSecurity();
+            if (sec != null) {
+                return sec.getPermissionsMatrix().hasPermission(sid, p);
+            }
+        }
+        return false;
+    }
     
     /**
      * Sets the ownership information.
@@ -160,10 +173,26 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
             @CheckForNull OwnershipDescription descr) throws IOException {
         FolderOwnershipProperty prop = getOwnerProperty(folder);
         if (prop == null) {
-            prop = new FolderOwnershipProperty(descr);
+            prop = new FolderOwnershipProperty(descr, null);
             folder.addProperty(prop);
         } else {
             prop.setOwnershipDescription(descr);
+        }
+    }
+
+    /**
+     * Sets the folder-specific security.
+     * @param folder Folder to be modified
+     * @param security Security settings to be set. Use null to drop settings
+     * @throws IOException if ownership is not configured or save fails
+     */
+    public static void setProjectSpecificSecurity(@Nonnull AbstractFolder<?> folder,
+            @CheckForNull FolderSpecificSecurity security) throws IOException {
+        FolderOwnershipProperty prop = getOwnerProperty(folder);
+        if (prop == null) {
+            throw new IOException("Ownership is not configured for " + folder);
+        } else {
+            prop.setItemSpecificSecurity(security);
         }
     }
     

@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.config.DisplayOptions;
 import org.jenkinsci.plugins.ownership.config.InheritanceOptions;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.jenkinsci.plugins.ownership.util.environment.EnvSetupOptions;
 import org.jenkinsci.plugins.ownership.util.mail.MailOptions;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -48,6 +49,7 @@ public class OwnershipPluginConfigurer {
     private boolean requiresConfigurePermissions;
     private String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
+    private FolderSpecificSecurity defaultFoldersSecurity;
     private ItemOwnershipPolicy itemOwnershipPolicy;
     private MailOptions mailOptions;
     private DisplayOptions displayOptions;
@@ -80,6 +82,11 @@ public class OwnershipPluginConfigurer {
     
     public OwnershipPluginConfigurer withDefaultJobsSecurity(ItemSpecificSecurity defaultJobsSecurity) {
         this.defaultJobsSecurity = defaultJobsSecurity;
+        return this;
+    }
+
+    public OwnershipPluginConfigurer withDefaultFoldersSecurity(FolderSpecificSecurity defaultFoldersSecurity) {
+        this.defaultFoldersSecurity = defaultFoldersSecurity;
         return this;
     }
     
@@ -121,6 +128,6 @@ public class OwnershipPluginConfigurer {
                 "Make sure the test is using JenkinsRule correctly and the plugin is in the test classpath.");
         }
         
-        plugin.configure(requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, conf);
+        plugin.configure(requiresConfigurePermissions, mailResolverClassName, defaultJobsSecurity, defaultFoldersSecurity, conf);
     }
 }

@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright (c) 2015-2017 Oleg Nenashev.
+ * Copyright 2018 Dmitry Gruzd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +30,7 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.IOwnershipItem;
 import com.synopsys.arc.jenkins.plugins.ownership.OwnershipDescription;
+import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Descriptor;
@@ -39,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.CheckForNull;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -53,8 +56,17 @@ public class FolderOwnershipProperty
     @CheckForNull
     OwnershipDescription ownership;
 
+    @CheckForNull
+    FolderSpecificSecurity itemSpecificSecurity;
+
     public FolderOwnershipProperty(@CheckForNull OwnershipDescription ownership) {
+        this(ownership, null);
+    }
+
+    public FolderOwnershipProperty(@CheckForNull OwnershipDescription ownership,
+                                   @CheckForNull FolderSpecificSecurity itemSpecificSecurity) {
         this.ownership = ownership;
+        this.itemSpecificSecurity = itemSpecificSecurity;
     }
 
     @Override
@@ -73,6 +85,29 @@ public class FolderOwnershipProperty
     }
 
     /**
+     * Gets current configuration of folder-specific security.
+     * Falls back to global defaults when not configured locally.
+     * Use {@link #hasItemSpecificSecurity()} to check an origin of permissions.
+     *
+     * @return FolderSpecificSecurity or {@code null} if neither local nor global is set
+     */
+    @CheckForNull
+    public FolderSpecificSecurity getItemSpecificSecurity() {
+        return itemSpecificSecurity != null
+                ? itemSpecificSecurity
+                : OwnershipPlugin.getInstance().getDefaultFoldersSecurity();
+    }
+
+    /**
+     * Checks if folder-specific security is configured locally.
+     *
+     * @return true if folder-specific security is configured on this property
+     */
+    public boolean hasItemSpecificSecurity() {
+        return itemSpecificSecurity != null;
+    }
+
+    /**
      * Sets the new ownership description.
      * @param description Description to be set. Use {@code null} to drop settings.
      * @throws IOException Property cannot be saved.
@@ -80,12 +115,17 @@ public class FolderOwnershipProperty
     public void setOwnershipDescription(@CheckForNull OwnershipDescription description) throws IOException {
         ownership = description;
         owner.save();
-    }    
+    }
+
+    public void setItemSpecificSecurity(@CheckForNull FolderSpecificSecurity security) throws IOException {
+        itemSpecificSecurity = security;
+        owner.save();
+    }
 
     @Override
     public AbstractFolderProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws Descriptor.FormException {
         // Retain the current configuration in order to prevent changes by form submissions
-        return new FolderOwnershipProperty(ownership);
+        return new FolderOwnershipProperty(ownership, itemSpecificSecurity);
     }
     
     @Extension(optional = true)
@@ -105,6 +145,7 @@ public class FolderOwnershipProperty
         try {
             Method m = XStream2.class.getMethod("addCriticalField", Class.class, String.class);
             m.invoke(Items.XSTREAM2, FolderOwnershipProperty.class, "ownership");
+            m.invoke(Items.XSTREAM2, FolderOwnershipProperty.class, "itemSpecificSecurity");
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new ExceptionInInitializerError(e);
         }

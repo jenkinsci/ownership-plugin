@@ -107,8 +107,16 @@ Location: `/job/<name>/ownership/configure-project-specifics`.
 
 Location: `/job/<folder>/ownership/` and `.../manage-owners`.
 
-- [ ] Hub shows navigation to manage owners
+- [ ] Hub shows navigation to manage owners and configure folder-specific access rights
 - [ ] Manage Owners form matches job behavior (primary select, secondary combobox, warning, save)
+
+### Folder — Configure item-specific security
+
+Location: `/job/<folder>/ownership/configure-project-specifics`.
+
+- [ ] Optional block for item-specific security is available
+- [ ] Permissions matrix (Matrix Auth folder property) can be edited when enabled
+- [ ] Save and `Restore default settings...` actions work
 
 ### Node ownership hub and Manage Owners
 
@@ -128,7 +136,8 @@ See [Configuration](Configuration.md) for option meanings.
 - [ ] Ownership management policy (hetero-radio / policy selection)
 - [ ] Globally inject ownership variables (if shown)
 - [ ] Specific e-mail address resolver optional block and dropdown
-- [ ] Default permissions for item-specific security optional block
+- [ ] Default permissions for job item-specific security optional block
+- [ ] Default permissions for folder item-specific security optional block
 - [ ] Ownership Display Options (advanced)
 - [ ] Ownership Inheritance Options (advanced)
 - [ ] Save on Configure System persists settings
