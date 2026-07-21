@@ -41,27 +41,28 @@ import org.jenkinsci.plugins.ownership.config.DisplayOptions;
 import org.jenkinsci.plugins.ownership.model.folders.FolderOwnershipHelper;
 import org.jenkinsci.plugins.ownership.model.runs.RunOwnershipHelper;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * UI integration and flow tests for Design Library migration.
  */
-public class OwnershipUiDesignLibraryTest {
+@WithJenkins
+class OwnershipUiDesignLibraryTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp(JenkinsRule rule) throws Exception {
+        j = rule;
         OwnershipPluginConfigurer.forJenkinsRule(j).configure();
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         User.getById("alice", true);
@@ -69,7 +70,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void jobHubUsesDesignLibraryCards() throws Exception {
+    void jobHubUsesDesignLibraryCards() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("hub-job");
         HtmlPage page = j.createWebClient().goTo(project.getUrl() + "ownership/");
 
@@ -83,7 +84,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void manageOwnersPageShowsWarningAlertAndForm() throws Exception {
+    void manageOwnersPageShowsWarningAlertAndForm() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("manage-job");
         HtmlPage page = j.createWebClient().goTo(project.getUrl() + "ownership/manage-owners");
 
@@ -97,7 +98,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void jobOwnershipFlowUpdatesSummaryCard() throws Exception {
+    void jobOwnershipFlowUpdatesSummaryCard() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("flow-job");
         JenkinsRule.WebClient wc = j.createWebClient();
 
@@ -119,7 +120,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void folderOwnershipFlowShowsSummaryCard() throws Exception {
+    void folderOwnershipFlowShowsSummaryCard() throws Exception {
         Folder folder = j.jenkins.createProject(Folder.class, "owned-folder");
         FolderOwnershipHelper.setOwnership(folder, new OwnershipDescription(true, "alice", Collections.singletonList("bob")));
 
@@ -134,7 +135,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void nodeOwnershipHubAndSummarySmoke() throws Exception {
+    void nodeOwnershipHubAndSummarySmoke() throws Exception {
         Node slave = j.createSlave("agent-1", null, null);
         com.synopsys.arc.jenkins.plugins.ownership.nodes.NodeOwnerHelper.setOwnership(
                 slave, new OwnershipDescription(true, "alice", Collections.emptyList()));
@@ -150,7 +151,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void runSummaryUsesDesignLibraryCard() throws Exception {
+    void runSummaryUsesDesignLibraryCard() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("run-card");
         JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, "alice", Collections.emptyList()));
         FreeStyleBuild build = j.buildAndAssertSuccess(project);
@@ -165,7 +166,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void jobSummaryCollapsedPreviewShowsPrimaryAndCoownerCount() throws Exception {
+    void jobSummaryCollapsedPreviewShowsPrimaryAndCoownerCount() throws Exception {
         FreeStyleProject project = j.createFreeStyleProject("preview-job");
         JobOwnerHelper.setOwnership(project,
                 new OwnershipDescription(true, "alice", java.util.Arrays.asList("bob", "charlie")));
@@ -179,7 +180,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void hideOptionsRemovesRunSummaryCard() throws Exception {
+    void hideOptionsRemovesRunSummaryCard() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(j)
                 .withDisplayOptions(new DisplayOptions(true, false))
                 .configure();
@@ -193,7 +194,7 @@ public class OwnershipUiDesignLibraryTest {
     }
 
     @Test
-    public void globalConfigSectionRenders() throws Exception {
+    void globalConfigSectionRenders() throws Exception {
         HtmlPage page = j.createWebClient().goTo("manage/configure");
         assertThat(page.getFirstByXPath("//*[@data-testid='ownership-global-config']"), notNullValue());
         assertThat(page.getFirstByXPath("//div[contains(@class,'jenkins-card')]"), notNullValue());

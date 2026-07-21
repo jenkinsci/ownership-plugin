@@ -43,11 +43,11 @@ import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,22 +55,23 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Functional coverage for JobOwnerJobAction item-specific security flows
  * beyond CSRF/permission gates.
  */
-public class JobOwnerJobActionItemSpecificSecurityTest {
+@WithJenkins
+class JobOwnerJobActionItemSpecificSecurityTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
 
     private FreeStyleProject project;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp(JenkinsRule rule) throws Exception {
+        r = rule;
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
         project = r.createFreeStyleProject("owned-job");
         JobOwnerHelper.setOwnership(project, new OwnershipDescription(true, "admin", null));
@@ -83,7 +84,7 @@ public class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
-    public void restoreDefault_clonesGlobalDefaultsOntoJob() throws Exception {
+    void restoreDefault_clonesGlobalDefaultsOntoJob() throws Exception {
         ItemSpecificSecurity defaults = matrixWith(Item.READ, "alice");
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withDefaultJobsSecurity(defaults)
@@ -109,7 +110,7 @@ public class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
-    public void restoreDefault_whenNoGlobalDefaults_clearsJobSecurity() throws Exception {
+    void restoreDefault_whenNoGlobalDefaults_clearsJobSecurity() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
         JobOwnerHelper.setProjectSpecificSecurity(project, matrixWith(Item.READ, "alice"));
         assertTrue(action().hasItemSpecificSecurity());
@@ -126,7 +127,7 @@ public class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
-    public void projectSpecificSecuritySubmit_withoutOptionalBlock_clearsSecurity() throws Exception {
+    void projectSpecificSecuritySubmit_withoutOptionalBlock_clearsSecurity() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
         JobOwnerHelper.setProjectSpecificSecurity(project, matrixWith(Item.READ, "alice"));
         assertTrue(action().hasItemSpecificSecurity());
@@ -147,7 +148,7 @@ public class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
-    public void getItemSpecificSecurity_fallsBackToGlobalDefaults() throws Exception {
+    void getItemSpecificSecurity_fallsBackToGlobalDefaults() throws Exception {
         ItemSpecificSecurity defaults = matrixWith(Item.READ, "alice");
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withDefaultJobsSecurity(defaults)
@@ -161,7 +162,7 @@ public class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
-    public void getItemSpecificSecurity_prefersJobOverrideOverGlobal() throws Exception {
+    void getItemSpecificSecurity_prefersJobOverrideOverGlobal() throws Exception {
         ItemSpecificSecurity defaults = matrixWith(Item.READ, "alice");
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withDefaultJobsSecurity(defaults)
@@ -174,7 +175,7 @@ public class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
-    public void actionIsAvailable_requiresItemRead() throws Exception {
+    void actionIsAvailable_requiresItemRead() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
         assertTrue(action().actionIsAvailable());
 

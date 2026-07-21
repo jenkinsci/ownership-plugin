@@ -36,11 +36,11 @@ import java.util.Collection;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.StaplerRequest2;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,24 +51,25 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Coverage for OwnershipPlugin APIs outside the defaultJobsSecurity binding path.
  */
-public class OwnershipPluginTest {
+@WithJenkins
+class OwnershipPluginTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp(JenkinsRule rule) throws Exception {
+        r = rule;
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
     }
 
     @Test
-    public void doCheckUser_empty_unknown_and_known() throws Exception {
+    void doCheckUser_empty_unknown_and_known() throws Exception {
         OwnershipPlugin plugin = OwnershipPlugin.getInstance();
         User.getById("alice", true);
 
@@ -84,7 +85,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void resolveEmail_withoutRestriction_usesDefaultResolver() throws Exception {
+    void resolveEmail_withoutRestriction_usesDefaultResolver() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withMailResolverClassName(null)
                 .configure();
@@ -98,7 +99,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void resolveEmail_withFastResolverRestriction() throws Exception {
+    void resolveEmail_withFastResolverRestriction() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withMailResolverClassName(OwnershipPlugin.FAST_RESOLVER_ID)
                 .configure();
@@ -112,7 +113,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void resolveEmail_withUnknownClass_fallsBackToDefault() throws Exception {
+    void resolveEmail_withUnknownClass_fallsBackToDefault() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withMailResolverClassName("com.example.DoesNotExistMailResolver")
                 .configure();
@@ -123,7 +124,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void resolveEmail_withCustomResolverExtension() throws Exception {
+    void resolveEmail_withCustomResolverExtension() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withMailResolverClassName(TestMailResolver.class.getCanonicalName())
                 .configure();
@@ -133,14 +134,14 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void getPossibleMailResolvers_includesFastIdAndExtensions() {
+    void getPossibleMailResolvers_includesFastIdAndExtensions() {
         Collection<String> resolvers = OwnershipPlugin.getInstance().getPossibleMailResolvers();
         assertThat(resolvers, hasItem(OwnershipPlugin.FAST_RESOLVER_ID));
         assertThat(resolvers, hasItem(TestMailResolver.class.getCanonicalName()));
     }
 
     @Test
-    public void getDefaultOwner_currentUserOrEmpty() throws Exception {
+    void getDefaultOwner_currentUserOrEmpty() throws Exception {
         r.jenkins.setSecurityRealm(r.createDummySecurityRealm());
 
         try (hudson.security.ACLContext ignored = ACL.as2(Jenkins.ANONYMOUS2)) {
@@ -154,7 +155,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void programmaticConfigure_setsFlagsAndDescriptorAccessors() throws Exception {
+    void programmaticConfigure_setsFlagsAndDescriptorAccessors() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .requireConfigurePermissions(true)
                 .withItemOwnershipPolicy(new AssignCreatorPolicy())
@@ -179,7 +180,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void configure_setsRequiresConfigureRightsAndMailResolver() throws Exception {
+    void configure_setsRequiresConfigureRightsAndMailResolver() throws Exception {
         OwnershipPlugin plugin = OwnershipPlugin.getInstance();
         JSONObject form = new JSONObject();
         form.put("requiresConfigureRights", true);
@@ -195,7 +196,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void configure_withoutMailRestriction_clearsResolver() throws Exception {
+    void configure_withoutMailRestriction_clearsResolver() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withMailResolverClassName(OwnershipPlugin.FAST_RESOLVER_ID)
                 .configure();
@@ -210,7 +211,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void configure_withoutDefaultJobsSecurity_keepsExistingDefaults() throws Exception {
+    void configure_withoutDefaultJobsSecurity_keepsExistingDefaults() throws Exception {
         ItemSpecificSecurity defaults = new ItemSpecificSecurity(null);
         OwnershipPluginConfigurer.forJenkinsRule(r)
                 .withDefaultJobsSecurity(defaults)
@@ -226,7 +227,7 @@ public class OwnershipPluginTest {
     }
 
     @Test
-    public void deprecatedInstance_matchesGetInstance() {
+    void deprecatedInstance_matchesGetInstance() {
         assertThat(OwnershipPlugin.Instance(), sameInstance(OwnershipPlugin.getInstance()));
     }
 
