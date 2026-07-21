@@ -157,7 +157,7 @@ public class FolderOwnershipHelper extends AbstractOwnershipHelper<AbstractFolde
         if (prop != null) {
             FolderSpecificSecurity sec = prop.getItemSpecificSecurity();
             if (sec != null) {
-                return sec.getPermissionsMatrix().hasPermission(sid, p);
+                return sec.grants(sid, p);
             }
         }
         return false;

@@ -64,6 +64,44 @@ public class OwnershipBasedSecurityTestHelper {
         jenkins.setAuthorizationStrategy(strategy);
         jenkins.save();
     }
+
+    /**
+     * Role Strategy setup where project {@code Item.CONFIGURE} is granted only via {@code @ItemSpecific}.
+     */
+    public static void setupItemSpecificMacro(@Nonnull Jenkins jenkins) throws AssertionError, IOException {
+        Map<String, RoleMap> grantedRoles = new HashMap<>();
+        grantedRoles.put(RoleType.Project.getStringType(), getItemSpecificProjectRoleMap());
+        grantedRoles.put(RoleType.Global.getStringType(), getGlobalRolesForItemSpecificMacro());
+
+        RoleBasedAuthorizationStrategy strategy = new RoleBasedAuthorizationStrategy(grantedRoles);
+        jenkins.setAuthorizationStrategy(strategy);
+        jenkins.save();
+    }
+
+    private static RoleMap getItemSpecificProjectRoleMap() {
+        Set<Permission> itemSpecificPermissions = new HashSet<>();
+        itemSpecificPermissions.add(Item.CONFIGURE);
+        itemSpecificPermissions.add(Item.BUILD);
+        Role itemSpecificRole = createRole("@ItemSpecificWithUserID", ".*", itemSpecificPermissions);
+        return createRoleMapForSid("authenticated", itemSpecificRole);
+    }
+
+    private static RoleMap getGlobalRolesForItemSpecificMacro() {
+        Set<Permission> adminPermissions = new HashSet<>();
+        adminPermissions.add(Jenkins.ADMINISTER);
+        Role adminRole = createRole("administrator", ".*", adminPermissions);
+
+        Set<Permission> authenticatedPermissions = new HashSet<>();
+        authenticatedPermissions.add(Jenkins.READ);
+        authenticatedPermissions.add(Item.READ);
+        authenticatedPermissions.add(Item.DISCOVER);
+        Role authenticatedRole = createRole("authenticated-reader", ".*", authenticatedPermissions);
+
+        final SortedMap<Role, Set<PermissionEntry>> grantedRoles = new TreeMap<>();
+        grantedRoles.put(adminRole, singleSid("admin"));
+        grantedRoles.put(authenticatedRole, singleSid("authenticated"));
+        return createRoleMap(grantedRoles);
+    }
     
     private static RoleMap getGlobalAdminAndAnonymousRoles() {
         Set<Permission> adminPermissions = new HashSet<>();

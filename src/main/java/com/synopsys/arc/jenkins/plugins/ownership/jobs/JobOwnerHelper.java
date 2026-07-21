@@ -148,7 +148,7 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
         if (prop != null) {
             ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
             if (sec != null) {
-                return sec.getPermissionsMatrix().hasPermission(sid, p);
+                return sec.grants(sid, p);
             }
         }
         return false;

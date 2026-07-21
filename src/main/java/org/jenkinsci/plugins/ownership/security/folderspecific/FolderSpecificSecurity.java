@@ -73,6 +73,16 @@ public class FolderSpecificSecurity implements Describable<FolderSpecificSecurit
         return permissionsMatrix;
     }
 
+    /**
+     * Checks whether the stored matrix grants {@code sid} the given permission.
+     * Uses matrix-auth 3.x typed entries (USER/GROUP/EITHER), not the deprecated
+     * two-argument {@code hasPermission(String, Permission)}.
+     */
+    public boolean grants(@Nonnull String sid, @Nonnull Permission p) {
+        return permissionsMatrix.hasPermission(sid, p, true)
+                || permissionsMatrix.hasPermission(sid, p, false);
+    }
+
     @Override
     public FolderSpecificSecurity clone() {
         FolderSpecificSecurity newItem;

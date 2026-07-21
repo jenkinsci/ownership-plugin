@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -175,6 +176,24 @@ class JobOwnerJobActionItemSpecificSecurityTest {
     }
 
     @Test
+    void hasItemSpecificPermission_respectsMatrix() throws Exception {
+        OwnershipPluginConfigurer.forJenkinsRule(r).configure();
+        JobOwnerHelper.setProjectSpecificSecurity(project, matrixWith(Item.READ, "alice"));
+
+        assertTrue(JobOwnerHelper.Instance.hasItemSpecificPermission(project, "alice", Item.READ));
+        assertFalse(JobOwnerHelper.Instance.hasItemSpecificPermission(project, "bob", Item.READ));
+    }
+
+    @Test
+    void hasItemSpecificPermission_respectsUserTypedMatrixEntry() throws Exception {
+        OwnershipPluginConfigurer.forJenkinsRule(r).configure();
+        JobOwnerHelper.setProjectSpecificSecurity(project, matrixWithUser(Item.BUILD, "alice"));
+
+        assertTrue(JobOwnerHelper.Instance.hasItemSpecificPermission(project, "alice", Item.BUILD));
+        assertFalse(JobOwnerHelper.Instance.hasItemSpecificPermission(project, "bob", Item.BUILD));
+    }
+
+    @Test
     void actionIsAvailable_requiresItemRead() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
         assertTrue(action().actionIsAvailable());
@@ -199,5 +218,11 @@ class JobOwnerJobActionItemSpecificSecurityTest {
         Map<Permission, Set<String>> permissions = new HashMap<>();
         permissions.put(permission, Collections.singleton(sid));
         return new ItemSpecificSecurity(new AuthorizationMatrixProperty(permissions));
+    }
+
+    private static ItemSpecificSecurity matrixWithUser(Permission permission, String sid) {
+        AuthorizationMatrixProperty matrix = new AuthorizationMatrixProperty(new HashMap<>());
+        matrix.add(permission, PermissionEntry.user(sid));
+        return new ItemSpecificSecurity(matrix);
     }
 }

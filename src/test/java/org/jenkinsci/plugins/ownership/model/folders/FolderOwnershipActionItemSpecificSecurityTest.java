@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
+import org.jenkinsci.plugins.matrixauth.PermissionEntry;
 import org.jenkinsci.plugins.ownership.test.util.OwnershipPluginConfigurer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -183,6 +184,15 @@ class FolderOwnershipActionItemSpecificSecurityTest {
     }
 
     @Test
+    void hasItemSpecificPermission_respectsUserTypedMatrixEntry() throws Exception {
+        OwnershipPluginConfigurer.forJenkinsRule(r).configure();
+        FolderOwnershipHelper.setProjectSpecificSecurity(folder, matrixWithUser(Item.BUILD, "alice"));
+
+        assertTrue(FolderOwnershipHelper.getInstance().hasItemSpecificPermission(folder, "alice", Item.BUILD));
+        assertFalse(FolderOwnershipHelper.getInstance().hasItemSpecificPermission(folder, "bob", Item.BUILD));
+    }
+
+    @Test
     void actionIsAvailable_requiresItemRead() throws Exception {
         OwnershipPluginConfigurer.forJenkinsRule(r).configure();
         assertTrue(action().actionIsAvailable());
@@ -207,5 +217,11 @@ class FolderOwnershipActionItemSpecificSecurityTest {
         Map<Permission, Set<String>> permissions = new HashMap<>();
         permissions.put(permission, Collections.singleton(sid));
         return new FolderSpecificSecurity(new AuthorizationMatrixProperty(permissions));
+    }
+
+    private static FolderSpecificSecurity matrixWithUser(Permission permission, String sid) {
+        AuthorizationMatrixProperty matrix = new AuthorizationMatrixProperty(new HashMap<>());
+        matrix.add(permission, PermissionEntry.user(sid));
+        return new FolderSpecificSecurity(matrix);
     }
 }
