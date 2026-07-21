@@ -48,6 +48,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -101,6 +102,9 @@ class ItemSpecificSecurityBindingTest {
         Set<PermissionEntry> entries = matrix.getGrantedPermissionEntries().get(Item.READ);
         assertThat(entries, notNullValue());
         assertThat(entries, hasItem(PermissionEntry.user("anonymous")));
+
+        assertTrue(JobOwnerHelper.Instance.hasItemSpecificPermission(project, "anonymous", Item.READ));
+        assertFalse(JobOwnerHelper.Instance.hasItemSpecificPermission(project, "admin", Item.READ));
     }
 
     @Test

@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev, Synopsys Inc.
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -115,6 +116,18 @@ public class JobOwnerHelper extends AbstractOwnershipHelper<Job<?,?>> {
         }
 
         return OwnershipInheritance.fromParents(job);
+    }
+
+    @Override
+    public boolean hasItemSpecificPermission(@Nonnull Job<?, ?> job, String sid, Permission p) {
+        JobOwnerJobProperty prop = getOwnerProperty(job);
+        if (prop != null && prop.hasItemSpecificSecurity()) {
+            ItemSpecificSecurity sec = prop.getItemSpecificSecurity();
+            if (sec != null) {
+                return sec.grants(sid, p);
+            }
+        }
+        return false;
     }
 
     /**

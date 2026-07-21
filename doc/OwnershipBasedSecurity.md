@@ -56,10 +56,10 @@ In order to specify all time- and node- specific permissions,
 :exclamation: This is an advanced feature, which allows going beyond two roles. 
 Use with caution.
 
-Item-specific permissions can be configured in the `Manage Ownership` action for jobs.
-These permissions may be granted by job owners to particular users (Similar to [Matrix Authorization Strategy](https://plugins.jenkins.io/matrix-auth)).
+Item-specific permissions can be configured in the `Manage Ownership` action for jobs and folders.
+These permissions may be granted by owners to particular users (Similar to [Matrix Authorization Strategy](https://plugins.jenkins.io/matrix-auth)).
 
-In order to enable this functionality, use the `@ItemSpecificWithUserID` in item Role definitions.
+In order to enable this functionality, use the `@ItemSpecific` or `@ItemSpecificWithUserID` macros in item Role definitions.
 
 ## Job Restrictions
 

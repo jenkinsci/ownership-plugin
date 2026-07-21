@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright 2013 Oleg Nenashev, Synopsys Inc.
+ * Copyright 2026 Rustam Atai (atai)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +50,7 @@ import javax.annotation.Nonnull;
 import jakarta.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.ownership.security.folderspecific.FolderSpecificSecurity;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 
@@ -78,6 +80,7 @@ public class OwnershipPlugin extends Plugin {
     private final List<OwnershipAction> pluginActions = new ArrayList<>();
     private String mailResolverClassName;
     private ItemSpecificSecurity defaultJobsSecurity;
+    private FolderSpecificSecurity defaultFoldersSecurity;
     private OwnershipPluginConfiguration configuration;
     
     /**
@@ -139,6 +142,11 @@ public class OwnershipPlugin extends Plugin {
     public ItemSpecificSecurity getDefaultJobsSecurity() {
         return defaultJobsSecurity;
     }
+
+    @CheckForNull
+    public FolderSpecificSecurity getDefaultFoldersSecurity() {
+        return defaultFoldersSecurity;
+    }
     
     public OwnershipPluginConfiguration getConfiguration() {
         return configuration;
@@ -155,6 +163,16 @@ public class OwnershipPlugin extends Plugin {
     }
 
     /**
+     * Gets descriptor of FolderSpecificSecurity.
+     * Required for jelly.
+     * @return Descriptor
+     */
+    @Nonnull
+    public FolderSpecificSecurity.FolderSpecificDescriptor getFolderSpecificDescriptor() {
+        return FolderSpecificSecurity.DESCRIPTOR;
+    }
+
+    /**
      * {@link OwnershipPlugin} initialization for test suites.
      * @param requiresConfigureRights
      * @param mailResolverClassName
@@ -165,9 +183,26 @@ public class OwnershipPlugin extends Plugin {
     public void configure(boolean requiresConfigureRights, String mailResolverClassName, 
             ItemSpecificSecurity defaultJobsSecurity, 
             OwnershipPluginConfiguration configuration) throws IOException {
+        configure(requiresConfigureRights, mailResolverClassName, defaultJobsSecurity, null, configuration);
+    }
+
+    /**
+     * {@link OwnershipPlugin} initialization for test suites.
+     * @param requiresConfigureRights
+     * @param mailResolverClassName
+     * @param defaultJobsSecurity
+     * @param defaultFoldersSecurity
+     * @param configuration
+     * @throws IOException
+     */
+    public void configure(boolean requiresConfigureRights, String mailResolverClassName,
+            ItemSpecificSecurity defaultJobsSecurity,
+            FolderSpecificSecurity defaultFoldersSecurity,
+            OwnershipPluginConfiguration configuration) throws IOException {
         this.requiresConfigureRights = requiresConfigureRights;
         this.mailResolverClassName = mailResolverClassName;
         this.defaultJobsSecurity = defaultJobsSecurity;
+        this.defaultFoldersSecurity = defaultFoldersSecurity;
         this.configuration = configuration;
         
         reinitActionsList();
@@ -193,6 +228,10 @@ public class OwnershipPlugin extends Plugin {
         
         if (formData.containsKey("defaultJobsSecurity")) {
             this.defaultJobsSecurity = getItemSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultJobsSecurity"));
+        }
+
+        if (formData.containsKey("defaultFoldersSecurity")) {
+            this.defaultFoldersSecurity = getFolderSpecificDescriptor().newInstance(req, formData.getJSONObject("defaultFoldersSecurity"));
         }
         
         reinitActionsList();
