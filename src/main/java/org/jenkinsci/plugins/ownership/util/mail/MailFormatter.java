@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -100,7 +99,7 @@ public class MailFormatter {
 
     private @CheckForNull String joinMailAddresses(@CheckForNull List<String> items) {
         if (items != null && items.size() > 0) {
-            return StringUtils.join(items, separator);
+            return hudson.Util.join(items, separator);
         }
         return null;
     }
