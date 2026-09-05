@@ -88,6 +88,17 @@ public class RunOwnershipHelper extends AbstractOwnershipHelper<Run> {
         return OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP;
     }
 
+    @Override
+    public boolean canManageOwnership(Run item) {
+        // Manage Owners lives on the parent Job/Folder, not on the Run itself
+        return false;
+    }
+
+    @Override
+    public String getManageOwnersURL(Run item) {
+        return null;
+    }
+
     /**
      * Environment setup according to wrapper configurations.
      * @param build Input build

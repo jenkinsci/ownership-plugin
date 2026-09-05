@@ -107,6 +107,18 @@
                 ${%adminsMailToLink.text}
               </a>
             </j:if>
+
+            <j:if test="${helper.canManageOwnership(item)}">
+              <j:set var="manageOwnersUrl" value="${helper.getManageOwnersURL(item)}"/>
+              <j:if test="${manageOwnersUrl != null}">
+                <a class="jenkins-button jenkins-button--tertiary"
+                   data-testid="ownership-manage-owners-link"
+                   href="${rootURL}${manageOwnersUrl}">
+                  <l:icon src="symbol-people-outline plugin-ionicons-api" class="icon-sm"/>
+                  ${%manageOwnersLink.text}
+                </a>
+              </j:if>
+            </j:if>
           </div>
         </div>
       </details>
@@ -124,6 +136,19 @@
             ${%noOwnership.disableDisplayHint.text}
             <code>${%noOwnership.disableDisplayHint.configPath}</code>
           </p>
+          <j:if test="${helper.canManageOwnership(item)}">
+            <j:set var="manageOwnersUrl" value="${helper.getManageOwnersURL(item)}"/>
+            <j:if test="${manageOwnersUrl != null}">
+              <div class="ownership-summary__actions jenkins-buttons-row jenkins-!-margin-top-2">
+                <a class="jenkins-button"
+                   data-testid="ownership-manage-owners-link"
+                   href="${rootURL}${manageOwnersUrl}">
+                  <l:icon src="symbol-people-outline plugin-ionicons-api" class="icon-sm"/>
+                  ${%manageOwnersLink.text}
+                </a>
+              </div>
+            </j:if>
+          </j:if>
         </l:card>
       </div>
     </j:if>

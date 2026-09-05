@@ -47,6 +47,8 @@ Location: job status page (`/job/<name>/`), sidebar link `Manage Ownership`.
 - [ ] Owner names link to user pages
 - [ ] `E-mail to Job owners` action is present when mail options allow it (mail icon)
 - [ ] `E-mail to Service owners` action is present when configured (mail + settings icon)
+- [ ] `Manage Owners` action is present for users with Manage Items Ownership (opens manage-owners)
+- [ ] Empty-state card includes `Manage Owners` when the user can manage ownership
 - [ ] Sidebar contains `Manage Ownership`
 - [ ] Empty-state card appears when ownership is not configured (unless hidden by display options)
 
@@ -54,7 +56,7 @@ Location: job status page (`/job/<name>/`), sidebar link `Manage Ownership`.
 
 Location: folder status page (`/job/<folder>/`).
 
-- [ ] `Folder Owners` summary card behaves as on the job page (collapse, preview, expand, mailto)
+- [ ] `Folder Owners` summary card behaves as on the job page (collapse, preview, expand, mailto, Manage Owners)
 - [ ] Sidebar contains `Manage Ownership`
 
 ### Node / computer status page
@@ -62,7 +64,7 @@ Location: folder status page (`/job/<folder>/`).
 Location: agent page (`/computer/<name>/` or built-in node).
 
 - [ ] `Node Owners` (or equivalent) summary card is visible when node ownership is enabled
-- [ ] Collapse / preview / expand and mailto actions work as on job pages
+- [ ] Collapse / preview / expand, mailto, and Manage Owners actions work as on job pages
 - [ ] Sidebar contains `Manage Ownership`
 
 ### Run / build status page
@@ -70,6 +72,7 @@ Location: agent page (`/computer/<name>/` or built-in node).
 Location: build page (`/job/<name>/<number>/`).
 
 - [ ] Run ownership summary card is shown by default when ownership data is available
+- [ ] Summary card does **not** offer a Manage Owners link (manage UI is on the parent job)
 - [ ] Card can be hidden via _`Manage Jenkins` / `Configure System` / Ownership / Ownership Display Options / Hide ownership summaries on Run pages`_
 - [ ] Empty ownership on runs can be hidden via `Hide ownership summaries for missing ownership info`
 

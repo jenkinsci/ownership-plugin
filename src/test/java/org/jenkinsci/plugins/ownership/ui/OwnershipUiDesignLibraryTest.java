@@ -116,10 +116,24 @@ class OwnershipUiDesignLibraryTest {
         HtmlElement summary = jobPage.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat(summary, notNullValue());
         assertThat(summary.getTextContent(), containsString("alice"));
+        HtmlElement manageLink = jobPage.getFirstByXPath("//*[@data-testid='ownership-manage-owners-link']");
+        assertThat(manageLink, notNullValue());
+        assertThat(manageLink.getAttribute("href"), containsString("ownership/manage-owners"));
 
         HtmlPage hub = wc.goTo(project.getUrl() + "ownership/");
         assertThat(hub.getFirstByXPath("//*[@data-testid='ownership-hub']"), notNullValue());
         assertThat(hub.getAnchorByHref("manage-owners"), notNullValue());
+    }
+
+    @Test
+    void jobEmptyStateSummaryOffersManageOwnersLink() throws Exception {
+        FreeStyleProject project = j.createFreeStyleProject("empty-manage-job");
+        HtmlPage page = j.createWebClient().goTo(project.getUrl());
+        HtmlElement summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
+        assertThat(summary, notNullValue());
+        HtmlElement manageLink = page.getFirstByXPath("//*[@data-testid='ownership-manage-owners-link']");
+        assertThat(manageLink, notNullValue());
+        assertThat(manageLink.getAttribute("href"), containsString("ownership/manage-owners"));
     }
 
     @Test
@@ -132,6 +146,9 @@ class OwnershipUiDesignLibraryTest {
         HtmlElement summary = page.getFirstByXPath("//*[@data-testid='ownership-summary']");
         assertThat(summary, notNullValue());
         assertThat(summary.getTextContent(), containsString("alice"));
+        HtmlElement manageLink = page.getFirstByXPath("//*[@data-testid='ownership-manage-owners-link']");
+        assertThat(manageLink, notNullValue());
+        assertThat(manageLink.getAttribute("href"), containsString("ownership/manage-owners"));
 
         HtmlPage hub = j.createWebClient().goTo(folder.getUrl() + "ownership/");
         assertThat(hub.getFirstByXPath("//*[@data-testid='ownership-hub']"), notNullValue());
@@ -153,6 +170,11 @@ class OwnershipUiDesignLibraryTest {
         HtmlPage manage = j.createWebClient().goTo(computerUrl + "ownership/manage-owners");
         assertThat(manage.getFirstByXPath("//*[@data-testid='ownership-manage-owners']"), notNullValue());
         assertThat(manage.getFirstByXPath("//div[contains(@class,'jenkins-alert-warning')]"), notNullValue());
+
+        HtmlPage computerPage = j.createWebClient().goTo(computerUrl);
+        HtmlElement manageLink = computerPage.getFirstByXPath("//*[@data-testid='ownership-manage-owners-link']");
+        assertThat(manageLink, notNullValue());
+        assertThat(manageLink.getAttribute("href"), containsString("ownership/manage-owners"));
     }
 
     @Test
@@ -168,6 +190,7 @@ class OwnershipUiDesignLibraryTest {
         assertThat(page.getFirstByXPath("//*[@data-testid='ownership-summary-preview']"), notNullValue());
         assertThat(page.getFirstByXPath("//*[@data-testid='ownership-user-info']"), notNullValue());
         assertThat(summary.getTextContent(), containsString("alice"));
+        assertThat(page.getFirstByXPath("//*[@data-testid='ownership-manage-owners-link']"), nullValue());
     }
 
     @Test
