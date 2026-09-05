@@ -76,7 +76,7 @@ public class HTMLFormatter {
                         + Functions.escape(userStr) + "</a>";
             }
         } else { // just return name w/o hyperlink
-            return userId + " (unregistered)";
+            return Functions.escape(userId) + " (unregistered)";
         }
     }
 }
