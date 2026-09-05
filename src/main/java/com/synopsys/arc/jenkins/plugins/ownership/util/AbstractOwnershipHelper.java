@@ -142,6 +142,29 @@ public abstract class AbstractOwnershipHelper<TObjectType> implements IOwnership
     }
 
     /**
+     * Whether the current user may open the Manage Owners UI for this item.
+     *
+     * @param item item shown in the ownership summary
+     * @return {@code true} if a Manage Owners link should be offered
+     */
+    public boolean canManageOwnership(@Nonnull TObjectType item) {
+        return item instanceof AccessControlled
+                && ((AccessControlled) item).hasPermission(getRequiredPermission());
+    }
+
+    /**
+     * Relative URL of the Manage Owners page for this item, or {@code null} if none exists.
+     *
+     * @param item item shown in the ownership summary
+     * @return relative URL ending with {@code ownership/manage-owners}, or {@code null}
+     */
+    @CheckForNull
+    public String getManageOwnersURL(@Nonnull TObjectType item) {
+        String base = getItemURL(item);
+        return base != null ? base + "ownership/manage-owners" : null;
+    }
+
+    /**
      * Check if the objeck has locally defined ownership info.
      * @param item Item
      * @return {@code true} if the object has ownership defined locally.

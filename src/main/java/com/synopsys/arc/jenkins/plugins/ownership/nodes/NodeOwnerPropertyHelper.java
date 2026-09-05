@@ -28,6 +28,7 @@ import com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin;
 import com.synopsys.arc.jenkins.plugins.ownership.util.AbstractOwnershipHelper;
 import com.synopsys.arc.jenkins.plugins.ownership.util.UserCollectionFilter;
 import hudson.Extension;
+import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.User;
 import hudson.security.Permission;
@@ -125,6 +126,16 @@ public class NodeOwnerPropertyHelper extends AbstractOwnershipHelper<NodePropert
     public String getItemURL(NodeProperty item) {
         Node node = getNode(item);
         return node != null ? NodeOwnerHelper.Instance.getItemURL(node) : null;
+    }
+
+    @Override
+    public boolean canManageOwnership(@Nonnull NodeProperty item) {
+        Node node = getNode(item);
+        if (node == null) {
+            return false;
+        }
+        Computer computer = node.toComputer();
+        return computer != null && computer.hasPermission(getRequiredPermission());
     }
 
     @Extension
