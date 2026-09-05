@@ -293,7 +293,7 @@ public class OwnershipPlugin extends Plugin {
 
     @POST
     public FormValidation doCheckUser(@QueryParameter String userId) {
-        Jenkins.get().checkPermission(Jenkins.READ);
+        // Overall/Read is already enforced for /plugin/... by Jenkins.getTarget()
         userId = Util.fixEmptyAndTrim(userId);
         if (userId == null) {
             return FormValidation.error("Field is empty. Field will be ignored");

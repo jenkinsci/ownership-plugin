@@ -24,6 +24,7 @@
 package com.synopsys.arc.jenkins.plugins.ownership.util;
 
 import hudson.Functions;
+import hudson.Util;
 import hudson.model.User;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -65,16 +66,9 @@ public class HTMLFormatter {
         User usr = User.getById(userId, false);
         if (usr != null) {
             String userStr = useLongFormat ? usr.getDisplayName() : UserStringFormatter.formatShort(usr.getId());
-            // URL-encoding for the URL part, HTML-escaping for the link text
-            try {
-                String encodedUserId = java.net.URLEncoder.encode(userId, "UTF-8");
-                return "<a href=\"" + Jenkins.get().getRootUrl() + "user/" + encodedUserId + "\">"
-                        + Functions.escape(userStr) + "</a>";
-            } catch (java.io.UnsupportedEncodingException e) {
-                // Fallback to original behavior if encoding fails
-                return "<a href=\"" + Jenkins.get().getRootUrl() + "user/" + Functions.escape(userId) + "\">"
-                        + Functions.escape(userStr) + "</a>";
-            }
+            // Path-safe URL encoding for the URL part, HTML-escaping for the link text
+            return "<a href=\"" + Jenkins.get().getRootUrl() + "user/" + Util.rawEncode(userId) + "\">"
+                    + Functions.escape(userStr) + "</a>";
         } else { // just return name w/o hyperlink
             return userId + " (unregistered)";
         }
